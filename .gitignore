@@ -1,0 +1,14 @@
+# node
+node_modules
+
+# Nuxt
+*.log*
+.nuxt
+.nitro
+.cache
+.output
+.env
+
+# IDE
+.vscode
+.idea
