@@ -8,5 +8,7 @@
   },
   "devDependencies": {
     "nuxt": "3.0.0-rc.1"
+    "prisma": "^3.14.0"
+    "@prisma/client": "^3.14.0",
   }
 }
