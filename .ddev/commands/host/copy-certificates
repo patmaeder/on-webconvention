@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mkdir -p $PWD/.ddev/ssl/certs
+
+docker cp ddev-web-engineering-web:/etc/ssl/certs/master.key $PWD/.ddev/ssl/certs/master.key
+docker cp ddev-web-engineering-web:/etc/ssl/certs/master.crt $PWD/.ddev/ssl/certs/master.crt
