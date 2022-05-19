@@ -3,6 +3,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "ws": "npx y-websocket",
     "generate": "nuxt generate",
     "preview": "nuxt preview"
   },
@@ -11,6 +12,8 @@
   },
   "dependencies": {
     "three": "^0.134.0",
-    "troisjs": "^0.3.4"
+    "troisjs": "^0.3.4",
+    "y-websocket": "^1.4.3",
+    "yjs": "^13.5.38"
   }
 }
