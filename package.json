@@ -9,8 +9,17 @@
     "preview": "nuxt preview"
   },
   "devDependencies": {
+    "@types/nodemailer": "^6.4.4",
     "nuxt": "3.0.0-rc.1",
     "prisma": "^3.14.0",
     "@prisma/client": "^3.14.0"
+  },
+  "dependencies": {
+    "date-fns": "^2.28.0",
+    "dotenv": "^16.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "nodemailer": "^6.7.5",
+    "prettier": "^2.6.2",
+    "validator": "^13.7.0"
   }
 }

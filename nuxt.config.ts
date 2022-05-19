@@ -18,5 +18,8 @@ const viteConfig = fs.existsSync(".ddev/ssl/certs") ? {
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   server: {},
-  vite: viteConfig,
+  runtimeConfig: {
+    JWT_SECRET: process.env.JWT_SECRET,
+  },
+  vite: viteConfig
 });

@@ -11,6 +11,8 @@ Make sure to install the dependencies:
 npm install
 ```
 
+Populate the environment inside `.env` with the JWT_SECRET which can be generated with the bash command `openssl rand -base64 12`.
+
 ## Development Server
 
 #### Option 1:
