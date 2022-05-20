@@ -1,5 +1,5 @@
 <template>
-  <h1>Nuxt 3 starter template with all folders and hint</h1>
+  <h1>Example of fetching data stored with prisma using useAsyncData-hook (running on the server)</h1>
   <p>Registrierte Benutzer:</p>
   <ul>
     <li v-for="user in users">{{user.email}}</li>
@@ -7,20 +7,19 @@
 </template>
 
 <script setup>
-import {useServer} from "../server";
+import {useNuxtApp} from "nuxt/app";
 
-const { data: users } = await useAsyncData('fetch.users', async () => {
+const { data: users } = await useAsyncData('fetch.users', async (context) => {
 
-  const { prisma } = await useServer();
+  const { $prisma } = useNuxtApp();
 
-  return await prisma.user.findMany({
+  return await $prisma.user.findMany({
     select: {
       email: true
     }
   });
 })
 
-console.log(users);
 </script>
 
 <style lang="scss" scoped>
