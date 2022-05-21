@@ -7,7 +7,10 @@
 </template>
 
 <script setup>
-const { data: users } = await useAsyncData('fetch.users', () => $fetch('/api/users'))
+import {useFetch} from "nuxt/app";
+
+const { data: users } = await useFetch('/api/users');
+
 </script>
 
 <style lang="scss" scoped>
