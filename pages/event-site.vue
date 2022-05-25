@@ -1,6 +1,13 @@
 <template>
     <div id="eventSite">
-        <EventSiteRenderer ref="eventSiteRenderer" :eventSite="eventSite" :user="user" />
+        <EventSiteRenderer 
+            ref="eventSiteRenderer"
+            :eventSite="eventSite" 
+            :user="user" 
+            :events="events" 
+            :favorites="favoriteEvents" 
+            @favorEvent="favor" 
+        />
     </div>
 </template>
 
@@ -58,6 +65,48 @@ const eventSite = {
             z: -1
         },
     },
+}
+
+const events = {
+    100000: {
+        name: "Ein zu frühes Event",
+        start_date: "05-20-2022 15:00:00",
+        end_date: "05-20-2022 15:45:00",
+        room: 500001
+    },
+    100001: {
+        name: "Ein Event",
+        start_date: "05-25-2022 15:00:00",
+        end_date: "05-25-2022 16:30:00",
+        room: 500001
+    },
+    100002: {
+        name: "Nächstes Event",
+        start_date: "05-26-2022 16:00:00",
+        end_date: "05-26-2022 16:30:00",
+        room: 500001
+    },
+    100003: {
+        name: "Ein Event im anderen Raum",
+        start_date: "05-26-2022 14:00:00",
+        end_date: "05-26-2022 16:00:00",
+        room: 500002
+    }
+}
+
+let favoriteEvents = ref([]);
+
+const eventSiteRenderer = ref(null);
+
+function favor(eventID) {
+    if (favoriteEvents.value.includes(eventID)) {
+        favoriteEvents.value = favoriteEvents.value.filter((elem) => {
+            return elem != eventID
+        })
+
+    } else {
+        favoriteEvents.value.push(eventID)
+    }
 }
 </script>
 
