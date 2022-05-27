@@ -6,6 +6,17 @@
                 <Scene ref="scene">
                     <PointLight :position="{x: -8, y: 10, z: 4 }" :intensity="1.4"/>
                     <GltfModel v-for="tile in eventSite" :key="tile.id" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom(tile.id, $event)" />
+                
+                    <!-- Render Character if user moves -->
+                    <GltfModel 
+                        v-if="showChar" 
+                        ref="character" 
+                        :src="user.role == 'visitor' ?  '/glbModels/visitor.glb' : '/glbModels/speaker.glb'" 
+                        :position="{x: 0, y: 0.05, z: 0}"
+                        :rotation="{x: 0, y: 0, z: 0}"
+                        :scale="{x: 0.4, y: 0.4, z: 0.4}" 
+                        @load="charLoaded"
+                    />
                 </Scene>
             </Renderer>
         </client-only>
@@ -46,6 +57,14 @@ const renderer = ref(null);
 let labelRenderer: CSS2DRenderer;
 const camera = ref(null);
 const scene = ref(null);
+const character = ref(null);
+let characterObject3D: THREE.Object3D;
+
+// Variables related to character movement
+let clock: THREE.Clock;
+let delta;
+let showChar = ref(false);
+const rotateAngle: THREE.Vector3 = {x: 0, y: 1, z: 0};
 
 // Variables needed for showing popover
 const eventSiteOverlay = ref(null);
@@ -101,6 +120,121 @@ const currentEvents = computed(() => {
  * Functions
  * ---------------
  */
+function charLoaded(gltf) {
+    characterObject3D = gltf.scene;
+
+    document.addEventListener("keydown", keyDown);
+    document.addEventListener("keyup", keyUp);
+
+    // Callback that is executed before every rerender to move characters
+    renderer.value.onBeforeRender(() => {
+
+        if (character.value.userData.move) {
+
+            if (character.value.userData.move.forward != 0 || character.value.userData.move.sideward != 0) {
+                
+                if (character.value.userData.move.speed < 10) {
+                    character.value.userData.move.speed += (Math.log(character.value.userData.move.speed) * -1 + 2.5) * 0.1;
+                }
+
+                moveChar(characterObject3D, character.value.userData.move.forward, character.value.userData.move.sideward, character.value.userData.move.speed, delta);
+            }
+        }
+    })
+}
+
+function keyDown(evt) {
+
+    let forward = (character.value.userData.move !== undefined) ? character.value.userData.move.forward : 0;
+    let sideward = (character.value.userData.move !== undefined) ?  character.value.userData.move.sideward : 0;
+    
+    switch(evt.keyCode){
+        case 87://W
+        case 38://Arrow up
+            forward = -1;
+            updateCharacterUserData(forward, sideward);
+            break;
+        case 83://S
+        case 40://Arrow down
+            forward = 1;
+            updateCharacterUserData(forward, sideward);
+            break;
+        case 65://A
+        case 37://Arrow left
+            sideward = -1;
+            updateCharacterUserData(forward, sideward);
+            break;
+        case 68://D
+        case 39://Arrow right
+            sideward = 1;
+            updateCharacterUserData(forward, sideward);
+            break;
+    }
+}
+  
+function keyUp(evt){
+    let forward = (character.value.userData.move !== undefined) ? character.value.userData.move.forward : 0;
+    let sideward = (character.value.userData.move !== undefined) ?  character.value.userData.move.sideward : 0;
+    
+    switch(evt.keyCode){
+      case 87://W
+      case 38://Arrow up
+      case 83://S
+      case 40://Arrow down
+        forward = 0;
+        updateCharacterUserData(forward, sideward);
+        break;
+      case 65://A
+      case 37://Arrow left
+      case 68://D
+      case 39://Arrow right
+        sideward = 0;
+        updateCharacterUserData(forward, sideward);
+        break;
+    }
+}
+
+function updateCharacterUserData(forward, sideward){
+
+    if (character.value.userData.move && (forward != 0 || sideward != 0)){
+        character.value.userData.move.forward = forward;
+        character.value.userData.move.sideward = sideward;
+
+    } else {
+        character.value.userData.move = { forward, sideward, speed: 1 };
+    }
+}
+
+function moveChar(model, forward, sideward, speed) {
+
+    let rotateQuaternion: THREE.Quaternion = new THREE.Quaternion();
+
+    if (forward == -1) {
+        if (sideward == -1) {
+            rotateQuaternion.setFromAxisAngle(rotateAngle, 0.25 * Math.PI); // w+a
+        } else if (sideward == 1) {
+            rotateQuaternion.setFromAxisAngle(rotateAngle, -0.25 * Math.PI); // w+d
+        } else {
+            rotateQuaternion.setFromAxisAngle(rotateAngle, 0); //w
+        }
+    } else if (forward == 1) {
+        if (sideward == -1) {
+            rotateQuaternion.setFromAxisAngle(rotateAngle, 0.75 * Math.PI); // s+a
+        } else if (sideward == 1) {
+            rotateQuaternion.setFromAxisAngle(rotateAngle, -0.75 * Math.PI); // s+d
+        } else {
+            rotateQuaternion.setFromAxisAngle(rotateAngle, Math.PI); // s
+        }
+    } else if (sideward == -1) {
+        rotateQuaternion.setFromAxisAngle(rotateAngle, 0.5 * Math.PI); // a
+    } else if (sideward == 1) {
+        rotateQuaternion.setFromAxisAngle(rotateAngle, -0.5 * Math.PI); // d
+    }
+
+    model.quaternion.rotateTowards(rotateQuaternion, 0.04);
+    model.translateX(0.02 * delta * speed);
+}
+
 function focusRoom(roomID, event) {
 
     if (selectedRoom.value != null) {
@@ -125,6 +259,9 @@ function blurRoom() {
 onMounted(() => {
     nextTick(() => {
 
+        // Setup Clock for animation
+        clock = new THREE.Clock();
+
         // Adjust default Three.js Orbitcontrol Properties
         const controls = renderer.value.three.cameraCtrl;
         controls.enableRotate = false;
@@ -132,6 +269,11 @@ onMounted(() => {
         controls.maxDistance = 14;
         controls.mouseButtons = {LEFT: 2, MIDDLE: 1, RIGHT: 0};
         controls.screenSpacePanning = false;
+
+        // EventListener to render character on user input
+        document.addEventListener("keydown", function listenForCharInput (event) {
+            [87, 38, 83, 40, 65, 37, 68, 39].includes(event.keyCode) ? showChar.value = true : null;
+        }, {once: true})
 
         // Setup CSS2DObject and CSS2DRenderer
         popoverCSS2DObject = new CSS2DObject(popover.value)
@@ -143,6 +285,7 @@ onMounted(() => {
         }))
 
         renderer.value.onBeforeRender(() => {
+            delta = clock.getDelta();
             labelRenderer.render(renderer.value.scene, renderer.value.camera);
             popoverCSS2DObject.position.set(0, (renderer.value.three.cameraCtrl.getDistance() * 0.048 + 0.12), 0);
         })
