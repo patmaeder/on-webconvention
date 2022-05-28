@@ -15,10 +15,12 @@
     "prisma": "^3.14.0"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.1.9",
     "date-fns": "^2.28.0",
     "dotenv": "^16.0.1",
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.7.5",
+    "pinia": "^2.0.14",
     "prettier": "^2.6.2",
     "sass": "^1.52.0",
     "validator": "^13.7.0"
