@@ -29,7 +29,6 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
 
   try {
     decodedToken = jwt.verify(query.token, process.env.JWT_SECRET);
-    console.log(decodedToken);
   } catch (error) {
     sendError(
       event,
@@ -40,6 +39,10 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
     );
     return;
   }
+
+  console.log(
+    `Token could be verified for registration attempt of user <${decodedToken.email}>`
+  );
 
   if (await prisma.user.findUnique({ where: { email: decodedToken.email } })) {
     sendError(
@@ -59,6 +62,10 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       role: Roles.PARTICIPANT,
     },
   });
+
+  console.log(
+    `Registration for use <${decodedToken.email}> confirmed. Prisma user created.`
+  );
 
   await setSessionToken(event, { email: decodedToken.email });
 

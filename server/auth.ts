@@ -1,5 +1,5 @@
-import { CompatibilityEvent, setCookie } from "h3";
-import { TokenType, useServer } from "~/server/index";
+import { CompatibilityEvent, sendError, setCookie } from "h3";
+import { Roles, TokenType, useServer } from "~/server/index";
 import jwt from "jsonwebtoken";
 
 export const setSessionToken = async (event: CompatibilityEvent, { email }) => {
@@ -41,4 +41,38 @@ export const setSessionToken = async (event: CompatibilityEvent, { email }) => {
       refreshToken: refreshToken,
     },
   });
+};
+
+export type Session =
+  | {
+      authenticated: boolean;
+      name: string;
+      email: string;
+      role: Roles;
+      expiresIn: number;
+    }
+  | { authenticated: false };
+
+export const parseSessionToken = async (cookie: string): Promise<Session> => {
+  let decodedToken;
+
+  try {
+    if (!cookie) {
+      throw new Error("No cookie provided");
+    }
+
+    decodedToken = jwt.verify(cookie, process.env.JWT_SECRET);
+  } catch (error) {
+    return {
+      authenticated: false,
+    };
+  }
+
+  return {
+    authenticated: true,
+    name: decodedToken.name,
+    email: decodedToken.email,
+    role: decodedToken.role,
+    expiresIn: decodedToken.exp,
+  };
 };
