@@ -1,4 +1,5 @@
 import { useStore } from "~/store";
+import { parse } from "set-cookie-parser";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const store = useStore();
@@ -21,25 +22,54 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return;
   }
 
-  if (process.server) {
-    console.log(
-      `Attempt to refresh expired session on ${
-        process.server ? "server" : "client"
-      }.`
-    );
+  let fetchPayload = {};
 
-    // refresh here
+  console.log(
+    `Attempt to refresh expired session on ${
+      process.server ? "server" : "client"
+    }.`
+  );
+
+  /**
+   * Ensure that cookie is sent with refresh request on server-side manually
+   */
+  if (process.server) {
+    let accessToken = useCookie("Authorization");
+
+    fetchPayload = {
+      headers: {
+        cookie: `Authorization=${accessToken.value}`,
+      },
+    };
   }
 
-  let refreshed = await $fetch("/api/auth/refresh", {
-    method: "POST",
-  })
-    .then((res) => res.refreshed)
-    .catch((error) => console.log("Refresh failed.", error));
+  let response = null;
 
-  if (!refreshed) {
+  try {
+    response = await $fetch.raw("/api/auth/refresh", {
+      method: "POST",
+      ...fetchPayload,
+    });
+  } catch (error) {
+    console.log("Refresh failed.", error);
+  }
+
+  if (!response?._data.refreshed) {
     console.log(`Session could not be refreshed. Abort navigation.`);
     return navigateTo("/login");
+  }
+
+  let cookies = parse(response.headers.get("set-cookie"));
+  let authorizationCookie = cookies.find(
+    (cookie) => cookie.name === "Authorization"
+  );
+
+  console.log(authorizationCookie);
+
+  if (authorizationCookie) {
+    console.log("Set-Cookie header present in refresh response");
+
+    accessToken.value = authorizationCookie.value;
   }
 
   console.log("Session could be refreshed.");

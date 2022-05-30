@@ -23,6 +23,7 @@
     "pinia": "^2.0.14",
     "prettier": "^2.6.2",
     "sass": "^1.52.0",
+    "set-cookie-parser": "^2.4.8",
     "validator": "^13.7.0"
   }
 }
