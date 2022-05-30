@@ -1,17 +1,17 @@
 // token wird per get überreicht
 // wird lokal gesetzt
 
-import { Roles, useServer } from "~/server";
-import { CompatibilityEvent, sendError, sendRedirect } from "h3";
+import { Roles, TokenType, useServer } from "~/server";
+import { CompatibilityEvent, createError, sendError, sendRedirect } from "h3";
 import jwt from "jsonwebtoken";
-import { setSessionToken } from "~/server/auth";
+import { RegistrationTokenPayload, setSessionToken } from "~/server/auth";
 
 /**
  * Confirm Registration, which is handled by clicking a link containing a jwt token with username and email
  */
 
 export default defineEventHandler(async (event: CompatibilityEvent) => {
-  const query = useQuery(event);
+  const query: any = useQuery(event);
   const { prisma } = await useServer();
 
   if (!query.token) {
@@ -25,11 +25,22 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
     return;
   }
 
-  let decodedToken;
+  let decodedToken: RegistrationTokenPayload;
 
   try {
     decodedToken = jwt.verify(query.token, process.env.JWT_SECRET);
   } catch (error) {
+    sendError(
+      event,
+      createError({
+        statusCode: 500,
+        statusMessage: "Request cannot be verified.",
+      })
+    );
+    return;
+  }
+
+  if (decodedToken.type !== TokenType.REGISTRATION) {
     sendError(
       event,
       createError({
@@ -69,5 +80,5 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
 
   await setSessionToken(event, { email: decodedToken.email });
 
-  sendRedirect(event, "/");
+  await sendRedirect(event, "/");
 });

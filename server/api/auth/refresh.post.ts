@@ -1,12 +1,10 @@
-import { Roles, useServer } from "~/server";
-import { CompatibilityEvent, sendError, sendRedirect, useCookie } from "h3";
+import { useServer } from "~/server";
+import { CompatibilityEvent, sendError, useCookie } from "h3";
 import jwt from "jsonwebtoken";
-import { refreshSessionToken, setSessionToken } from "~/server/auth";
+import { refreshSessionToken } from "~/server/auth";
 
 export default defineEventHandler(async (event: CompatibilityEvent) => {
   const sessionToken = useCookie(event, "Authorization");
-
-  console.log("received cookie", sessionToken);
 
   const { prisma } = await useServer();
 
@@ -57,9 +55,27 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
     return;
   }
 
-  if (
-    !(await prisma.user.findUnique({ where: { email: decodedToken.email } }))
-  ) {
+  let existingUser = await prisma.user.findUnique({
+    where: {
+      email: decodedToken.email,
+    },
+  });
+
+  if (!existingUser) {
+    sendError(
+      event,
+      createError({
+        statusCode: 500,
+        statusMessage: "Request cannot be verified.",
+      })
+    );
+    return;
+  }
+
+  if (existingUser.refreshToken !== decodedToken.refreshToken) {
+    console.log(
+      `Cannot renew session for user <${decodedToken.email}> because refreshToken is not valid anymore.`
+    );
     sendError(
       event,
       createError({

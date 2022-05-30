@@ -2,6 +2,7 @@ import { CompatibilityEvent, sendError } from "h3";
 import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
 import setupServer, { TokenType, useServer } from "~/server";
+import { RegistrationTokenPayload } from "~/server/auth";
 
 // token läuft nach 15 Minuten ab, aber Account wird nicht gelöscht. -> d.h. Account automatisch löschen oder erst nach Verifizierung speichern.
 
@@ -22,13 +23,14 @@ const getVerificationURL = (token: string) =>
   `${process.env.HOST}/api/auth/confirm?token=${token}`;
 
 const createToken = ({ name, email }) => {
-  return jwt.sign(
-    { name: name, email: email, type: TokenType.REGISTRATION },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "15m",
-    }
-  );
+  let payload: RegistrationTokenPayload = {
+    name: name,
+    email: email,
+    type: TokenType.REGISTRATION,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: "15m",
+  });
 };
 
 const sendRegistrationMail = async ({ name, email }) => {
@@ -70,7 +72,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Given e-mail address is invalid.",
+        statusMessage: "Given email address is invalid.",
       })
     );
     return;
@@ -103,6 +105,6 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
   return {
     success: true,
     message:
-      "You will receive a confirmation email on the next minutes if you don't have an account, if you don't receive the email try forget password",
+      "Registration attempt succeeded. You will receive a confirmation email in the next minutes.",
   };
 });

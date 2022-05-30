@@ -9,6 +9,7 @@ type ServerInstance = {
 
 export enum TokenType {
   REGISTRATION = "registration",
+  LOGIN = "login",
   SESSION = "session",
   REFRESH = "refresh",
 }

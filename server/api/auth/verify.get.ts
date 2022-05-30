@@ -1,17 +1,15 @@
-// token wird per get überreicht
-// wird lokal gesetzt
-
 import { TokenType, useServer } from "~/server";
-import { CompatibilityEvent, sendError, setCookie } from "h3";
+import { CompatibilityEvent, createError, sendError, sendRedirect } from "h3";
 import jwt from "jsonwebtoken";
-import { setSessionToken } from "~/server/auth";
+import { LoginTokenPayload, setSessionToken } from "~/server/auth";
 
 /**
- * Verify token url issued to login
+ * Verifies a login token handled via GET-request. No further checks for authorization are needed when the token can be verified.
  */
 
 export default defineEventHandler(async (event: CompatibilityEvent) => {
-  const query = useQuery(event);
+  const query: any = useQuery(event);
+  const { prisma } = await useServer();
 
   if (!query.token) {
     sendError(
@@ -24,11 +22,11 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
     return;
   }
 
-  let decodedToken;
+  let decodedToken: LoginTokenPayload;
 
   try {
     decodedToken = jwt.verify(query.token, process.env.JWT_SECRET);
-    console.log(`Token for user ${decodedToken.email} is valid`);
+    console.log(`LoginToken for user ${decodedToken.email} is valid.`);
   } catch (error) {
     sendError(
       event,
@@ -40,5 +38,39 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
     return;
   }
 
+  if (decodedToken.type !== TokenType.LOGIN) {
+    sendError(
+      event,
+      createError({
+        statusCode: 500,
+        statusMessage: "Request cannot be verified.",
+      })
+    );
+    return;
+  }
+
+  let user = await prisma.user.findUnique({
+    where: {
+      email: decodedToken.email,
+    },
+  });
+
+  if (user.refreshToken) {
+    console.log(
+      `Login request for user <${decodedToken.email}> can be verified but user has remaining refresh-token. Prevent overwriting existing session.`
+    );
+
+    sendError(
+      event,
+      createError({
+        statusCode: 500,
+        statusMessage: "User is logged in.",
+      })
+    );
+    return;
+  }
+
   await setSessionToken(event, { email: decodedToken.email });
+
+  await sendRedirect(event, "/");
 });

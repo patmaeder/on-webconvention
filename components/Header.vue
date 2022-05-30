@@ -1,18 +1,26 @@
 <template>
   <nav>
-    <NuxtLink to="/register">
+    <NuxtLink to="/register" v-if="!store.session">
       Registrieren
     </NuxtLink>
-    <NuxtLink to="/login">
+    <NuxtLink to="/login" v-if="!store.session">
       Login
     </NuxtLink>
     <NuxtLink to="/protected">
       Geschützter Inhalt
     </NuxtLink>
+    <NuxtLink to="/logout" v-if="store.session">
+      Logout
+    </NuxtLink>
   </nav>
 </template>
 
 <script setup>
+
+import {useStore} from "../store";
+
+const store = useStore();
+
 </script>
 
 <style lang="scss" scoped>

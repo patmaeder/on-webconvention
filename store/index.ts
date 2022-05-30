@@ -7,7 +7,11 @@ export const useStore = defineStore("store", () => {
     session.value = { name, email, expiresIn };
   }
 
-  return { session, updateSession };
+  function clearSession() {
+    session.value = null;
+  }
+
+  return { session, updateSession, clearSession };
 });
 
 // hmr functionality

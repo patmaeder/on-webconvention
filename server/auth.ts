@@ -2,7 +2,18 @@ import { CompatibilityEvent, sendError, setCookie } from "h3";
 import { Roles, TokenType, useServer } from "~/server/index";
 import jwt from "jsonwebtoken";
 
-export type AccessTokenPayload = {
+export type RegistrationTokenPayload = {
+  type: TokenType;
+  email: string;
+  name: string;
+};
+
+export type LoginTokenPayload = {
+  type: TokenType.LOGIN;
+  email: string;
+};
+
+export type SessionTokenPayload = {
   type: TokenType;
   email: string;
   refreshToken: string;
@@ -18,7 +29,7 @@ export const setSessionToken = async (event: CompatibilityEvent, { email }) => {
     process.env.JWT_SECRET
   );
 
-  let payload: AccessTokenPayload = {
+  let payload: SessionTokenPayload = {
     type: TokenType.SESSION,
     email: email,
     refreshToken: refreshToken,
@@ -85,7 +96,7 @@ export const parseSessionToken = async (cookie: string): Promise<Session> => {
 
 export const refreshSessionToken = async (
   event: CompatibilityEvent,
-  payload: AccessTokenPayload
+  payload: SessionTokenPayload
 ) => {
   if (!payload) {
     throw new Error("No payload provided");
