@@ -1,12 +1,10 @@
 <template>
   <main>
-    <form class="form" @submit.prevent="performRegistration">
-      <h1>Registrieren</h1>
+    <form class="form" @submit.prevent="performLogin">
+      <h1>Login</h1>
       <label for="email">E-Mail-Adresse</label>
       <input name="email" id="email" type="email" v-model="email">
-      <label for="name">Benutzername</label>
-      <input name="name" id="name" type="text" v-model="name">
-      <input type="submit" value="Jetzt Registrieren">
+      <input type="submit" value="Jetzt Einloggen">
     </form>
     <span v-if="pending">Wird gesendet ...</span>
     <span v-if="response">{{response}}</span>
@@ -18,34 +16,32 @@
   import {useFetch} from "nuxt/app";
 
   const email = ref('');
-  const name = ref('');
 
   let pending = ref(false);
   let response = ref(null);
 
-  const performRegistration = async () => {
-    const registrationRequest = useFetch('/api/auth/register', {
+  const performLogin = async () => {
+    const loginRequest = useFetch('/api/auth/login', {
       method: "post",
       body: {
         email: email.value,
-        name: name.value
       }
     });
 
     watchEffect(() => {
-      pending.value = registrationRequest.pending.value;
+      pending.value = loginRequest.pending.value;
 
       // consecutive requests with no changes
-      if(registrationRequest.error.value === true) {
+      if(loginRequest.error.value === true) {
         return;
       }
 
-      if(registrationRequest.error.value) {
-        response.value = registrationRequest.error.value;
+      if(loginRequest.error.value) {
+        response.value = loginRequest.error.value;
         return;
       }
 
-      response.value = registrationRequest.data.value;
+      response.value = loginRequest.data.value;
     });
   }
 
