@@ -9,7 +9,10 @@ import { parseSessionToken } from "~/server/auth";
 export default defineNuxtPlugin(async (nuxt) => {
   const store = useStore();
 
+  console.log("Populating client-side store.");
+
   const sessionCookie = useCookie(nuxt.ssrContext.req, "Authorization");
+
   const decodedToken = await parseSessionToken(sessionCookie);
 
   if (!decodedToken.authenticated) {
@@ -20,10 +23,12 @@ export default defineNuxtPlugin(async (nuxt) => {
   store.updateSession({
     name: decodedToken.name,
     email: decodedToken.email,
-    expiresIn: decodedToken.expiresIn,
+    expiresIn: decodedToken.expiresIn * 1000,
   });
 
   console.log(
-    `Updated session from server-side function for user <${decodedToken.email}>`
+    `Loaded session from server-side function for user <${
+      decodedToken.email
+    }>. Session valid until ${new Date(store.session.expiresIn)}.`
   );
 });
