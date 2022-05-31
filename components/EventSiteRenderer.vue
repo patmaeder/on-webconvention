@@ -15,7 +15,7 @@
                         v-if="showCharacter" 
                         ref="character" 
                         :src="user.role == 'visitor' ?  '/glbModels/visitor.glb' : '/glbModels/speaker.glb'" 
-                        :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: 0, y: 0.05, z: 0}"
+                        :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: 0, y: 0.03, z: 0}"
                         :rotation="usersSharedMap.has(props.user.id) ? {x: usersSharedMap.get(props.user.id).rotation._x, y: usersSharedMap.get(props.user.id).rotation._y, z: usersSharedMap.get(props.user.id).rotation._z} : {x: 0, y: 0, z: 0}"
                         :scale="{x: 0.4, y: 0.4, z: 0.4}" 
                         @load="characterLoaded"
@@ -170,18 +170,25 @@ function characterLoaded(gltf) {
 
             if (character.value.userData.move.forward != 0 || character.value.userData.move.sideward != 0) {
                 
-                if (character.value.userData.move.speed < 10) {
-                    character.value.userData.move.speed += (Math.log(character.value.userData.move.speed) * -1 + 2.5) * 0.1;
-                }
+                let quaternion = getRotationQuaternion(character.value.userData.move.forward, character.value.userData.move.sideward);
+                characterObject3D.quaternion.rotateTowards(quaternion, 0.04);
 
-                moveCharacter(characterObject3D, character.value.userData.move.forward, character.value.userData.move.sideward, character.value.userData.move.speed, delta);
-
-                raycaster.set(characterObject3D.position, new THREE.Vector3(0, -1, 0));
-                let tempRoom = raycaster.intersectObjects(tiles.value.group.children)[0].object.parent.userData.roomID;
+                if (!characterIsIntersecting()) {
                 
-                if (tempRoom != currentRoom) {
-                    currentRoom = tempRoom;
-                    emit("enterRoom", currentRoom)
+                    if (character.value.userData.move.speed < 12) {
+                        character.value.userData.move.speed += (Math.log(character.value.userData.move.speed) * -1 + 2.5) * 0.1;
+                    }
+
+                    characterObject3D.translateX(0.02 * delta * character.value.userData.move.speed);
+
+                    raycaster.set(characterObject3D.position, new THREE.Vector3(0, -1, 0));
+                    let intersections = raycaster.intersectObjects(tiles.value.group.children);
+                    let tempRoom = intersections.length > 0 ? intersections[0].object.parent.userData.roomID : null;
+                    
+                    if (tempRoom != currentRoom) {
+                        currentRoom = tempRoom;
+                        emit("enterRoom", currentRoom)
+                    }
                 }
 
                 usersSharedMap.set(props.user.id, {
@@ -194,7 +201,32 @@ function characterLoaded(gltf) {
     })
 }
 
-function moveCharacter(model, forward, sideward, speed) {
+// Check if the character is intersecting with world objects
+function characterIsIntersecting() {
+
+    const vectors = [
+        new THREE.Vector3(1, 0, 0).applyQuaternion(characterObject3D.quaternion),
+        new THREE.Vector3(1, 0, 1).applyQuaternion(characterObject3D.quaternion),
+        new THREE.Vector3(1, 0, -1).applyQuaternion(characterObject3D.quaternion)
+    ]
+
+    for (let i = 0; i < vectors.length; i++) {
+        raycaster.set(characterObject3D.position, vectors[i]);
+
+        let collisions = raycaster.intersectObjects(tiles.value.group.children);
+
+        if (collisions.filter(collision => collision.distance <= 0.03).length > 0) {
+
+            return true;
+            
+        } else {
+            return false;
+        }
+    }
+}
+
+// Get direction the character is rotation towards
+function getRotationQuaternion(forward, sideward) {
 
     let rotateQuaternion: THREE.Quaternion = new THREE.Quaternion();
     let angle = 0;
@@ -226,9 +258,7 @@ function moveCharacter(model, forward, sideward, speed) {
             break;
     }
 
-    rotateQuaternion.setFromAxisAngle(rotateAngle, angle);
-    model.quaternion.rotateTowards(rotateQuaternion, 0.04);
-    model.translateX(0.02 * delta * speed);
+    return rotateQuaternion.setFromAxisAngle(rotateAngle, angle);
 }
 
 function keyDown(evt) {
