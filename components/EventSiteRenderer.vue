@@ -8,8 +8,8 @@
                     <GltfModel v-for="tile in eventSite" :key="tile.id" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom(tile.id, $event)" />
                 
                     <!-- Render Character if user moves -->
-                    <GltfModel 
-                        v-if="showChar" 
+                    <GltfModel
+                        v-if="showCharacter" 
                         ref="character" 
                         :src="user.role == 'visitor' ?  '/glbModels/visitor.glb' : '/glbModels/speaker.glb'" 
                         :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: 0, y: 0.05, z: 0}"
@@ -48,6 +48,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
 
+// Expose publicly available variables and functions
+defineExpose({
+    removeCharacter
+})
+
+
 /*
  * ---------------
  * Variables
@@ -72,7 +78,7 @@ let selectedRoom = ref(null);
 // Variables related to character movement
 let clock: THREE.Clock;
 let delta;
-let showChar = ref(false);
+let showCharacter = ref(false);
 const rotateAngle: THREE.Vector3 = {x: 0, y: 1, z: 0};
 
 // Variables needed for websocket connection
@@ -146,7 +152,7 @@ function characterLoaded(gltf) {
     // Callback that is executed before every rerender to move characters
     renderer.value.onBeforeRender(() => {
 
-        if (character.value.userData.move) {
+        if (showCharacter && character.value.userData.move) {
 
             if (character.value.userData.move.forward != 0 || character.value.userData.move.sideward != 0) {
                 
@@ -265,19 +271,24 @@ function setDirectionOfMovement(forward, sideward){
     }
 }
 
+function removeCharacter() {
+    showCharacter.value = false;
+    usersSharedMap.delete(props.user.id);
+}
+
 function addUser(key, user) {
     const loader = new GLTFLoader();
     const src = user.role == "visitor" ? "/glbModels/visitor.glb" : "/glbModels/speaker.glb";
 
     loader.load(
         src,
-        function (gltf) {
+        function(gltf) {
             scene.value.add(gltf.scene);
 
             gltf.scene.position.set(user.position.x, user.position.y, user.position.z);
             gltf.scene.scale.set(0.4, 0.4, 0.4)
             gltf.scene.rotation.set(user.rotation._x, user.rotation._y, user.rotation._z)
-            
+
             users[key] = {
                 model: gltf.scene,
                 ...user
@@ -332,7 +343,7 @@ onMounted(() => {
 
         // EventListener to render character on user input
         document.addEventListener("keydown", function listenForCharInput (event) {
-            [87, 38, 83, 40, 65, 37, 68, 39].includes(event.keyCode) ? showChar.value = true : null;
+            [87, 38, 83, 40, 65, 37, 68, 39].includes(event.keyCode) ? showCharacter.value = true : null;
         }, {once: true})
 
         // Establish Websocket connection and listen for changes
@@ -347,8 +358,8 @@ onMounted(() => {
                         if (key != props.user.id) {
                             addUser(key, usersSharedMap.get(key));
 
-                        } else if (!showChar.value) {
-                            showChar.value = true;
+                        } else if (!showCharacter.value) {
+                            showCharacter.value = true;
                         }
                         break;
                     
@@ -363,7 +374,7 @@ onMounted(() => {
 
                     case "delete":
                         if (key != props.user.id) {
-                            scene.value.remove(users[key].character);
+                            scene.value.remove(users[key].model);
                             delete users[key];
                         }
                         break;

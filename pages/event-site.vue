@@ -1,5 +1,8 @@
 <template>
     <div id="eventSite">
+        <div>
+            <button @click="leaveEvent">Event verlassen</button>
+        </div>
         <EventSiteRenderer 
             ref="eventSiteRenderer"
             :eventSite="eventSite" 
@@ -30,7 +33,7 @@ const eventSite = {
             x: 0,
             y: 0,
             z: 0.5
-        }
+        },
    },
    500001: {
         id: 500001,
@@ -107,6 +110,11 @@ function favor(eventID) {
     } else {
         favoriteEvents.value.push(eventID)
     }
+}
+
+function leaveEvent() {
+    eventSiteRenderer.value.removeCharacter();
+    window.location.pathname = "/";
 }
 </script>
 
