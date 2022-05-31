@@ -5,8 +5,11 @@
                 <Camera ref="camera" :position="{x: -10, y: 6, z: 8}" />
                 <Scene ref="scene">
                     <PointLight :position="{x: -8, y: 10, z: 4 }" :intensity="1.4"/>
-                    <GltfModel v-for="tile in eventSite" :key="tile.id" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom(tile.id, $event)" />
-                
+
+                    <Group ref="tiles">
+                        <GltfModel v-for="(tile, key) in eventSite" :key="key" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom($event, tile.id)" @load="tileLoaded($event, key)" />
+                    </Group>
+                    
                     <!-- Render Character if user moves -->
                     <GltfModel
                         v-if="showCharacter" 
@@ -17,6 +20,7 @@
                         :scale="{x: 0.4, y: 0.4, z: 0.4}" 
                         @load="characterLoaded"
                     />
+
                 </Scene>
             </Renderer>
         </client-only>
@@ -41,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Renderer, Camera, Scene, PointLight, GltfModel } from "troisjs";
+import { Renderer, Camera, Scene, PointLight, Group, GltfModel } from "troisjs";
 import * as THREE from "three";
 import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -66,6 +70,7 @@ const renderer = ref(null);
 let labelRenderer: CSS2DRenderer;
 const camera = ref(null);
 const scene = ref(null);
+const tiles = ref(null);
 const character = ref(null);
 let characterObject3D: THREE.Object3D;
 
@@ -80,12 +85,15 @@ let clock: THREE.Clock;
 let delta;
 let showCharacter = ref(false);
 const rotateAngle: THREE.Vector3 = {x: 0, y: 1, z: 0};
+let raycaster: THREE.Raycaster;
+let currentRoom;
 
 // Variables needed for websocket connection
 let wsProvider: WebsocketProvider;
 const doc = new Y.Doc();
 let users = {};
 const usersSharedMap = doc.getMap("users");
+
 
 /*
  * ---------------
@@ -105,7 +113,7 @@ const props = defineProps({
  * Events
  * ---------------
  */
-const emit = defineEmits(["favorEvent"])
+const emit = defineEmits(["favorEvent", "enterRoom"])
 
 
 /*
@@ -134,6 +142,10 @@ const currentEvents = computed(() => {
  * Functions
  * ---------------
  */
+function tileLoaded(gltf, id) {
+    gltf.scene.userData.roomID = id;
+}
+
 function characterLoaded(gltf) {
     characterObject3D = gltf.scene;
 
@@ -149,6 +161,8 @@ function characterLoaded(gltf) {
         })
     }
 
+    raycaster = new THREE.Raycaster()
+
     // Callback that is executed before every rerender to move characters
     renderer.value.onBeforeRender(() => {
 
@@ -161,6 +175,14 @@ function characterLoaded(gltf) {
                 }
 
                 moveCharacter(characterObject3D, character.value.userData.move.forward, character.value.userData.move.sideward, character.value.userData.move.speed, delta);
+
+                raycaster.set(characterObject3D.position, new THREE.Vector3(0, -1, 0));
+                let tempRoom = raycaster.intersectObjects(tiles.value.group.children)[0].object.parent.userData.roomID;
+                
+                if (tempRoom != currentRoom) {
+                    currentRoom = tempRoom;
+                    emit("enterRoom", currentRoom)
+                }
 
                 usersSharedMap.set(props.user.id, {
                     role: props.user.role,
@@ -297,7 +319,7 @@ function addUser(key, user) {
     );
 }
 
-function focusRoom(roomID, event) {
+function focusRoom(event, roomID) {
 
     if (selectedRoom.value != null) {
         event.component.remove(popoverCSS2DObject);
@@ -305,6 +327,11 @@ function focusRoom(roomID, event) {
 
     selectedRoom.value = roomID;
     event.component.add(popoverCSS2DObject);
+
+    if (roomID != currentRoom) {
+        currentRoom = roomID;
+        emit("enterRoom", currentRoom)
+    }
 }
 
 function blurRoom() {

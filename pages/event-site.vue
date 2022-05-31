@@ -2,6 +2,9 @@
     <div id="eventSite">
         <div>
             <button @click="leaveEvent">Event verlassen</button>
+            <button v-if="currentRoom != null">
+                {{ eventSite[currentRoom]?.name }} beitreten
+            </button>
         </div>
         <EventSiteRenderer 
             ref="eventSiteRenderer"
@@ -9,7 +12,8 @@
             :user="user" 
             :events="events" 
             :favorites="favoriteEvents" 
-            @favorEvent="favor" 
+            @favorEvent="favor"
+            @enterRoom="joinRoom" 
         />
     </div>
 </template>
@@ -99,6 +103,8 @@ const events = {
 
 let favoriteEvents = ref([]);
 
+let currentRoom = ref(null);
+
 const eventSiteRenderer = ref(null);
 
 function favor(eventID) {
@@ -110,6 +116,10 @@ function favor(eventID) {
     } else {
         favoriteEvents.value.push(eventID)
     }
+}
+
+function joinRoom(roomID) {
+    currentRoom.value = roomID
 }
 
 function leaveEvent() {
