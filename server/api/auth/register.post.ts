@@ -20,7 +20,7 @@ const registrationEmailTemplate = ({
 `;
 
 const getVerificationURL = (token: string) =>
-  `${process.env.HOST}/api/auth/confirm?token=${token}`;
+  `${process.env.MAIL_HOST}/api/auth/confirm?token=${token}`;
 
 const createToken = ({ name, email }) => {
   let payload: RegistrationTokenPayload = {
