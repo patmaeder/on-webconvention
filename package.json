@@ -24,6 +24,10 @@
     "prettier": "^2.6.2",
     "sass": "^1.52.0",
     "set-cookie-parser": "^2.4.8",
-    "validator": "^13.7.0"
+    "validator": "^13.7.0",
+    "three": "^0.134.0",
+    "troisjs": "^0.3.4",
+    "y-websocket": "^1.4.3",
+    "yjs": "^13.5.38"
   }
 }
