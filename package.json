@@ -3,8 +3,8 @@
   "scripts": {
     "build": "nuxi build",
     "dev": "test -d .ddev/ssl/certs && npm run dev:https || npm run dev:http",
-    "dev:https": "npx concurrently 'nuxi dev --https --ssl-cert .ddev/ssl/certs/master.crt --ssl-key .ddev/ssl/certs/master.key' 'npm run ws'",
-    "dev:http": "npx concurrently  'nuxi dev' 'npm run ws'",
+    "dev:https": "nuxi dev --https --ssl-cert .ddev/ssl/certs/master.crt --ssl-key .ddev/ssl/certs/master.key",
+    "dev:http": "nuxi dev",
     "ws": "npx y-websocket",
     "generate": "nuxi generate",
     "preview": "nuxi preview"
