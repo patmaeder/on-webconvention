@@ -15,7 +15,7 @@ const loginEmailTemplate = ({ username, link }: LoginEmailProps) => `
 `;
 
 const getVerificationURL = (token: string) =>
-  `${process.env.HOST}/api/auth/verify?token=${token}`;
+  `${process.env.MAIL_HOST}/api/auth/verify?token=${token}`;
 
 const createToken = ({ email }) => {
   let payload: LoginTokenPayload = {
