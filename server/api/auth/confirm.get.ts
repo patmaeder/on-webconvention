@@ -52,6 +52,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
   }
 
   console.log(
+    "[Auth]",
     `Token could be verified for registration attempt of user <${decodedToken.email}>`
   );
 
@@ -75,6 +76,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
   });
 
   console.log(
+    "[Auth]",
     `Registration for use <${decodedToken.email}> confirmed. Prisma user created.`
   );
 

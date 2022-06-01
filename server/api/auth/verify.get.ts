@@ -26,7 +26,10 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
 
   try {
     decodedToken = jwt.verify(query.token, process.env.JWT_SECRET);
-    console.log(`LoginToken for user ${decodedToken.email} is valid.`);
+    console.log(
+      "[Auth]",
+      `LoginToken for user ${decodedToken.email} is valid.`
+    );
   } catch (error) {
     sendError(
       event,
@@ -57,6 +60,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
 
   if (user.refreshToken) {
     console.log(
+      "[Auth]",
       `Login request for user <${decodedToken.email}> can be verified but user has remaining refresh-token. Prevent overwriting existing session.`
     );
 

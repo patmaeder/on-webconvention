@@ -50,7 +50,10 @@ const sendRegistrationMail = async ({ name, email }) => {
   };
 
   let info = await mailer.sendMail(mailOptions);
-  console.log(`Registration request sent to user <${email}> ${info.messageId}`);
+  console.log(
+    "[Auth]",
+    `Registration request sent to user <${email}> ${info.messageId}`
+  );
 };
 
 export default defineEventHandler(async (event: CompatibilityEvent) => {
@@ -90,7 +93,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
     try {
       await sendRegistrationMail({ name, email });
     } catch (error) {
-      console.log(error);
+      console.log("[Auth]", error);
       sendError(
         event,
         createError({

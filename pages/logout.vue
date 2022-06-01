@@ -13,9 +13,9 @@ const store = useStore();
 const { data, pending } = await useLazyFetch('/api/auth/logout', { method: "POST"});
 
 watch(data, (response) => {
-  console.log("Logout done");
+  console.log("[Auth]","Logout done");
   if(!response.success) {
-    console.log("Logout did not succeed");
+    console.log("[Auth]","Logout did not succeed");
     return;
   }
 

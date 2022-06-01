@@ -5,18 +5,23 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const store = useStore();
 
   if (!store.session) {
-    console.log(`User is not logged in.`);
+    console.log("[Auth]", `User is not logged in.`);
     return navigateTo("/login");
   }
 
   const userIsAuthenticated = store.session.expiresIn > Date.now();
 
   if (process.client) {
-    console.log("Session will expire at", new Date(store.session?.expiresIn));
+    console.log(
+      "[Auth]",
+      "Session will expire at",
+      new Date(store.session?.expiresIn)
+    );
   }
 
   if (userIsAuthenticated) {
     console.log(
+      "[Auth]",
       `Session is still valid. Continue navigation to ${to.fullPath}.`
     );
     return;
@@ -25,6 +30,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   let fetchPayload = {};
 
   console.log(
+    "[Auth]",
     `Attempt to refresh expired session on ${
       process.server ? "server" : "client"
     }.`
@@ -51,11 +57,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
       ...fetchPayload,
     });
   } catch (error) {
-    console.log("Refresh failed.", error);
+    console.log("[Auth]", "Refresh failed.", error);
   }
 
   if (!response?._data.refreshed) {
-    console.log(`Session could not be refreshed. Abort navigation.`);
+    console.log("[Auth]", `Session could not be refreshed. Abort navigation.`);
     return navigateTo("/login");
   }
 
@@ -64,13 +70,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
     (cookie) => cookie.name === "Authorization"
   );
 
-  console.log(authorizationCookie);
+  console.log("[Auth]", authorizationCookie);
 
   if (authorizationCookie) {
-    console.log("Set-Cookie header present in refresh response");
+    console.log("[Auth]", "Set-Cookie header present in refresh response");
 
     accessToken.value = authorizationCookie.value;
   }
 
-  console.log("Session could be refreshed.");
+  console.log("[Auth]", "Session could be refreshed.");
 });

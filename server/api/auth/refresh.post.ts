@@ -41,6 +41,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
 
   if (!tokenIsExpired) {
     console.log(
+      "[Auth]",
       `Token is still valid and not expired for user <${decodedToken.email}>. Preventing refresh.`
     );
 
@@ -74,6 +75,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
 
   if (existingUser.refreshToken !== decodedToken.refreshToken) {
     console.log(
+      "[Auth]",
       `Cannot renew session for user <${decodedToken.email}> because refreshToken is not valid anymore.`
     );
     sendError(

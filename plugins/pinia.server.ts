@@ -9,14 +9,14 @@ import { parseSessionToken } from "~/server/auth";
 export default defineNuxtPlugin(async (nuxt) => {
   const store = useStore();
 
-  console.log("Populating client-side store.");
+  console.log("[Pinia]", "Populating client-side store.");
 
   const sessionCookie = useCookie(nuxt.ssrContext.req, "Authorization");
 
   const decodedToken = await parseSessionToken(sessionCookie);
 
   if (!decodedToken.authenticated) {
-    console.log("Error: User is not authenticated.");
+    console.log("[Pinia]", "Error: User is not authenticated.");
     return;
   }
 
@@ -27,6 +27,7 @@ export default defineNuxtPlugin(async (nuxt) => {
   });
 
   console.log(
+    "[Pinia]",
     `Loaded session from server-side function for user <${
       decodedToken.email
     }>. Session valid until ${new Date(store.session.expiresIn)}.`
