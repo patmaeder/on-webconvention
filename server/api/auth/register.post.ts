@@ -1,8 +1,8 @@
 import { CompatibilityEvent, sendError } from "h3";
 import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
-import setupServer, { TokenType, useServer } from "~/server";
-import { RegistrationTokenPayload } from "~/server/auth";
+import setupServer, { TokenType, useServer } from "~/backend";
+import { RegistrationTokenPayload } from "~/backend/auth";
 
 // token läuft nach 15 Minuten ab, aber Account wird nicht gelöscht. -> d.h. Account automatisch löschen oder erst nach Verifizierung speichern.
 

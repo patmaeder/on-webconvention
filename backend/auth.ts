@@ -1,5 +1,5 @@
 import { CompatibilityEvent, sendError, setCookie } from "h3";
-import { Roles, TokenType, useServer } from "~/server/index";
+import { Roles, TokenType, useServer } from "~/backend/index";
 import jwt from "jsonwebtoken";
 
 export type RegistrationTokenPayload = {

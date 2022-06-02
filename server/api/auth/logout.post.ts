@@ -1,6 +1,6 @@
 import { createError, deleteCookie, sendError, useCookie } from "h3";
 import jwt from "jsonwebtoken";
-import { useServer } from "~/server";
+import { useServer } from "~/backend";
 
 export default defineEventHandler(async (event) => {
   const sessionToken = useCookie(event, "Authorization");

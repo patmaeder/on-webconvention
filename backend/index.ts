@@ -1,4 +1,4 @@
-import { setupNodeMailer } from "~/server/setup/nodemailer";
+import { setupNodeMailer } from "~/backend/setup/nodemailer";
 import { PrismaClient } from "@prisma/client";
 import { Transporter } from "nodemailer";
 

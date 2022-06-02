@@ -1,4 +1,4 @@
-import { useServer } from "~/server";
+import { useServer } from "~/backend";
 import { defineEventHandler } from "h3";
 
 export default defineEventHandler(async () => {

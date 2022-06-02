@@ -1,7 +1,7 @@
-import { useServer } from "~/server";
+import { useServer } from "~/backend";
 import { CompatibilityEvent, sendError, useCookie } from "h3";
 import jwt from "jsonwebtoken";
-import { refreshSessionToken } from "~/server/auth";
+import { refreshSessionToken } from "~/backend/auth";
 
 export default defineEventHandler(async (event: CompatibilityEvent) => {
   const sessionToken = useCookie(event, "Authorization");

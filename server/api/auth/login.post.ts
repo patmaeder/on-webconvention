@@ -1,8 +1,8 @@
 import { CompatibilityEvent, sendError } from "h3";
 import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
-import setupServer, { TokenType, useServer } from "~/server";
-import { LoginTokenPayload } from "~/server/auth";
+import setupServer, { TokenType, useServer } from "~/backend";
+import { LoginTokenPayload } from "~/backend/auth";
 
 type LoginEmailProps = { username: string; link: string };
 

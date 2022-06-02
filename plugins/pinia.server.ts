@@ -1,6 +1,6 @@
 import { useStore } from "~/store";
 import { useCookie } from "h3";
-import { parseSessionToken } from "~/server/auth";
+import { parseSessionToken } from "~/backend/auth";
 
 /**
  * This plugin will populate the client-side store with the jwt accessToken payload, which is not accessible through client-side scripts

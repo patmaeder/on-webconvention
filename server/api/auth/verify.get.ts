@@ -1,7 +1,7 @@
-import { TokenType, useServer } from "~/server";
+import { TokenType, useServer } from "~/backend";
 import { CompatibilityEvent, createError, sendError, sendRedirect } from "h3";
 import jwt from "jsonwebtoken";
-import { LoginTokenPayload, setSessionToken } from "~/server/auth";
+import { LoginTokenPayload, setSessionToken } from "~/backend/auth";
 
 /**
  * Verifies a login token handled via GET-request. No further checks for authorization are needed when the token can be verified.

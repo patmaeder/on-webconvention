@@ -1,10 +1,10 @@
 // token wird per get überreicht
 // wird lokal gesetzt
 
-import { Roles, TokenType, useServer } from "~/server";
+import { Roles, TokenType, useServer } from "~/backend";
 import { CompatibilityEvent, createError, sendError, sendRedirect } from "h3";
 import jwt from "jsonwebtoken";
-import { RegistrationTokenPayload, setSessionToken } from "~/server/auth";
+import { RegistrationTokenPayload, setSessionToken } from "~/backend/auth";
 
 /**
  * Confirm Registration, which is handled by clicking a link containing a jwt token with username and email
