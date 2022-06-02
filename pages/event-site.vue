@@ -15,6 +15,7 @@
             @favorEvent="favor"
             @enterRoom="joinRoom" 
         />
+        <Calendar/>
     </div>
 </template>
 
