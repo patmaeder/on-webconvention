@@ -192,8 +192,10 @@ function showCalendarComponent(){
 <style>
 
 #calendar-component{
-    background: #000000;
     padding: 20px;
+    position: absolute;
+    bottom: 0px;
+    left: 50px;
 }
 
 #calendarbody{
@@ -266,9 +268,9 @@ function showCalendarComponent(){
 .calendar-button{
     background: #ffffff;
     border-radius: 50px;
-    width: 50px;
+    width: 100px;
     text-align: center;
-    height: 50px;
+    height: 100px;
     align-items: center;
     display: flex;
     cursor: pointer;
@@ -277,6 +279,7 @@ function showCalendarComponent(){
 .calendar-button > span{
     margin: 10px auto;
     align-self: center;
+    font-size: 40px;
 }
 
 </style>
