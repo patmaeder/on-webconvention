@@ -195,6 +195,7 @@ function showCalendarComponent(){
     padding: 20px;
     position: absolute;
     bottom: 0px;
+    width: 100%;
     left: 50px;
 }
 
