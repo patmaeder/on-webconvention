@@ -23,5 +23,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     JWT_SECRET: process.env.JWT_SECRET,
   },
+  css: ["@/assets/styles/index.scss"],
   vite: viteConfig,
 });
