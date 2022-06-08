@@ -1,5 +1,5 @@
 <template>
-    <div id="event-site_wrapper" ref="eventSiteWrapper">
+    <div id="eventSite__wrapper" ref="eventSiteWrapper">
         <client-only>
             <Renderer ref="renderer" alpha antialias orbitCtrl resize="true" :pointer="{intersectRecursive: true}">
                 <Camera ref="camera" :position="{x: -10, y: 6, z: 8}" />
@@ -7,7 +7,7 @@
                     <PointLight :position="{x: -8, y: 10, z: 4 }" :intensity="1.4"/>
 
                     <Group ref="tiles">
-                        <GltfModel v-for="(tile, key) in eventSite" :key="key" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom($event, tile.id)" @load="tileLoaded($event, key)" />
+                        <GltfModel v-for="(tile, key) in eventSite" :key="tile.id" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom($event, tile.id)" @load="tileLoaded($event, tile.id)" />
                     </Group>
                     
                     <!-- Render Character if user moves -->
@@ -24,10 +24,10 @@
                 </Scene>
             </Renderer>
         </client-only>
-        <div id="event-site_overlay" ref="eventSiteOverlay" >
+        <div id="eventSite__overlay" ref="eventSiteOverlay" >
             <div ref="popover">
                 <div v-if="selectedRoom != null">
-                    <span>{{ eventSite[selectedRoom].name }}</span>
+                    <span>{{ eventSite.find(elem => elem.id == selectedRoom).name }}</span>
                     <button @click="blurRoom">
                         X
                     </button>
@@ -455,12 +455,12 @@ onMounted(() => {
 </script>
 
 <style>
-#event-site_wrapper {
+#eventSite__wrapper {
     width: 100%;
     height: 100%;
 }
 
-#event-site_overlay {
+#eventSite__overlay {
     position: absolute;
     top: 0px;
     width: 100%;
@@ -469,7 +469,7 @@ onMounted(() => {
     pointer-events: none;
 }
 
-#event-site_overlay > div > div {
+#eventSite__overlay > div > div {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -482,7 +482,7 @@ onMounted(() => {
     filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .25));
 }
 
-#event-site_overlay > div > div::before {
+#eventSite__overlay > div > div::before {
     content: '';
     position: absolute;
     bottom: -10px;
@@ -493,29 +493,29 @@ onMounted(() => {
     background-color: inherit;
 }
 
-#event-site_overlay > div > div span {
+#eventSite__overlay > div > div span {
     text-align: center;
     padding: 0 40px;
 }
 
-#event-site_overlay > div > div button {
+#eventSite__overlay > div > div button {
     position: absolute;
     top: 10px;
     right: 10px;
 }
 
-#event-site_overlay ul {
+#eventSite__overlay ul {
     list-style-type: none;
     padding: 0;
 }
 
-#event-site_overlay li {
+#eventSite__overlay li {
     display: grid;
     grid-template-columns: 60px 1fr 40px;
     justify-items: center;
 }
 
-#event-site_overlay .favorite {
+#eventSite__overlay .favorite {
     color: #79F0DA;
 }
 </style>
