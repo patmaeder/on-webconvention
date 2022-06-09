@@ -1,54 +1,48 @@
 <template>
-    <div class="iconWrapper" :class="size">
-        <img :src=source />
-    </div>
+  <div class="iconWrapper" :class="size">
+    <img :src="source" />
+  </div>
 </template>
 
 <script lang="ts" setup>
-
 /*
  * ---------------
  * Props
  * ---------------
  */
 const props = defineProps({
-    size: String,
-    source: String,
-})
-
+  size: String,
+  source: String,
+});
 </script>
 
-
 <style lang="scss" scoped>
+.iconWrapper {
+  background-color: #ffffff;
+  border-radius: 100px;
+  display: flex;
+  justify-content: center;
 
-    .iconWrapper {
+  img {
+    align-self: center;
+  }
+}
 
-        background-color: #FFFFFF;
-        border-radius: 100px;
-        display: flex;
-        justify-content: center;
-        
-        img {
-            align-self: center;
-        }
-    }
+.medium {
+  width: 55px;
+  height: 55px;
 
-    .medium {
-        width: 52px;
-        height: 52px;
+  img {
+    height: 45%;
+  }
+}
 
-        img {
-            height: 40%;
-        }
-    }
+.large {
+  width: 75px;
+  height: 75px;
 
-    .large {
-        width: 80px;
-        height: 80px;
-
-        img {
-            height: 40%;
-        }
-    }
-
+  img {
+    height: 35%;
+  }
+}
 </style>

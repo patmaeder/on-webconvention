@@ -3,9 +3,22 @@
     <div class="header">
       <div class="menu-wrapper">
         <div class="menu">
-          <BasicIcon size="medium" source="/icons/profile.svg" />
-          <BasicIcon size="medium" source="/icons/q.svg" />
-          <BasicIcon size="medium" source="/icons/settings.svg" />
+          <ul>
+            <li>
+              <BasicIcon
+                size="medium"
+                source="/icons/q.svg"
+                class="basic-btn"
+              />
+            </li>
+            <li>
+              <BasicIcon
+                size="medium"
+                source="/icons/settings.svg"
+                class="basic-btn"
+              />
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -23,14 +36,45 @@
       </div>
     </div>
     <BasicIcon id="button-calendar" size="large" source="/icons/filter.svg" />
-    <!--<div id="button-calendar">XY</div>-->
     <div class="footer">
       <div class="toolbar">
-        <BasicIcon size="medium" source="/icons/mic.svg" />
-        <BasicIcon size="medium" source="/icons/phones.svg" />
-        <BasicIcon size="medium" source="/icons/end_call.svg" />
-        <BasicIcon size="medium" source="/icons/cam.svg" />
-        <BasicIcon size="medium" source="/icons/chat.svg" />
+        <ul>
+          <li>
+            <BasicIcon
+              size="medium"
+              source="/icons/mic.svg"
+              class="basic-btn"
+            />
+          </li>
+          <li>
+            <BasicIcon
+              size="medium"
+              source="/icons/phones.svg"
+              class="basic-btn"
+            />
+          </li>
+          <li>
+            <BasicIcon
+              size="medium"
+              source="/icons/end_call.svg"
+              class="basic-btn"
+            />
+          </li>
+          <li>
+            <BasicIcon
+              size="medium"
+              source="/icons/cam.svg"
+              class="basic-btn"
+            />
+          </li>
+          <li>
+            <BasicIcon
+              size="medium"
+              source="/icons/chat.svg"
+              class="basic-btn"
+            />
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -66,11 +110,31 @@ export default {};
   }
 
   .menu {
-    width: 17%;
     height: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
+
+    ul {
+      display: flex;
+      padding: 0px;
+      margin: 0px;
+
+      li {
+        margin-left: 20px;
+        list-style: none;
+
+        &:first-child {
+          margin-left: 0px;
+        }
+
+        .basic-btn {
+          &:hover {
+            background: #79f0da;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -125,11 +189,32 @@ export default {};
 
 .toolbar {
   height: 15vh;
-  width: 25%;
+  width: 100%;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+
+  ul {
+    display: flex;
+    padding: 0px;
+    margin: 0px;
+
+    li {
+      margin-left: 20px;
+      list-style: none;
+
+      &:first-child {
+        margin-left: 0px;
+      }
+
+      .basic-btn {
+        &:hover {
+          background: #79f0da;
+        }
+      }
+    }
+  }
 }
 
 #button-small {
