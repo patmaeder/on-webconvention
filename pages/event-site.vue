@@ -30,7 +30,7 @@
             @favorEvent="favor"
             @enterRoom="joinRoom" 
         />
-        <Calendar/>
+        <Calendar :events="events" :favorites="favoriteEvents" @favorEvent="favor"/>
     </div>
 </template>
 
@@ -168,7 +168,7 @@ function favor(eventID) {
 
 function joinRoom(roomID) {
     const roomType = eventSite.find(elem => elem.id == roomID).type;
-    currentRoom.value = null
+    currentRoom.value = null;
 
     if (roomType == "keynote") {
         const currentTimestamp = new Date().getTime()
@@ -179,7 +179,7 @@ function joinRoom(roomID) {
                 new Date(elem.startDate).getTime() < currentTimestamp
         });
 
-        currentRoom.value = roomID;
+        filteredEvents.length > 0 ? currentRoom.value = roomID : null;
 
     } else if (roomType == "break") {
         currentRoom.value = roomID

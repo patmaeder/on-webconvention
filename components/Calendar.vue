@@ -1,87 +1,86 @@
 <template>
     <div id="calendar-component">
-    <div id="calendarbody" v-show="showAll">
-        <div id="head" v-show="showCal">
-            <p @click="monthBack" class="arrows">&larr;</p>
-            <h1>{{ monthNames[month] + ' ' + year }}</h1>
-            <p @click="monthForward" class="arrows">&rarr;</p>
-        </div>
-        <div id="calendar" v-show="showCal">
-            <div v-for="weekday in weekdays" :key="weekday" class="placholder">
-            </div>   
-            <div v-for="day in firstDay" :key="day" class="placholder">
+        <div id="calendarbody" v-show="showAll">
+            <div id="head" v-show="showCal">
+                <p @click="monthBack" class="arrows">&larr;</p>
+                <h1>{{ monthNames[month] + ' ' + year }}</h1>
+                <p @click="monthForward" class="arrows">&rarr;</p>
             </div>
-            <div v-for="day in daysInMonth" :key="day" class="day" :class="{'selected': selectedDay == day}" @click="selectDay(day)">
-                <p>{{weekdays[day.getDay()].slice(0, 1)}} <br> {{ day.getDate() }}</p>
+            <div id="calendar" v-show="showCal">
+                <div v-for="weekday in weekdays" :key="weekday" class="placholder"></div>   
+                <div v-for="day in firstDay" :key="day" class="placholder"></div>
+                <div v-for="day in daysInMonth" :key="day" class="day" :class="{'selected': selectedDay == day}" @click="selectDay(day)">
+                    <p>{{weekdays[day.getDay()].slice(0, 1)}} <br> {{ day.getDate() }}</p>
+                </div>
             </div>
-        </div>
-        <div id="events">
-            <div class="row">
-            <div v-for="event in visibleEvents" :key="event">
-                <div class="row event-container">
-                    <div class="col-sm-9 event-body" v-show="showCal">
-                        <div class="row">
-                            <div class="col-sm-10 start_time_display" @click="showProgramm(event)">                        
+            <div id="events">
+                <div class="row">
+                    <div v-for="event in visibleEvents" :key="event">
+                        <div class="row event-container">
+                            <div class="col-sm-9 event-body" v-show="showCal" :class="{'favorite': favorites.includes(event)}">
                                 <div class="row">
-                                    <div class="col-sm-12 room-display">
-                                        <p>{{ events[event].room }}</p>
+                                    <div class="col-sm-10 start_time_display" @click="showProgramm(event)">                        
+                                        <div class="row">
+                                            <div class="col-sm-12 room-display">
+                                                <p>{{ events.find(elem => elem.id == event).room }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <h5>{{ new Date(events.find(elem => elem.id == event).startDate).toTimeString().slice(0, 5) }}</h5>
+                                            </div>
+                                            <div class="col-sm-8 title_display">
+                                                <h5>{{ events.find(elem => elem.id == event).name }}</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 star" @click="$emit('favorEvent', event)">
+                                        <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 0L14.6942 8.2918H23.4127L16.3593 13.4164L19.0534 21.7082L12 16.5836L4.94658 21.7082L7.64074 13.4164L0.587322 8.2918H9.30583L12 0Z"/>
+                                        </svg>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-2">
-                                        <h5>{{ events[event].start_time }}</h5>
-                                    </div>
-                                    <div class="col-sm-8 title_display">
-                                        <h5>{{ events[event].title }}</h5>
-                                    </div>    
-                                </div>
-                            </div>
-                            <div class="col-sm-2 star" @click="change_favorite(event)">
-                                <p>{{ events[event].star }}</p>
                             </div>
                         </div>
                     </div>
-
-                </div>
-                
-            </div>
-                <div id="programm-container" v-if="showPr">
-                    <ProgrammSite :event="events[e_key]" @closePr="hideProgramm"></ProgrammSite>
+                    <div id="programm-container" v-if="showPr">
+                        <ProgrammSite :event="events.find(elem => elem.id == e_key)" @closePr="hideProgramm"></ProgrammSite>
+                    </div>
                 </div>
             </div>
+            <p class="close" @click="closeCalendar">&#10006;</p>
         </div>
-    <p class="close" @click="closeCalendar">&#10006;</p>
-    </div>
         <div class="calendar-button" v-show="showBtn" @click="showCalendarComponent">
             <span>&#128197;</span>
         </div>
     </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
-import ProgrammSite from "./ProgrammSite.vue"
-
+<script lang="ts" setup>
 let weekdays = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 let month = ref(new Date().getMonth());
 let monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
 let year = ref(new Date().getFullYear());
 let selectedDay = ref(null);
 
+const props = defineProps(["events", "favorites"])
+
 //später leeren, wenn Eventform fertig
-let events = ref({
+/*let events = ref({
     "8482134": {title: "ABC-Kurs", start_time: "15:30", end_time: "18:00", date: "2022/06/30", room: "123", description: "Das ist ein ABC-Kurs.", favorite: "false", star: "\u2606"},
     "1346325": {title: "DC-Kurs", start_time: "15:00", end_time: "17:00", date: "2022/06/30", room: "456", description: "Das ist ein DC-Kurs.", favorite: "false", star: "\u2606"},
-});
+});*/
 let showPr = ref(false);
 let showCal = ref(true);
 let showAll = ref(false);
-let starUnfilled = ref("\u2606");
-let starFilled = ref("\u2605");
+//let starUnfilled = ref("\u2606");
+//let starFilled = ref("\u2605");
 let showBtn = ref(true);
 let e_key = ref("");
-let favorites = ref([]);
-const staritem = {star: "\u2606"};
+//let favorites = ref([]);
+//const staritem = {star: "\u2606"};
+
+const emit = defineEmits(["favorEvent"])
 
 let daysInMonth = computed(() => {
     let temp = [];
@@ -100,17 +99,14 @@ let firstDay = computed(() => {
     return temp;
 });
 
-let visibleEvents = computed(() => {
-    let temp = [];
+const visibleEvents = computed(() => {
+    let temp = props.events.filter(elem => new Date(elem.startDate).toDateString() == new Date(selectedDay.value).toDateString())
 
-    for(let key of Object.keys(events.value)){
-        let value = events.value[key]; 
-        if(new Date(value.date).toDateString() == new Date(selectedDay.value).toDateString()){
-             temp.push(key);
-        }  
-        console.log(value)
-    }
-    return temp;
+    temp.sort((a, b) => {
+        return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+    })
+   
+    return temp.map(elem => elem.id);
 })
 
 function selectDay(day) {
@@ -168,14 +164,14 @@ function closeCalendar(){
 
 }
 
-function change_favorite(index){
+/*function change_favorite(index){
     var i = favorites.value.indexOf(index);
     favorites.value.includes(index) === true ? favorites.value.splice(i, 1) : favorites.value.push(index);
     favorites.value.includes(index) === true ? events.value[index].star = starFilled.value : events.value[index].star = starUnfilled.value;
     console.log(favorites.value);
     // events.value[index].favorite = !events.value[index].favorite;
     // events.value[index].favorite === true ? events.value[index].star = starFilled.value : events.value[index].star = starUnfilled.value;
-}
+}*/
 
 function hideProgramm(){
     showPr.value = !showPr.value;
@@ -190,12 +186,9 @@ function showCalendarComponent(){
 </script>
 
 <style>
-
 #calendar-component{
-    padding: 20px;
     position: absolute;
-    bottom: 0px;
-    width: 100%;
+    bottom: 50px;
     left: 50px;
 }
 
@@ -260,10 +253,17 @@ function showCalendarComponent(){
     background: #4bb1ff;
 }
 
-.star{
-    font-size: 30px;
-    margin-top: 15px;
-    text-align: right;
+.event-body.favorite {
+    background: #ff0000;
+}
+
+.star svg {
+    stroke: #ffffff;
+    stroke-width: 1.5px;
+}
+
+.favorite .star svg {
+    fill: #ffffff
 }
 
 .calendar-button{
@@ -282,5 +282,4 @@ function showCalendarComponent(){
     align-self: center;
     font-size: 40px;
 }
-
 </style>

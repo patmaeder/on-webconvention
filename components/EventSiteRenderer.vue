@@ -2,7 +2,7 @@
     <div id="eventSite__wrapper" ref="eventSiteWrapper">
         <client-only>
             <Renderer ref="renderer" alpha antialias orbitCtrl resize="true" :pointer="{intersectRecursive: true}">
-                <Camera ref="camera" :position="{x: -10, y: 6, z: 8}" />
+                <Camera ref="camera" :position="{x: -10, y: 5, z: 8}" />
                 <Scene ref="scene">
                     <PointLight :position="{x: -8, y: 10, z: 4 }" :intensity="1.4"/>
 
@@ -543,6 +543,7 @@ onMounted(() => {
                 gap: 32px;
                 padding: 10px 20px 14px 20px;
                 border-radius: 6px;
+                background-color: #3c404c;
 
                 &:not(:last-child) {
                     margin-bottom: 16px;
