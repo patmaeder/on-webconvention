@@ -101,7 +101,7 @@ const events = [
     {
         id: 100000,
         name: "Willkommen - Einführungsveranstaltung",
-        startDate: "2022-06-05T10:00:00",
+        startDate: "2022-07-05T10:00:00",
         endDate: "2022-07-05T11:00:00",
         description: "Dr. Peter Maier startet gemeinsam mit allen Teilnehmern in die Veranstaltung Digitalisierungscamp. In der Einführungsveranstaltung wird Ablauf der Veranstaltung vorgestellt. Außerdem findet zu Beginn eine Vorstellung aller wichtigen Themen statt, die während der Veranstaltung behandelt werden sollen.",
         room: 500001
@@ -155,6 +155,7 @@ let currentRoom = ref(null);
 const eventSiteRenderer = ref(null);
 
 function favor(eventID) {
+
     if (favoriteEvents.value.includes(eventID)) {
         favoriteEvents.value = favoriteEvents.value.filter((elem) => {
             return elem != eventID
@@ -166,14 +167,23 @@ function favor(eventID) {
 }
 
 function joinRoom(roomID) {
+    const roomType = eventSite.find(elem => elem.id == roomID).type;
+    currentRoom.value = null
 
-    let filteredEvents = events.filter((elem) => {
-        return elem.room == roomID &&
-        new Date(elem.endDate).getTime() > new Date().getTime() &&
-        new Date(elem.startDate).getTime() < new Date().getTime()
-    });
+    if (roomType == "keynote") {
+        const currentTimestamp = new Date().getTime()
 
-    filteredEvents.length > 0 ? currentRoom.value = roomID : currentRoom.value = null;
+        let filteredEvents = events.filter((elem) => {
+            return elem.room == roomID &&
+                new Date(elem.endDate).getTime() > currentTimestamp &&
+                new Date(elem.startDate).getTime() < currentTimestamp
+        });
+
+        currentRoom.value = roomID;
+
+    } else if (roomType == "break") {
+        currentRoom.value = roomID
+    }
 }
 
 function leaveEvent() {
@@ -199,6 +209,7 @@ function leaveEvent() {
         flex-direction: row;
         gap: 12px;
         padding: 26px;
+        z-index: 10;
 
         & > a {
             padding: 18px 26px;

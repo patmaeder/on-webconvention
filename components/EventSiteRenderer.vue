@@ -7,7 +7,7 @@
                     <PointLight :position="{x: -8, y: 10, z: 4 }" :intensity="1.4"/>
 
                     <Group ref="tiles">
-                        <GltfModel v-for="(tile, key) in eventSite" :key="tile.id" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom($event, tile.id)" @load="tileLoaded($event, tile.id)" />
+                        <GltfModel v-for="tile in eventSite" :key="tile.id" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom($event, tile.id)" @load="tileLoaded($event, tile.id)" />
                     </Group>
                     
                     <!-- Render Character if user moves -->
@@ -26,16 +26,31 @@
         </client-only>
         <div id="eventSite__overlay" ref="eventSiteOverlay" >
             <div ref="popover">
-                <div v-if="selectedRoom != null">
+                <div v-if="currentEvents.length > 0">
                     <span>{{ eventSite.find(elem => elem.id == selectedRoom).name }}</span>
                     <button @click="blurRoom">
-                        X
+                        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.698874 0.698874C1.1465 0.251385 1.75353 0 2.38647 0C3.01941 0 3.62644 0.251385 4.07406 0.698874L12.5144 9.13923L20.9548 0.698874C21.405 0.264067 22.0079 0.0234734 22.6338 0.028912C23.2596 0.0343505 23.8583 0.285386 24.3009 0.727951C24.7434 1.17052 24.9945 1.7692 24.9999 2.39506C25.0053 3.02092 24.7648 3.62387 24.3299 4.07406L15.8896 12.5144L24.3299 20.9548C24.7648 21.405 25.0053 22.0079 24.9999 22.6338C24.9945 23.2596 24.7434 23.8583 24.3009 24.3009C23.8583 24.7434 23.2596 24.9945 22.6338 24.9999C22.0079 25.0053 21.405 24.7648 20.9548 24.3299L12.5144 15.8896L4.07406 24.3299C3.62387 24.7648 3.02092 25.0053 2.39506 24.9999C1.7692 24.9945 1.17052 24.7434 0.727951 24.3009C0.285386 23.8583 0.0343505 23.2596 0.028912 22.6338C0.0234734 22.0079 0.264067 21.405 0.698874 20.9548L9.13923 12.5144L0.698874 4.07406C0.251385 3.62644 0 3.01941 0 2.38647C0 1.75353 0.251385 1.1465 0.698874 0.698874Z"/>
+                        </svg>
                     </button>
                     <ul>
-                        <li v-for="event in currentEvents" :key="event.id" :class="{'favorite': favorites.includes(event.id)}">
-                            <span>{{ new Date(events[event.id].start_date).toLocaleTimeString("de-DE").slice(0, -3) }}</span>
-                            <span>{{ events[event.id].name }}</span>
-                            <span @click="$emit('favorEvent', event.id)">O</span>
+                        <li v-for="event in currentEvents" :key="events.find(elem => elem.id == event).id" :class="{'favorite': favorites.includes(event)}">
+                            <div>
+                                <span v-if="new Date(events.find(elem => elem.id == event).startDate).getTime() < new Date().getTime()">Aktuell</span>
+                                <span v-else>
+                                    <span>Bevorstehend</span>
+                                    <span>{{ `0${new Date(events.find(elem => elem.id == event).startDate).getDate()}`.slice(-2) }}.{{ `0${new Date(events.find(elem => elem.id == event).startDate).getMonth() + 1}`.slice(-2) }}</span>
+                                </span>
+                                <p>
+                                    <span>{{ new Date(events.find(elem => elem.id == event).startDate).toLocaleTimeString("de-DE").slice(0, -3) }}</span>
+                                    <span>{{ events.find(elem => elem.id == event).name }}</span>
+                                </p>
+                            </div>
+                            <button @click="$emit('favorEvent', event)">
+                                <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 0L14.6942 8.2918H23.4127L16.3593 13.4164L19.0534 21.7082L12 16.5836L4.94658 21.7082L7.64074 13.4164L0.587322 8.2918H9.30583L12 0Z"/>
+                                </svg>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -122,18 +137,18 @@ const emit = defineEmits(["favorEvent", "enterRoom"])
  * ---------------
  */
 const currentEvents = computed(() => {
-    let temp = [];
-    const time = new Date().getTime();
+    const currentTimestamp = new Date().getTime();
 
-    for (let [key, value] of Object.entries(props.events)) {
-        value.room == selectedRoom.value && new Date(value.end_date).getTime() > time ? temp.push({id: key, ...value}): null;
-    }
+    let temp = props.events.filter((elem) => {
+        return elem.room == selectedRoom.value &&
+            new Date(elem.endDate).getTime() > currentTimestamp
+    })
 
     temp.sort((a, b) => {
-        return new Date(a.start_date).getTime() < new Date(b.start_date).getTime() ? -1 : 1;
+        return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
     })
-    
-    return temp.slice(0, 2);
+   
+    return temp.slice(0, 2).map(elem => elem.id);
 })
 
 
@@ -454,7 +469,7 @@ onMounted(() => {
 })
 </script>
 
-<style>
+<style lang="scss">
 #eventSite__wrapper {
     width: 100%;
     height: 100%;
@@ -467,55 +482,122 @@ onMounted(() => {
     height: 100%;
     touch-action: none;
     pointer-events: none;
-}
 
-#eventSite__overlay > div > div {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 20px;
-    pointer-events: all;
-    background-color: #363A45;
-    color: #ffffff;
-    border-radius: 10px;
-    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .25));
-}
+    & > div > div {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px;
+        pointer-events: all;
+        background-color: #363A45;
+        color: #ffffff;
+        border-radius: 10px;
+        transform: translateY(-38%);
+        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .25));
 
-#eventSite__overlay > div > div::before {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: calc(50% - 8px);
-    width: 20px;
-    height: 20px;
-    transform: rotate(45deg);
-    background-color: inherit;
-}
+        &::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: calc(50% - 8px);
+            width: 20px;
+            height: 20px;
+            transform: rotate(45deg);
+            background-color: inherit;
+        }
 
-#eventSite__overlay > div > div span {
-    text-align: center;
-    padding: 0 40px;
-}
+        & > span {
+            margin-bottom: 20px;
+            padding: 0 40px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
 
-#eventSite__overlay > div > div button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
+        & > button {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
 
-#eventSite__overlay ul {
-    list-style-type: none;
-    padding: 0;
-}
+            & svg {
+                stroke: #363A45;
+                stroke-width: 2px;
+                fill: #ffffff;
+                opacity: .5;
+            }
+        }
 
-#eventSite__overlay li {
-    display: grid;
-    grid-template-columns: 60px 1fr 40px;
-    justify-items: center;
-}
+        & ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
 
-#eventSite__overlay .favorite {
-    color: #79F0DA;
+            & li {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 32px;
+                padding: 10px 20px 14px 20px;
+                border-radius: 6px;
+
+                &:not(:last-child) {
+                    margin-bottom: 16px;
+                }
+
+                &.favorite {
+                    background: linear-gradient(150deg, rgba(121,220,240,1) 0%, rgba(59,86,149,1) 100%);
+
+                    & button svg {
+                        fill: #ffffff;
+                    }
+                }
+
+                & div {
+
+                    & > span {
+                        font-size: .9rem;
+                        font-weight: 400;
+
+                        & > span:last-child {
+                            margin-left: 18px;
+                            opacity: .5;
+                        }
+                    }
+
+                    & p {
+                        margin: 0;
+                        margin-top: 4px;
+                        font-size: 1.1rem;
+
+                        & span:first-child {
+                            margin-right: 20px;
+                            font-weight: 600;
+                        }
+                    }
+                }
+
+                & button {
+                    visibility: hidden;
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+
+                    & svg {
+                        stroke: #ffffff;
+                        stroke-width: 1.5px;
+                        transform: translateY(2px);
+                    }
+                }
+
+                &:hover button {
+                    visibility: visible;
+                }
+            }
+        }
+    }
 }
 </style>
