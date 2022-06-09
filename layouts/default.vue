@@ -1,12 +1,9 @@
 <template>
   <Header />
-  <div class="layout">
+  <main>
     <slot></slot>
-  </div>
+  </main>
 </template>
 
 <script setup>
 </script>
-
-<style lang="sass" scoped>
-</style>

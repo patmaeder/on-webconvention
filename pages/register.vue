@@ -2,14 +2,14 @@
   <main>
     <form class="form" @submit.prevent="performRegistration">
       <h1>Registrieren</h1>
-      <label for="email">E-Mail-Adresse</label>
+      <label class="form__label" for="email">E-Mail-Adresse</label>
       <input name="email" id="email" type="email" v-model="email">
-      <label for="name">Benutzername</label>
+      <label class="form__label" for="name">Benutzername</label>
       <input name="name" id="name" type="text" v-model="name">
       <input type="submit" value="Jetzt Registrieren">
     </form>
     <span v-if="pending">Wird gesendet ...</span>
-    <span v-if="response">{{response}}</span>
+    <span class="form__response" v-if="response">{{response}}</span>
   </main>
 </template>
 
@@ -45,7 +45,7 @@
         return;
       }
 
-      response.value = registrationRequest.data.value;
+      response.value = registrationRequest.data.value.message;
     });
   }
 
