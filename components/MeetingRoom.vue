@@ -3,8 +3,9 @@
     <div class="header">
       <div class="menu-wrapper">
         <div class="menu">
-          <div id="button-small">FRA</div>
-          <div id="button-small">EIN</div>
+          <BasicIcon source="/icons/profile.svg" />
+          <BasicIcon source="/icons/q.svg" />
+          <BasicIcon source="/icons/settings.svg" />
         </div>
       </div>
     </div>
@@ -24,11 +25,11 @@
     <div id="button-calendar">XY</div>
     <div class="footer">
       <div class="toolbar">
-        <div id="button-small">A</div>
-        <div id="button-small">B</div>
-        <div id="button-small">C</div>
-        <div id="button-small">D</div>
-        <div id="button-small">E</div>
+        <BasicIcon source="/icons/profile.svg" />
+        <BasicIcon source="/icons/q.svg" />
+        <BasicIcon source="/icons/settings.svg" />
+        <BasicIcon source="/icons/q.svg" />
+        <BasicIcon source="/icons/settings.svg" />
       </div>
     </div>
   </div>
@@ -44,11 +45,14 @@ export default {};
   max-height: 100vh;
   background: #252830;
   box-sizing: border-box;
+
+  //PADDING
+  padding: 0 50px;
 }
 
 .header {
   width: 100%;
-  height: 10vh;
+  height: 15vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -61,7 +65,7 @@ export default {};
   }
 
   .menu {
-    width: 15%;
+    width: 17%;
     height: 100%;
     display: flex;
     justify-content: space-around;
@@ -78,18 +82,18 @@ export default {};
 
 .members {
   width: 100%;
-  height: 18vh;
+  height: 15vh;
   display: grid;
   align-items: center;
   justify-items: center;
   grid-auto-flow: column;
-  grid-auto-columns: 25%;
+  grid-auto-columns: 20%;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
 }
 
 .camera {
-  width: 80%;
+  width: 90%;
   height: 100%;
   background: grey;
   border-radius: 25px;
@@ -97,7 +101,7 @@ export default {};
 
 .screen-wrapper {
   width: 100%;
-  height: 58vh;
+  height: 51vh;
   padding: 2vh 0;
 
   #screen {
@@ -113,13 +117,13 @@ export default {};
 
 .footer {
   width: 100%;
-  height: 10vh;
+  height: 15vh;
   display: flex;
   justify-content: center;
 }
 
 .toolbar {
-  height: 10vh;
+  height: 15vh;
   width: 25%;
 
   display: flex;
@@ -148,7 +152,7 @@ export default {};
   height: 80px;
   border-radius: 160px;
   position: absolute;
-  bottom: 0px;
-  left: 0px;
+  bottom: 25px;
+  left: 50px;
 }
 </style>
