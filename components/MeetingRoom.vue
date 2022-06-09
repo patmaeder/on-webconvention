@@ -3,9 +3,9 @@
     <div class="header">
       <div class="menu-wrapper">
         <div class="menu">
-          <BasicIcon source="/icons/profile.svg" />
-          <BasicIcon source="/icons/q.svg" />
-          <BasicIcon source="/icons/settings.svg" />
+          <BasicIcon size="medium" source="/icons/profile.svg" />
+          <BasicIcon size="medium" source="/icons/q.svg" />
+          <BasicIcon size="medium" source="/icons/settings.svg" />
         </div>
       </div>
     </div>
@@ -19,17 +19,18 @@
         <div class="camera"></div>
       </div>
       <div class="screen-wrapper">
-        <div id="screen">SCREEN / WHITEBOARD / PRASENTATION</div>
+        <div id="screen">SCREEN / WHITEBOARD / PRESENTATION</div>
       </div>
     </div>
-    <div id="button-calendar">XY</div>
+    <BasicIcon id="button-calendar" size="large" source="/icons/filter.svg" />
+    <!--<div id="button-calendar">XY</div>-->
     <div class="footer">
       <div class="toolbar">
-        <BasicIcon source="/icons/profile.svg" />
-        <BasicIcon source="/icons/q.svg" />
-        <BasicIcon source="/icons/settings.svg" />
-        <BasicIcon source="/icons/q.svg" />
-        <BasicIcon source="/icons/settings.svg" />
+        <BasicIcon size="medium" source="/icons/mic.svg" />
+        <BasicIcon size="medium" source="/icons/phones.svg" />
+        <BasicIcon size="medium" source="/icons/end_call.svg" />
+        <BasicIcon size="medium" source="/icons/cam.svg" />
+        <BasicIcon size="medium" source="/icons/chat.svg" />
       </div>
     </div>
   </div>
@@ -148,9 +149,9 @@ export default {};
   justify-content: center;
   align-items: center;
 
-  width: 80px;
-  height: 80px;
-  border-radius: 160px;
+  //width: 80px;
+  //height: 80px;
+  //border-radius: 160px;
   position: absolute;
   bottom: 25px;
   left: 50px;

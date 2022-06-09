@@ -1,5 +1,5 @@
 <template>
-    <div class="iconWrapper">
+    <div class="iconWrapper" :class="size">
         <img :src=source />
     </div>
 </template>
@@ -12,6 +12,7 @@
  * ---------------
  */
 const props = defineProps({
+    size: String,
     source: String,
 })
 
@@ -23,15 +24,30 @@ const props = defineProps({
     .iconWrapper {
 
         background-color: #FFFFFF;
-        width: 62px;
-        height: 62px;
         border-radius: 100px;
         display: flex;
         justify-content: center;
-
+        
         img {
             align-self: center;
-            height: 29px;
+        }
+    }
+
+    .medium {
+        width: 52px;
+        height: 52px;
+
+        img {
+            height: 40%;
+        }
+    }
+
+    .large {
+        width: 80px;
+        height: 80px;
+
+        img {
+            height: 40%;
         }
     }
 
