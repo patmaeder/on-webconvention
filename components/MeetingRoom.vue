@@ -88,11 +88,15 @@ export default {};
 .meetingRoomWrapper {
   width: 100%;
   max-height: 100vh;
-  background: #252830;
   box-sizing: border-box;
+  background: #252830;
 
   //PADDING
-  padding: 0 50px;
+  padding: 0 25px;
+
+  @media screen and (min-width: 768px) {
+    padding: 0 50px;
+  }
 }
 
 .header {
@@ -116,9 +120,9 @@ export default {};
     align-items: center;
 
     ul {
-      display: flex;
       padding: 0px;
       margin: 0px;
+      display: flex;
 
       li {
         margin-left: 20px;
@@ -141,8 +145,12 @@ export default {};
 .main-section {
   width: 100%;
   height: 100%;
-  padding: 0px 100px;
+  padding: 0px;
   box-sizing: border-box;
+
+  @media screen and (min-width: 768px) {
+    padding: 0px 100px;
+  }
 }
 
 .members {
@@ -152,14 +160,27 @@ export default {};
   align-items: center;
   justify-items: center;
   grid-auto-flow: column;
-  grid-auto-columns: 20%;
+  grid-auto-columns: 100%;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
+
+  @media screen and (min-width: 400px) {
+    grid-auto-columns: 50%;
+  }
+
+  @media screen and (min-width: 576px) {
+    grid-auto-columns: 25%;
+  }
+
+  @media screen and (min-width: 992px) {
+    grid-auto-columns: 20%;
+  }
 }
 
 .camera {
   width: 90%;
   height: 100%;
+  margin-left: 5px;
   background: grey;
   border-radius: 25px;
 }
@@ -172,7 +193,7 @@ export default {};
   #screen {
     width: 100%;
     height: 100%;
-    background: navajowhite;
+    background: salmon;
     border-radius: 25px;
     display: flex;
     justify-content: center;
@@ -189,16 +210,22 @@ export default {};
 
 .toolbar {
   height: 15vh;
-  width: 100%;
-
+  width: 70%;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media screen and (min-width: 768px) {
+    width: 100%;
+  }
 
   ul {
     display: flex;
     padding: 0px;
     margin: 0px;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
 
     li {
       margin-left: 20px;
@@ -217,28 +244,11 @@ export default {};
   }
 }
 
-#button-small {
-  background: whitesmoke;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  width: 60px;
-  height: 60px;
-  border-radius: 120px;
-}
-
 #button-calendar {
-  background: whitesmoke;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  //width: 80px;
-  //height: 80px;
-  //border-radius: 160px;
   position: absolute;
   bottom: 25px;
-  left: 50px;
 }
 </style>
