@@ -4,10 +4,30 @@
             <Renderer ref="renderer" alpha antialias orbitCtrl resize="true" :pointer="{intersectRecursive: true}">
                 <Camera ref="camera" :position="{x: -10, y: 6, z: 8}" />
                 <Scene ref="scene">
-                    <PointLight :position="{x: -8, y: 10, z: 4 }" :intensity="1.4"/>
+                    <AmbientLight :intensity=".7" />
+                    <DirectionalLight
+                        ref="directionalLight1" 
+                        :position="{x: -10, y: 10, z: 6}"
+                        :intensity=".6"
+                        :shadowMapSize="{width: 4096, height: 4096}"
+                        :castShadow="true" 
+                    />
+                    <DirectionalLight
+                        ref="directionalLight2" 
+                        :position="{x: 0, y: 10, z: 0}"
+                        :intensity=".3"
+                        :shadowMapSize="{width: 4096, height: 4096}"
+                        :castShadow="true" 
+                    />
 
                     <Group ref="tiles">
-                        <GltfModel v-for="(tile, key) in eventSite" :key="key" :src="'/glbModels/' + tile.src" :position="tile.position" @click="focusRoom($event, tile.id)" @load="tileLoaded($event, key)" />
+                        <GltfModel 
+                            v-for="(tile, key) in eventSite" 
+                            :key="key" :src="'/glbModels/' + tile.src" 
+                            :position="tile.position" 
+                            @click="focusRoom($event, tile.id)" 
+                            @load="tileLoaded($event, key)" 
+                        />
                     </Group>
                     
                     <!-- Render Character if user moves -->
@@ -45,10 +65,11 @@
 </template>
 
 <script lang="ts" setup>
-import { Renderer, Camera, Scene, PointLight, Group, GltfModel } from "troisjs";
+import { Renderer, Camera, Scene, HemisphereLight, AmbientLight, DirectionalLight, Group, GltfModel } from "troisjs";
 import * as THREE from "three";
 import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
 
@@ -70,6 +91,8 @@ const renderer = ref(null);
 let labelRenderer: CSS2DRenderer;
 const camera = ref(null);
 const scene = ref(null);
+const directionalLight1 = ref(null);
+const directionalLight2 = ref(null);
 const tiles = ref(null);
 const character = ref(null);
 let characterObject3D: THREE.Object3D;
@@ -144,6 +167,14 @@ const currentEvents = computed(() => {
  */
 function tileLoaded(gltf, id) {
     gltf.scene.userData.roomID = id;
+
+    gltf.scene.children[0].traverse((node) => {
+        node.castShadow = true;
+        node.receiveShadow = true;
+    });
+
+    gltf.scene.children[0].receiveShadow = true;
+    gltf.scene.children[0].castShadow = false;
 }
 
 function characterLoaded(gltf) {
@@ -380,6 +411,14 @@ onMounted(() => {
 
         // Setup Clock for animation
         clock = new THREE.Clock();
+
+        // Adjust colors and shadows
+        renderer.value.three.renderer.shadowMap.enabled = true;
+        renderer.value.three.renderer.shadowMap.enabled = THREE.PCFSoftShadowMap;
+        renderer.value.three.renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.value.three.renderer.gammaFactor = 2.2;
+        directionalLight1.value.light.shadow.bias = -0.00006;
+        directionalLight2.value.light.shadow.bias = -0.00006;
 
         // Adjust default Three.js Orbitcontrol Properties
         const controls = renderer.value.three.cameraCtrl;
