@@ -2,9 +2,9 @@
     <div id="eventSite__wrapper" ref="eventSiteWrapper">
         <client-only>
             <Renderer ref="renderer" alpha antialias orbitCtrl resize="true" :pointer="{intersectRecursive: true}">
-                <Camera ref="camera" :position="{x: -10, y: 5, z: 8}" />
+                <Camera ref="camera" :position="{x: -10, y: 4.4, z: 8}" />
                 <Scene ref="scene">
-                    <AmbientLight :intensity=".7" />
+                    <AmbientLight :intensity=".5" />
                     <DirectionalLight
                         ref="directionalLight1" 
                         :position="{x: -10, y: 10, z: 6}"
@@ -22,11 +22,11 @@
 
                     <Group ref="tiles">
                         <GltfModel 
-                            v-for="(tile, key) in eventSite" 
-                            :key="key" :src="'/glbModels/' + tile.src" 
+                            v-for="tile in eventSite" 
+                            :key="tile.id" :src="'/glbModels/' + tile.src" 
                             :position="tile.position" 
                             @click="focusRoom($event, tile.id)" 
-                            @load="tileLoaded($event, key)" 
+                            @load="tileLoaded($event, tile.id)" 
                         />
                     </Group>
                     
@@ -34,10 +34,10 @@
                     <GltfModel
                         v-if="showCharacter" 
                         ref="character" 
-                        :src="user.role == 'visitor' ?  '/glbModels/visitor.glb' : '/glbModels/speaker.glb'" 
-                        :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: 0, y: 0.03, z: 0}"
+                        :src="user.role == 'speaker' ? '/glbModels/speaker.glb' : '/glbModels/visitor.glb'" 
+                        :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: -0.3, y: 0.03, z: 0.44}"
                         :rotation="usersSharedMap.has(props.user.id) ? {x: usersSharedMap.get(props.user.id).rotation._x, y: usersSharedMap.get(props.user.id).rotation._y, z: usersSharedMap.get(props.user.id).rotation._z} : {x: 0, y: 0, z: 0}"
-                        :scale="{x: 0.4, y: 0.4, z: 0.4}" 
+                        :scale="{x: 0.5, y: 0.5, z: 0.5}"
                         @load="characterLoaded"
                     />
 
@@ -168,7 +168,7 @@ const currentEvents = computed(() => {
     })
 
     temp.sort((a, b) => {
-        return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
     })
    
     return temp.slice(0, 2).map(elem => elem.id);
@@ -225,11 +225,17 @@ function characterLoaded(gltf) {
                         character.value.userData.move.speed += (Math.log(character.value.userData.move.speed) * -1 + 2.5) * 0.1;
                     }
 
-                    characterObject3D.translateX(0.02 * delta * character.value.userData.move.speed);
-
-                    raycaster.set(characterObject3D.position, new THREE.Vector3(0, -1, 0));
+                    raycaster.set(characterObject3D.position, new THREE.Vector3(1, -1, 0).applyQuaternion(characterObject3D.quaternion));
                     let intersections = raycaster.intersectObjects(tiles.value.group.children);
-                    let tempRoom = intersections.length > 0 ? intersections[0].object.parent.userData.roomID : null;
+                    let tempRoom
+
+                    if (intersections.length > 0) {
+                        characterObject3D.translateX(0.02 * delta * character.value.userData.move.speed);
+                        tempRoom = intersections[0].object.parent.userData.roomID;
+
+                    } else {
+                        tempRoom = null;
+                    }
                     
                     if (tempRoom != currentRoom) {
                         currentRoom = tempRoom;
@@ -251,24 +257,27 @@ function characterLoaded(gltf) {
 function characterIsIntersecting() {
 
     const vectors = [
-        new THREE.Vector3(1, 0, 0).applyQuaternion(characterObject3D.quaternion),
-        new THREE.Vector3(1, 0, 1).applyQuaternion(characterObject3D.quaternion),
-        new THREE.Vector3(1, 0, -1).applyQuaternion(characterObject3D.quaternion)
+        new THREE.Vector3(0, 0.06, -0.04).applyQuaternion(characterObject3D.quaternion),
+        new THREE.Vector3(0, 0.06, 0.04).applyQuaternion(characterObject3D.quaternion),
+    ]
+    
+    const positions = [
+        new THREE.Vector3(0.03, 0, 0.02).applyQuaternion(characterObject3D.quaternion),
+        new THREE.Vector3(0.03, 0, -0.02).applyQuaternion(characterObject3D.quaternion),
     ]
 
     for (let i = 0; i < vectors.length; i++) {
-        raycaster.set(characterObject3D.position, vectors[i]);
 
+        raycaster.set(characterObject3D.position.clone().add(positions[i]), vectors[i]);
         let collisions = raycaster.intersectObjects(tiles.value.group.children);
 
-        if (collisions.filter(collision => collision.distance <= 0.03).length > 0) {
+        if (collisions.filter(collision => collision.distance <= 0.034).length > 0) {
 
-            return true;
-            
-        } else {
-            return false;
+            return true;   
         }
     }
+
+    return false;
 }
 
 // Get direction the character is rotation towards
@@ -376,7 +385,7 @@ function removeCharacter() {
 
 function addUser(key, user) {
     const loader = new GLTFLoader();
-    const src = user.role == "visitor" ? "/glbModels/visitor.glb" : "/glbModels/speaker.glb";
+    const src = user.role == "speaker" ? "/glbModels/speaker.glb" : "/glbModels/visitor.glb";
 
     loader.load(
         src,
@@ -384,7 +393,7 @@ function addUser(key, user) {
             scene.value.add(gltf.scene);
 
             gltf.scene.position.set(user.position.x, user.position.y, user.position.z);
-            gltf.scene.scale.set(0.4, 0.4, 0.4)
+            gltf.scene.scale.set(0.5, 0.5, 0.5)
             gltf.scene.rotation.set(user.rotation._x, user.rotation._y, user.rotation._z)
 
             users[key] = {
@@ -432,6 +441,7 @@ onMounted(() => {
         renderer.value.three.renderer.shadowMap.enabled = THREE.PCFSoftShadowMap;
         renderer.value.three.renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.value.three.renderer.gammaFactor = 2.2;
+        renderer.value.three.renderer.setPixelRatio( window.devicePixelRatio );
         directionalLight1.value.light.shadow.bias = -0.00006;
         directionalLight2.value.light.shadow.bias = -0.00006;
 

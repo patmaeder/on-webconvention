@@ -167,29 +167,32 @@ function favor(eventID) {
 }
 
 function joinRoom(roomID) {
-    const roomType = eventSite.find(elem => elem.id == roomID).type;
+
     currentRoom.value = null;
 
-    if (roomType == "keynote") {
-        const currentTimestamp = new Date().getTime()
+    if (roomID != null) {
+        const roomType = eventSite.find(elem => elem.id == roomID).type;
 
-        let filteredEvents = events.filter((elem) => {
-            return elem.room == roomID &&
-                new Date(elem.endDate).getTime() > currentTimestamp &&
-                new Date(elem.startDate).getTime() < currentTimestamp
-        });
+        if (roomType == "keynote") {
+            const currentTimestamp = new Date().getTime()
 
-        filteredEvents.length > 0 ? currentRoom.value = roomID : null;
+            let filteredEvents = events.filter((elem) => {
+                return elem.room == roomID &&
+                    new Date(elem.endDate).getTime() > currentTimestamp &&
+                    new Date(elem.startDate).getTime() < currentTimestamp
+            });
 
-    } else if (roomType == "break") {
-        currentRoom.value = roomID
+            filteredEvents.length > 0 ? currentRoom.value = roomID : null;
+
+        } else if (roomType == "break") {
+            currentRoom.value = roomID
+        }
     }
 }
 
 function leaveEvent() {
     eventSiteRenderer.value.removeCharacter();
-    // Event-Gelände verlassen
-    //console.log(useRoute().value.push('/'));
+    useRouter().push('/')
 }
 </script>
 
