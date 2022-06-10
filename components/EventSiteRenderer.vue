@@ -2,9 +2,9 @@
     <div id="eventSite__wrapper" ref="eventSiteWrapper">
         <client-only>
             <Renderer ref="renderer" alpha antialias orbitCtrl resize="true" :pointer="{intersectRecursive: true}">
-                <Camera ref="camera" :position="{x: -10, y: 4.4, z: 8}" />
+                <Camera ref="camera" :position="{x: -3, y: 1.32, z: 2.4}" />
                 <Scene ref="scene">
-                    <AmbientLight :intensity=".5" />
+                    <AmbientLight :intensity=".8" />
                     <DirectionalLight
                         ref="directionalLight1" 
                         :position="{x: -10, y: 10, z: 6}"
@@ -257,13 +257,13 @@ function characterLoaded(gltf) {
 function characterIsIntersecting() {
 
     const vectors = [
-        new THREE.Vector3(0, 0.06, -0.04).applyQuaternion(characterObject3D.quaternion),
-        new THREE.Vector3(0, 0.06, 0.04).applyQuaternion(characterObject3D.quaternion),
+        new THREE.Vector3(0.03, 0.1, -0.03).applyQuaternion(characterObject3D.quaternion),
+        new THREE.Vector3(-0.03, 0.1, 0.03).applyQuaternion(characterObject3D.quaternion),
     ]
     
     const positions = [
-        new THREE.Vector3(0.03, 0, 0.02).applyQuaternion(characterObject3D.quaternion),
-        new THREE.Vector3(0.03, 0, -0.02).applyQuaternion(characterObject3D.quaternion),
+        new THREE.Vector3(0.03, -0.01, 0.02).applyQuaternion(characterObject3D.quaternion),
+        new THREE.Vector3(0.03, -0.01, -0.02).applyQuaternion(characterObject3D.quaternion),
     ]
 
     for (let i = 0; i < vectors.length; i++) {
@@ -271,8 +271,7 @@ function characterIsIntersecting() {
         raycaster.set(characterObject3D.position.clone().add(positions[i]), vectors[i]);
         let collisions = raycaster.intersectObjects(tiles.value.group.children);
 
-        if (collisions.filter(collision => collision.distance <= 0.034).length > 0) {
-
+        if (collisions.length > 0) {
             return true;   
         }
     }
@@ -383,22 +382,23 @@ function removeCharacter() {
     usersSharedMap.delete(props.user.id);
 }
 
-function addUser(key, user) {
+function addUser(key, visitor) {
+
     const loader = new GLTFLoader();
-    const src = user.role == "speaker" ? "/glbModels/speaker.glb" : "/glbModels/visitor.glb";
+    const src = visitor.role == "speaker" ? "/glbModels/speaker.glb" : "/glbModels/visitor.glb";
 
     loader.load(
         src,
         function(gltf) {
             scene.value.add(gltf.scene);
 
-            gltf.scene.position.set(user.position.x, user.position.y, user.position.z);
+            gltf.scene.position.set(visitor.position.x, visitor.position.y, visitor.position.z);
             gltf.scene.scale.set(0.5, 0.5, 0.5)
-            gltf.scene.rotation.set(user.rotation._x, user.rotation._y, user.rotation._z)
+            gltf.scene.rotation.set(visitor.rotation._x, visitor.rotation._y, visitor.rotation._z)
 
             users[key] = {
                 model: gltf.scene,
-                ...user
+                ...visitor
             }
         },
     );
@@ -454,7 +454,7 @@ onMounted(() => {
         controls.screenSpacePanning = false;
 
         // Setup CSS2DObject and CSS2DRenderer
-        popoverCSS2DObject = new CSS2DObject(popover.value)
+        popoverCSS2DObject = new CSS2DObject(popover.value);
         labelRenderer = new CSS2DRenderer({element: eventSiteOverlay.value});
         labelRenderer.setSize(eventSiteWrapper.value.clientWidth, eventSiteWrapper.value.clientHeight);
 
@@ -508,10 +508,10 @@ onMounted(() => {
             labelRenderer.render(renderer.value.scene, renderer.value.camera);
             popoverCSS2DObject.position.set(0, (renderer.value.three.cameraCtrl.getDistance() * 0.048 + 0.12), 0);
         
-            for (let [key, user] of Object.entries(users)) {
+            for (let [key, visitor] of Object.entries(users)) {
 
-                user.model.rotation.set(user.rotation._x,user.rotation._y, user.rotation._z);
-                user.model.position.lerp(user.position, 0.5)
+                visitor.model.rotation.set(visitor.rotation._x,visitor.rotation._y, visitor.rotation._z);
+                visitor.model.position.lerp(visitor.position, 0.5)
             }
         })
     })

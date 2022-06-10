@@ -39,8 +39,8 @@
 const route = useRoute()
 
 const user = {
-    id: route.query.user,
-    role: "visitor"
+    id: route.query.id,
+    role: route.query.role
 }
 
 const expo = {
