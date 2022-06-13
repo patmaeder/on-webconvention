@@ -38,19 +38,62 @@ const props = defineProps({
     height: 100px;
     border-radius: 10px;
 
+    @media screen and (min-width: 400px) {
+        width: 250px;
+        height: 60px;
+    }
+
+    @media screen and (min-width: 576px) {
+        width: 300px;
+        height: 70px;
+    }
+
+    @media screen and (min-width: 992px) {
+        width: 580px;
+        height: 95px;
+    }
+
     .flexInfo {
         align-self: center;
 
         p {
             margin: 10px 0px 10px 0px;
-            font-size: 20px;
             font-weight: lighter;
         }
 
         h3 {
             margin: 10px 0px 10px 0px;
-            font-size: 24px;
             font-weight: bold;
+        }
+
+        @media screen and (min-width: 400px) {
+            p {
+                font-size: 16px;
+            }
+
+            h3 {
+                font-size: 19px;
+            }
+        }
+
+        @media screen and (min-width: 576px) {
+            p {
+                font-size: 17px;
+            }
+
+            h3 {
+                font-size: 20px;
+            }
+        }
+
+        @media screen and (min-width: 992px) {
+            p {
+                font-size: 20px;
+            }
+
+            h3 {
+                font-size: 24px;
+            }
         }
     }
 
@@ -60,7 +103,7 @@ const props = defineProps({
         align-self: center;
 
         img {
-            width: 35px;
+            width: 100%;
         }
     }
 }

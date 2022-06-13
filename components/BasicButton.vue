@@ -27,6 +27,12 @@ const props = defineProps({
     font-weight: bold;
     border-radius: 10px;
     border: 0;
+
+    @media screen and (max-width: 768px) {
+        padding: 9px 15px 9px 15px;
+        width: 200px;
+        font-size: 17px;
+    }
 }
 
 </style>

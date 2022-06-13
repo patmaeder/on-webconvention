@@ -43,31 +43,91 @@ const props = defineProps({
     height: 78px;
     border-radius: 10px;
 
+    @media screen and (min-width: 400px) {
+        width: 180px;
+        height: 35px;
+    }
+
+    @media screen and (min-width: 576px) {
+        width: 200px;
+        height: 40px;
+    }
+
+    @media screen and (min-width: 992px) {
+        width: 340px;
+        height: 70px;
+    }
+
     .flexTime {
         align-self: center;
 
         p:first-child {
             margin: 10px 0px 10px 0px;
-            font-size: 12px;
             font-weight: medium;
         }
 
         p:last-child {
             margin: 10px 0px 10px 0px;
-            font-size: 16px;
             font-weight: medium;
+        }
+
+        @media screen and (min-width: 400px) {
+            p:first-child {
+                font-size: 9px;
+            }
+
+            p:last-child {
+                font-size: 12px;
+            }
+        }
+
+        @media screen and (min-width: 576px) {
+            p:first-child {
+                font-size: 10px;
+            }
+
+            p:last-child {
+                font-size: 13px;
+            }
+        }
+
+        @media screen and (min-width: 992px) {
+            p:first-child {
+                font-size: 12px;
+            }
+
+            p:last-child {
+                font-size: 16px;
+            }
         }
     }
 
     .flexContent {
         align-self: center;
-        margin-left: 20px;
-        margin-top: 25px;
+        margin-left: 15px;
+        margin-top: 23px;
 
         h3 {
             margin: 10px 0px 10px 0px;
-            font-size: 16px;
             font-weight: medium;
+        }
+
+        @media screen and (min-width: 400px) {
+            h3 {
+                font-size: 12px;
+            }
+        }
+
+        @media screen and (min-width: 576px) {
+            h3 {
+                font-size: 13px;
+            }
+        }
+
+        @media screen and (min-width: 992px) {
+            h3 {
+                font-size:16px;
+            }
         }
     }    
 
@@ -75,8 +135,23 @@ const props = defineProps({
         align-self: center;
         margin-left: auto;
 
-        img {
-            width: 24px;
+
+        @media screen and (min-width: 400px) {
+            img {
+                width: 50%;
+            }
+        }
+
+        @media screen and (min-width: 576px) {
+            img {
+                width: 60%;
+            }
+        }
+
+        @media screen and (min-width: 992px) {
+            img {
+                width: 85%;
+            }
         }
     }
 }

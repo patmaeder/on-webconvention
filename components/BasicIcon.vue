@@ -32,6 +32,21 @@ const props = defineProps({
   width: 55px;
   height: 55px;
 
+  @media screen and (min-width: 400px) {
+    width: 30px;
+    height: 30px;
+  }
+
+  @media screen and (min-width: 576px) {
+    width: 40px;
+    height: 40px;
+  }
+
+  @media screen and (min-width: 992px) {
+    width: 50px;
+    height: 50px;
+  }
+
   img {
     height: 45%;
   }
@@ -40,6 +55,21 @@ const props = defineProps({
 .large {
   width: 75px;
   height: 75px;
+
+  @media screen and (min-width: 400px) {
+    width: 45px;
+    height: 45px;
+  }
+
+  @media screen and (min-width: 576px) {
+    width: 55px;
+    height: 55px;
+  }
+
+  @media screen and (min-width: 992px) {
+    width: 65px;
+    height: 65px;
+  }
 
   img {
     height: 35%;
