@@ -1,5 +1,4 @@
 <template>
-  <NuxtLayout>
     <main>
       <form class="form" @submit.prevent="performLogin">
         <h1>Login</h1>
@@ -10,7 +9,6 @@
       <span v-if="pending">Wird gesendet ...</span>
       <span class="form__response" v-if="response">{{response}}</span>
     </main>
-  </NuxtLayout>
 </template>
 
 <script setup>

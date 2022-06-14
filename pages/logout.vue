@@ -1,10 +1,8 @@
 <template>
-  <NuxtLayout>
     <main>
       <span v-if="pending">Wird geladen...</span>
       <h1 v-if="!store.session">Du hast dich erfolgreich ausgeloggt.</h1>
     </main>
-  </NuxtLayout>
 </template>
 
 <script setup>
