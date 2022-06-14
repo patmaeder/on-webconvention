@@ -1,36 +1,42 @@
-const express = require("express");
-const app = express();
-const server = require('http').Server(app);
-const io = require("socket.io")(server);
-const { ExpressPeerServer } = require("peer");
-const cors = require("cors");
+const fs = require("fs");
+const express = require('express')
+const app = express()
+const cors = require('cors')
+app.use(cors({
+    origin: "https://localhost:3000"
+}))
 
-const peerServer = ExpressPeerServer(server, {
-    debug: true,
-    key: "peerjs",
-    allow_discovery: true
+const credentials = {
+    key: fs.readFileSync(".ddev/ssl/certs/master.key"),
+    cert: fs.readFileSync(".ddev/ssl/certs/master.crt"),
+}
+
+const server = require('https').createServer(credentials, app)
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "https://localhost:3000"
+    }
 });
-app.use('/peerjs', peerServer);
+const { v4: uuidV4 } = require('uuid')
 
-app.get("/", (req, res) => {
-    res.send("Hallo");
-});
 
-io.on('connection', (socket) => {
-    socket.on('join-room', (roomId, userId) => {
-        socket.join(roomId);
-        socket.to(roomId).broadcast.emit('user-connected', userId);
-
-        socket.on('message', (message) => {
-            io.to(roomId).emit('createMessage', message);
-        });
-
-        socket.on("disconnect", () => {
-            socket.to(roomId).broadcast.emit('user-disconnected', userId);
-        })
-    });
+app.get('/', (req, res) => {
+    res.send(uuidV4());
 })
 
-app.listen(3030, () => {
-    console.log("Server listening on port 3030")
-});
+io.on('connection', socket => {
+    socket.on('join-room', (roomId, userId) => {
+        console.log("Joined room", roomId);
+        socket.join(roomId);
+        console.log("emitted join", userId);
+        socket.broadcast.to(roomId).emit("user-connected", userId)
+
+        socket.on("disconnect", () => {
+            socket.broadcast.to(roomId).emit("user-disconnected", userId);
+        });
+    });
+
+
+})
+
+server.listen(3030)

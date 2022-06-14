@@ -1,12 +1,12 @@
 <template>
   <client-only>
-    <MeetingVideo />
+    <MeetingMember />
   </client-only>
 </template>
 
 <script>
-import MeetingVideo from "../components/MeetingVideo";
+import MeetingMember from "../components/MeetingMember";
 export default {
-  components: {MeetingVideo}
+  components: {MeetingMember}
 }
 </script>
