@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div id="events">
-                <div class="row">
+                <div class="row event-row">
                     <div v-for="event in visibleEvents" :key="event">
                         <div class="row event-container">
                             <div class="col-sm-9 event-body" v-show="showCal" :class="{'favorite': favorites.includes(event)}">
@@ -188,8 +188,8 @@ function showCalendarComponent(){
 <style>
 #calendar-component{
     position: absolute;
-    bottom: 20px;
-    left: 20px;
+    bottom: 15px;
+    left: 25px;
     z-index: 1000;
 }
 
@@ -205,9 +205,9 @@ function showCalendarComponent(){
     background: #363A45;
     color: #ffffff;
     padding: 5px 20px;
-    border-radius: 20px;
-    -webkit-box-shadow: 5px 5px 8px 2px rgba(0,0,0,0.59); 
-    box-shadow: 5px 5px 8px 2px rgba(0,0,0,0.59);
+    border-radius: 10px;
+    -webkit-box-shadow: 5px 5px 8px 0px rgba(0,0,0,0.53); 
+    box-shadow: 5px 5px 8px 0px rgba(0,0,0,0.53);
 }
 
 #head {
@@ -240,6 +240,10 @@ function showCalendarComponent(){
     text-align: center;
 }
 
+.room-display p{
+    margin-bottom: 0;
+}
+
 .day {
     box-sizing: border-box;
     padding: 5px 15px;
@@ -254,8 +258,14 @@ function showCalendarComponent(){
 }
 
 .event-container h5{
-    margin-top: 0;
-    display: inline;
+    margin: 0;
+    margin-top: 10px;
+    font-weight: normal;
+}
+
+.event-row{
+    overflow-y: auto;
+    max-height: 280px;
 }
 
 .day:hover, .selected {
@@ -273,10 +283,15 @@ function showCalendarComponent(){
 }
 
 .event-body{
-    margin: 10px auto !important;
+    margin: 20px auto;
     background: linear-gradient(90deg, rgba(59,76,149,1) 0%, rgba(88,158,181,1) 52%, rgba(120,239,217,1) 100%);
     border-radius: 5px;
-    padding: 10px 30px;
+    padding: 15px 30px;
+    margin-top: 0;
+}
+
+.close{
+    font-size: 25px;
 }
 
 .event-body.favorite {
@@ -299,8 +314,9 @@ function showCalendarComponent(){
 }
 
 .room-display p{
-    font-size: 16px;
+    font-size: 14px;
     margin-top: 0;
+    margin-bottom: 0;
 }
 
 .favorite .star svg {
@@ -323,4 +339,26 @@ function showCalendarComponent(){
     align-self: center;
     font-size: 40px;
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1bd; 
+    border-radius: 5px;
+
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: rgb(139, 139, 139); 
+    border-radius: 5px;
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
 </style>
