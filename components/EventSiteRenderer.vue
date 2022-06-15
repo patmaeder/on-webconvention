@@ -23,8 +23,8 @@
                     <Group ref="tiles">
                         <GltfModel 
                             v-for="tile in eventSite" 
-                            :key="tile.id" :src="'/glbModels/' + tile.src" 
-                            :position="tile.position" 
+                            :key="tile.id" :src="'/glbModels/' + tile.type + '.glb'" 
+                            :position="{x: tile.positionX, y: tile.positionY, z: tile.positionZ}" 
                             @click="focusRoom($event, tile.id)" 
                             @load="tileLoaded($event, tile.id)" 
                         />
@@ -46,7 +46,7 @@
         </client-only>
         <div id="eventSite__overlay" ref="eventSiteOverlay" >
             <div ref="popover">
-                <div v-if="currentEvents.length > 0">
+               <div v-if="currentEvents.length > 0">
                     <span>{{ eventSite.find(elem => elem.id == selectedRoom).name }}</span>
                     <button @click="blurRoom">
                         <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -73,7 +73,7 @@
                             </button>
                         </li>
                     </ul>
-                </div>
+                </div> 
             </div>
         </div>
     </div>
@@ -84,7 +84,6 @@ import { Renderer, Camera, Scene, AmbientLight, DirectionalLight, Group, GltfMod
 import * as THREE from "three";
 import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
 
@@ -139,9 +138,9 @@ const usersSharedMap = doc.getMap("users");
  * ---------------
  */
 const props = defineProps({
-    eventSite: Object,
+    eventSite: Array,
     user: Object,
-    events: Object,
+    events: Array,
     favorites: Array,
 })
 
@@ -163,8 +162,7 @@ const currentEvents = computed(() => {
     const currentTimestamp = new Date().getTime();
 
     let temp = props.events.filter((elem) => {
-        return elem.room == selectedRoom.value &&
-            new Date(elem.endDate).getTime() > currentTimestamp
+        return elem.roomId == selectedRoom.value && new Date(elem.endDate).getTime() > currentTimestamp
     })
 
     temp.sort((a, b) => {
@@ -504,6 +502,7 @@ onMounted(() => {
         })
 
         renderer.value.onBeforeRender(() => {
+
             delta = clock.getDelta();
             labelRenderer.render(renderer.value.scene, renderer.value.camera);
             popoverCSS2DObject.position.set(0, (renderer.value.three.cameraCtrl.getDistance() * 0.048 + 0.12), 0);

@@ -7,14 +7,14 @@
                 <p @click="monthForward" class="arrows">&rarr;</p>
             </div>
             <div id="calendar" v-show="showCal">
+                <div v-for="day in firstDay" :key="day" class="placholder"></div>                
                 <div v-for="weekday in weekdays" :key="weekday" class="placholder"></div>   
-                <div v-for="day in firstDay" :key="day" class="placholder"></div>
                 <div v-for="day in daysInMonth" :key="day" class="day" :class="{'selected': selectedDay == day}" @click="selectDay(day)">
                     <p>{{weekdays[day.getDay()].slice(0, 1)}} <br> {{ day.getDate() }}</p>
                 </div>
             </div>
             <div id="events">
-                <div class="row">
+                <div class="row event-row">
                     <div v-for="event in visibleEvents" :key="event">
                         <div class="row event-container">
                             <div class="col-sm-9 event-body" v-show="showCal" :class="{'favorite': favorites.includes(event)}">
@@ -22,19 +22,19 @@
                                     <div class="col-sm-10 start_time_display" @click="showProgramm(event)">                        
                                         <div class="row">
                                             <div class="col-sm-12 room-display">
-                                                <p>{{ events.find(elem => elem.id == event).room }}</p>
+                                                <p>Raum: {{ events.find(elem => elem.id == event).room }}</p>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-sm-2">
+                                            <div class="col-sm-3">
                                                 <h5>{{ new Date(events.find(elem => elem.id == event).startDate).toTimeString().slice(0, 5) }}</h5>
                                             </div>
-                                            <div class="col-sm-8 title_display">
+                                            <div class="col-sm-6 title_display">
                                                 <h5>{{ events.find(elem => elem.id == event).name }}</h5>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-2 star" @click="$emit('favorEvent', event)">
+                                    <div class="col-sm-3 star" @click="$emit('favorEvent', event)">
                                         <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12 0L14.6942 8.2918H23.4127L16.3593 13.4164L19.0534 21.7082L12 16.5836L4.94658 21.7082L7.64074 13.4164L0.587322 8.2918H9.30583L12 0Z"/>
                                         </svg>
@@ -188,21 +188,37 @@ function showCalendarComponent(){
 <style>
 #calendar-component{
     position: absolute;
-    bottom: 50px;
-    left: 50px;
+    bottom: 15px;
+    left: 25px;
+    z-index: 1000;
+}
+
+@media (max-width: 550px){
+    #calendar-component{
+    bottom: 0px;
+    left: 0px;
+    }
 }
 
 #calendarbody{
     font-family: Arial,sans-serif;
-    max-width: 40vw;
-    background: #282828;
+    background: #363A45;
     color: #ffffff;
     padding: 5px 20px;
+    border-radius: 10px;
+    -webkit-box-shadow: 5px 5px 8px 0px rgba(0,0,0,0.53); 
+    box-shadow: 5px 5px 8px 0px rgba(0,0,0,0.53);
 }
 
 #head {
     display: flex;
     justify-content: space-between;
+    margin-bottom: -20px;
+}
+
+#head > h1{
+    font-size: 25px;
+    margin-top: 30px;
 }
 
 #head > p {
@@ -215,7 +231,7 @@ function showCalendarComponent(){
     display: grid; 
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; 
     grid-template-rows: 40px 1fr 1fr 1fr 1fr 1fr 1fr; 
-    gap: 10px 10px; 
+    gap: 15px 15px; 
     
 }
 
@@ -224,24 +240,42 @@ function showCalendarComponent(){
     text-align: center;
 }
 
+.room-display p{
+    margin-bottom: 0;
+}
+
 .day {
     box-sizing: border-box;
-    padding: 10px;
-    background-color: #6600ff;
+    padding: 5px 15px;
+    background-color: none;
     text-align: center;
     cursor: pointer;
+    margin-top: -10px;
 }
 
-.day:hover {
-    background-color:rgb(95, 193, 160);
+.event-container{
+    font-size: 20px;
 }
 
-.selected {
+.event-container h5{
+    margin: 0;
+    margin-top: 10px;
+    font-weight: normal;
+}
+
+.event-row{
+    overflow-y: auto;
+    max-height: 280px;
+}
+
+.day:hover, .selected {
     background-color:rgb(95, 193, 160);
+    border-radius: 5px;
 }
 
 .placholder {
     background-color: none;
+    margin-top: -20px;
 }
 
 .star, .event-container, .close{
@@ -249,8 +283,15 @@ function showCalendarComponent(){
 }
 
 .event-body{
-    margin: 10px auto !important;
-    background: #4bb1ff;
+    margin: 20px auto;
+    background: linear-gradient(90deg, rgba(59,76,149,1) 0%, rgba(88,158,181,1) 52%, rgba(120,239,217,1) 100%);
+    border-radius: 5px;
+    padding: 15px 30px;
+    margin-top: 0;
+}
+
+.close{
+    font-size: 25px;
 }
 
 .event-body.favorite {
@@ -262,8 +303,24 @@ function showCalendarComponent(){
     stroke-width: 1.5px;
 }
 
+.col-sm-10, .col-sm-3{
+    display: inline-block;
+}
+
+.star{
+    text-align: right;
+    float: right;
+    margin-top: 12px;
+}
+
+.room-display p{
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 .favorite .star svg {
-    fill: #ffffff
+    fill: #ffffff;
 }
 
 .calendar-button{
@@ -282,4 +339,26 @@ function showCalendarComponent(){
     align-self: center;
     font-size: 40px;
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1bd; 
+    border-radius: 5px;
+
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: rgb(139, 139, 139); 
+    border-radius: 5px;
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
 </style>
