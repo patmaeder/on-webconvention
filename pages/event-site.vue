@@ -23,12 +23,12 @@
         </div>
         <EventSiteRenderer 
             ref="eventSiteRenderer"
-            :eventSite="eventSite" 
-            :user="user" 
-            :events="events" 
-            :favorites="favoriteEvents" 
+            :eventSite="eventSite"
+            :user="user"
+            :events="events"
+            :favorites="favoriteEvents"
             @favorEvent="favor"
-            @enterRoom="joinRoom" 
+            @enterRoom="joinRoom"
         />
         <Calendar :events="events" :favorites="favoriteEvents" @favorEvent="favor"/>
     </div>
@@ -36,118 +36,17 @@
 
 <script lang="ts" setup>
 
-const route = useRoute()
+import {useNuxtApp} from "nuxt/app";
 
+const route = useRoute()
 const user = {
     id: route.query.id,
     role: route.query.role
 }
-
-const expo = {
-    id: 123456789,
-    name: "Digitalisierungscamp",
-    startDate: "2022-07-05T09:00:00",
-    endDate: "2022-07-12T17:00:00"
-}
-
-const eventSite = [
-   {
-        id: 500000,
-        name: 'Empfangsbereich',
-        type: "lobby",
-        src: "lobby.glb",
-        position: {
-            x: 0,
-            y: 0,
-            z: 0.5
-        },
-   },
-   {
-        id: 500001,
-        name: 'Meetingraum 1',
-        type: "keynote",
-        src: "keynote.glb",
-        position: {
-            x: 1,
-            y: 0,
-            z: 0
-        },
-    }, 
-    {
-        id: 500002,
-        name: 'Meetingraum 2',
-        type: "keynote",
-        src: "keynote.glb",
-        position: {
-            x: 1,
-            y: 0,
-            z: 1
-        },
-    }, 
-    {
-        id: 500003,
-        name: 'Pausenraum',
-        type: "break",
-        src: "break.glb",
-        position: {
-            x: 0,
-            y: 0,
-            z: -1
-        },
-    },
-]
-
-const events = [
-    {
-        id: 100000,
-        name: "Willkommen - Einführungsveranstaltung",
-        startDate: "2022-07-05T10:00:00",
-        endDate: "2022-07-05T11:00:00",
-        description: "Dr. Peter Maier startet gemeinsam mit allen Teilnehmern in die Veranstaltung Digitalisierungscamp. In der Einführungsveranstaltung wird Ablauf der Veranstaltung vorgestellt. Außerdem findet zu Beginn eine Vorstellung aller wichtigen Themen statt, die während der Veranstaltung behandelt werden sollen.",
-        room: 500001
-    },
-    {
-        id: 100001,
-        name: "5G-Workshop",
-        startDate: "2022-07-05T13:00:00",
-        endDate: "2022-07-05T15:00:00",
-        description: "Die Vernetzung von Maschinen und Endgeräten schreitet ungebrochen voran. Eng damit verknüpft ist ein anhaltender Bedarf an Bandbreite, um die riesigen Datenmengen zu übertragen. Lte ist schon heute ausgeschöpft. Das Seminar erklärt die Zielsetzungen und die Umsetzung für 5G. 5G steht dabei für 5. Generation Mobilfunk. 5G soll nicht nur Menschen, sondern Allem (Maschinen, Autos, Messgeräten, etc.) die Möglichkeit zur Kommunikation bieten. Der Fokus liegt auf den Grundlagen der Technik, die in 5G verwendet werden. Das beinhaltet Air Interface (New Radio) genauso wie Modulationsarten, Stand der Technik und Kompatibilität zu anderen Standards.",
-        room: 500001
-    },
-    {
-        id: 100002,
-        name: "Java Programmierung für Anfänger",
-        startDate: "2022-07-05T13:00:00",
-        endDate: "2022-07-05T15:00:00",
-        description: "Durch die rasante Entwicklung der IT-Technologien steigt die Nachfrage nach neuer Software und IT-Fachkräften mit entsprechenden Programmierkenntnissen. JAVA gehört zu der international bekanntesten und am meisten verwendeten Programmiersprache.In diesem Live-Online-Seminar erlernen Sie die Grundkenntnisse der JAVA Programmierung, um plattformübergreifende Softwareprogramme wie Android-Betriebssystem, Webanwendungen und Datenbanken programmieren zu können.",
-        room: 500002
-    },
-    {
-        id: 100003,
-        name: "IPv6 - das neue Internetprotokoll",
-        startDate: "2022-07-06T11:00:00",
-        endDate: "2022-07-06T13:00:00",
-        description: "Das bisher im TCP/IP-Internet verwendete zentrale Netzwerkprotokoll IPv4 (Internetwork Protocol version 4, RFC 791) mit seinen Hilfsprotokollen ICMP und ARP ist heute mehr als 30 Jahre alt und genügt als EDV-Methusalem nicht mehr den Anforderungen an das moderne Internet. Daher wurde ab 1995 der Nachfolger IPv6 (RFC 2460) entwickelt, der heute für alle modernen Betriebssysteme (Windows, UNIX) verfügbar ist und IPv4 im Feld ersetzen wird.",
-        room: 500002
-    },
-    {
-        id: 100004,
-        name: "Effektive Arbeitsvorbereitung",
-        startDate: "2022-07-07T09:00:00",
-        endDate: "2022-07-07T11:00:00",
-        description: "Die Kunden wollen immer schneller, in kürzerer Zeit termintreu beliefert werden. Eine effektive Planung und Steuerung ist somit unabdingbar. Die Arbeitsvorbereitung muss in der Lage sein die Material- und Kapazitätsplanung, die Produktion, die Auftragsfeinplanung so terminlich aufeinander abzustimmen, dass mit minimiertem Working Capital die richtigen Produkte kostenoptimiert gefertigt, die Kundenaufträge pünktlich, zum gewünschten Termin geliefert werden.",
-        room: 500001
-    },
-    {
-        id: 100005,
-        name: "JAVA Programmierung für Fortgeschrittene",
-        startDate: "2022-07-07T09:00:00",
-        endDate: "2022-07-07T11:00:00",
-        description: "Durch die rasante Entwicklung der IT-Technologien steigt die Nachfrage nach neuer Software und der IT-Fachkräfte mit entsprechenden Programmierkenntnissen. JAVA gehört zu der international bekanntesten und am meisten verwendeten Programmiersprache. In diesem Live-online Seminar wird die korrekte Anwendung von objektorientierter Programmierung, dazugehörigen Patterns sowie generischen Elementen erlernt. Ein weiterer Fokus liegt auf testgetriebener Entwicklung und der damit verbundenen Verbesserung der Code- und Softwarequalität.",
-        room: 500002
-    }
-]
-
+const { data: expo } = await useAsyncData('fetch.expo', () => $fetch('/api/expo'))
+const { data: eventSite } = await useAsyncData('fetch.eventRooms', () => $fetch('/api/expo/eventRooms'))
+const { data: events } = await useAsyncData('fetch.events', () => $fetch('/api/expo/events'))
+ 
 let favoriteEvents = ref([]);
 
 let currentRoom = ref(null);
@@ -171,12 +70,12 @@ function joinRoom(roomID) {
     currentRoom.value = null;
 
     if (roomID != null) {
-        const roomType = eventSite.find(elem => elem.id == roomID).type;
+        const roomType = eventSite.value.find(elem => elem.id == roomID).type;
 
         if (roomType == "keynote") {
             const currentTimestamp = new Date().getTime()
 
-            let filteredEvents = events.filter((elem) => {
+            let filteredEvents = events.value.filter((elem) => {
                 return elem.room == roomID &&
                     new Date(elem.endDate).getTime() > currentTimestamp &&
                     new Date(elem.startDate).getTime() < currentTimestamp
@@ -192,7 +91,7 @@ function joinRoom(roomID) {
 
 function leaveEvent() {
     eventSiteRenderer.value.removeCharacter();
-    useRouter().push('/')
+    navigateTo('/')
 }
 </script>
 
