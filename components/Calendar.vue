@@ -188,20 +188,37 @@ function showCalendarComponent(){
 <style>
 #calendar-component{
     position: absolute;
-    bottom: 50px;
-    left: 50px;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+@media (max-width: 550px){
+    #calendar-component{
+    bottom: 0px;
+    left: 0px;
+    }
 }
 
 #calendarbody{
     font-family: Arial,sans-serif;
-    background: #282828;
+    background: #363A45;
     color: #ffffff;
     padding: 5px 20px;
+    border-radius: 20px;
+    -webkit-box-shadow: 5px 5px 8px 2px rgba(0,0,0,0.59); 
+    box-shadow: 5px 5px 8px 2px rgba(0,0,0,0.59);
 }
 
 #head {
     display: flex;
     justify-content: space-between;
+    margin-bottom: -20px;
+}
+
+#head > h1{
+    font-size: 25px;
+    margin-top: 30px;
 }
 
 #head > p {
@@ -229,6 +246,7 @@ function showCalendarComponent(){
     background-color: none;
     text-align: center;
     cursor: pointer;
+    margin-top: -10px;
 }
 
 .event-container{
@@ -237,6 +255,7 @@ function showCalendarComponent(){
 
 .event-container h5{
     margin-top: 0;
+    display: inline;
 }
 
 .day:hover, .selected {
@@ -246,6 +265,7 @@ function showCalendarComponent(){
 
 .placholder {
     background-color: none;
+    margin-top: -20px;
 }
 
 .star, .event-container, .close{
@@ -256,7 +276,7 @@ function showCalendarComponent(){
     margin: 10px auto !important;
     background: linear-gradient(90deg, rgba(59,76,149,1) 0%, rgba(88,158,181,1) 52%, rgba(120,239,217,1) 100%);
     border-radius: 5px;
-    padding: 20px 30px;
+    padding: 10px 30px;
 }
 
 .event-body.favorite {
@@ -275,10 +295,12 @@ function showCalendarComponent(){
 .star{
     text-align: right;
     float: right;
+    margin-top: 12px;
 }
 
-.room-display{
+.room-display p{
     font-size: 16px;
+    margin-top: 0;
 }
 
 .favorite .star svg {
