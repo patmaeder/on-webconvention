@@ -46,8 +46,8 @@ model Event {
   startDate        DateTime?
   endDate          DateTime?
   description      String?
-  roomId           Int?       @unique
-  room             EventRoom? @relation(fields: [roomId], references: [id])
+  roomId           Int
+  room             EventRoom  @relation(fields: [roomId], references: [id])
   expoId           Int
   expo             Expo       @relation(fields: [expoId], references: [id])
   speakers         Speaker[]
@@ -63,5 +63,5 @@ model EventRoom {
   positionZ String
   expoId    Int
   expo      Expo   @relation(fields: [expoId], references: [id])
-  event     Event?
+  events    Event[]
 }
