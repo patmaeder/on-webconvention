@@ -3,16 +3,14 @@ import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
 import setupServer, { TokenType, useServer } from "~/backend";
 import { LoginTokenPayload } from "~/backend/auth";
+import html from "server/api/auth/login-email-template.html";
 
 type LoginEmailProps = { username: string; link: string };
 
-const loginEmailTemplate = ({ username, link }: LoginEmailProps) => `
-  <div style='font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'">
-    <p style="font-size: 24px; font-weight: 700"><b>Hallo ${username},</b></p>
-    <p>du hast versucht dich auf unserer Plattform einzuloggen.</p><p>Klicke auf den folgenden Link um loszulegen: <a href="${link}">Jetzt einloggen</a></p>
-    <p>Falls du nicht für unsere Plattform registriert hast, kannst du diese E-Mail ignorieren.</p>
-  </div>
-`;
+const loginEmailTemplate = ({ 
+  username, 
+  link 
+}: LoginEmailProps) =>  html.replace("${username}",username).replace("${link}",link);
 
 const getVerificationURL = (token: string) =>
   `${process.env.MAIL_HOST}/api/auth/verify?token=${token}`;

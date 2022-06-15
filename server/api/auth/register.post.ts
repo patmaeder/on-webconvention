@@ -5,8 +5,6 @@ import setupServer, { TokenType, useServer } from "~/backend";
 import { RegistrationTokenPayload } from "~/backend/auth";
 import html from "server/api/auth/registration-email-template.html";
 
-
-
 // token läuft nach 15 Minuten ab, aber Account wird nicht gelöscht. -> d.h. Account automatisch löschen oder erst nach Verifizierung speichern.
 
 type RegistrationEmailProps = { username: string; link: string };
@@ -14,7 +12,7 @@ type RegistrationEmailProps = { username: string; link: string };
 const registrationEmailTemplate = ({
   username,
   link,
-}: RegistrationEmailProps) => html;
+}: RegistrationEmailProps) =>  html.replace("${username}",username).replace("${link}",link);
 
 const getVerificationURL = (token: string) =>
   `${process.env.MAIL_HOST}/api/auth/confirm?token=${token}`;
