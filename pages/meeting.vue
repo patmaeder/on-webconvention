@@ -1,12 +1,26 @@
 <template>
   <client-only>
-    <MeetingMember />
+    <div v-if="this.$route.query.roomId">
+      <ConferenceHandler v-if="this.type === 'conference'" :room-id="roomId" />
+      <BreakroomHandler v-else :room-id="roomId" />
+    </div>
+    <div v-else>
+      <p>Nothing to see here!</p>
+    </div>
   </client-only>
 </template>
 
-<script>
-import MeetingMember from "../components/MeetingMember";
+<script lang="ts">
+import ConferenceHandler from "~/components/meetings/ConferenceHandler.vue";
+import BreakroomHandler from "~/components/meetings/BreakroomHandler.vue";
+
 export default {
-  components: {MeetingMember}
+  components: {BreakroomHandler, ConferenceHandler},
+  data() {
+    return {
+      type: this.$route.query.type || "breakroom",
+      roomId: this.$route.query.roomId || "default"
+    }
+  }
 }
 </script>
