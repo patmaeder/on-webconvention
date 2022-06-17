@@ -1,14 +1,15 @@
 <template>
-  <MeetingControls :start-webcam="startShare" :mute-audio="mute" :unmute-audio="unmute" />
-  <BreakroomView ref="breakroomView" />
+  <client-only>
+    <MeetingControls :start-webcam="startShare" :mute-audio="mute" :unmute-audio="unmute" />
+    <BreakroomView ref="breakroomView" />
+  </client-only>
 </template>
 
 <script>
 import MeetingControls from "./MeetingControls";
 import BreakroomView from "./BreakroomView";
 
-import { LocalStream, Client } from 'ion-sdk-js';
-import { IonSFUJSONRPCSignal } from 'ion-sdk-js/lib/signal/json-rpc-impl';
+import {useNuxtApp} from "nuxt/app";
 let client, local;
 
 const config = {
@@ -24,9 +25,10 @@ export default {
   props: ["roomId"],
   components: {BreakroomView, MeetingControls},
   created() {
-    const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
-    client = new Client(signal, config);
-    signal.onopen = () => client.join(this.roomId);
+    const { $client, $jsonRPC } = useNuxtApp();
+    const signal = new $jsonRPC("ws://localhost:7000/ws");
+    client = new $client(signal, config);
+    signal.onopen = () => client.join(this.roomId || "room1");
     client.ontrack = (track, stream) => {
       const videoContainer = this.$refs.breakroomView.$refs.subscriber_video;
       const videoEl = document.createElement('video');
@@ -51,9 +53,10 @@ export default {
   },
   methods: {
     async startShare() {
+      const { $localStream } = useNuxtApp();
       const  videoContainer = this.$refs.breakroomView.$refs.public_video;
       const videoEl = document.createElement('video');
-      local = await LocalStream.getUserMedia({
+      local = await $localStream.getUserMedia({
         resolution: "vga",
         audio: true,
         video: true,
