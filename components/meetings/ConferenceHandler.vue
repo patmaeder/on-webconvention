@@ -2,17 +2,15 @@
   <client-only>
     <!-- <MeetingMember :room="this.$route.query.room" /> -->
     <MeetingControls :startWebcam="startShareWebcam" :startScreenshare="startShareScreen" :mute-audio="mute" />
-    <ConferenceView ref="conferenceView" :isPresenter="presenter" />
+    <ConferenceView ref="conferenceView" :isPresenter="true" />
   </client-only>
 </template>
 
 <script>
-import MeetingMember from "../MeetingMember";
 import ConferenceView from "./ConferenceView";
 import MeetingControls from "./MeetingControls";
 
-import { LocalStream, Client } from "ion-sdk-js";
-import { IonSFUJSONRPCSignal } from "ion-sdk-js/lib/signal/json-rpc-impl";
+import {useNuxtApp} from "nuxt/app";
 
 const config = {
   iceServers: [
@@ -25,7 +23,7 @@ const config = {
 let client, screenshare;
 
 export default {
-  components: {MeetingControls, ConferenceView, MeetingMember},
+  components: {MeetingControls, ConferenceView},
   props: ["roomId"],
   data() {
     return {
@@ -33,10 +31,12 @@ export default {
     }
   },
   created() {
-    const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
-    const screenshareSignal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
-    client = new Client(signal, config);
-    screenshare = new Client(screenshareSignal, config);
+    const { $jsonRPC, $client } = useNuxtApp();
+
+    const signal = new $jsonRPC("ws://localhost:7000/ws");
+    const screenshareSignal = new $jsonRPC("ws://localhost:7000/ws");
+    client = new $client(signal, config);
+    screenshare = new $client(screenshareSignal, config);
     signal.onopen = () => {
       client.join(this.roomId);
     }
@@ -70,7 +70,8 @@ export default {
   },
   methods: {
     startShareWebcam() {
-      LocalStream.getUserMedia({
+      const { $localStream } = useNuxtApp();
+      $localStream.getUserMedia({
         resolution: "vga",
         audio: true,
         video: true,
@@ -81,7 +82,8 @@ export default {
       }).catch(err => console.error(err));
     },
     startShareScreen() {
-      LocalStream.getDisplayMedia({
+      const { $localStream } = useNuxtApp();
+      $localStream.getDisplayMedia({
         resolution: "vga",
         audio: true,
         video: true,

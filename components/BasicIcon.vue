@@ -26,6 +26,10 @@ const props = defineProps({
   img {
     align-self: center;
   }
+
+  &.active {
+    background-color: #508bab;
+  }
 }
 
 .medium {
