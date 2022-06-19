@@ -41,6 +41,28 @@ Mailhog is accessible via https://web-engineering.ddev.site:8026/
 
 _Please note that the **development setup** with ddev is **optional**. You can omit these steps and just run the command at the top of this section._
 
+## Signaling Backend
+
+This project uses the [Ion-SFU selective forwarding unit by Pion](https://github.com/pion/ion-sfu) to handle WebRTC Peers. To provide the signaling backend for this service, proceed with the following steps.
+
+Clone the Pion Ion-SFU repository
+```bash
+git clone git@github.com:pion/ion-sfu.git
+```
+To start using the SFU with json-rpc signaling, switch to the Ion-SFU directory and start the signaling service using GoLang or Docker.
+
+**Using golang environment**
+```bash
+go build ./cmd/signal/json-rpc/main.go && ./main -c config.toml
+```
+
+**Using Docker**
+```bash
+docker run -p 7000:7000 -p 5000-5200:5000-5200/udp pionwebrtc/ion-sfu:latest-jsonrpc
+```
+
+*Please note that the setup of the **Ion-SFU json-rpc signaling is essential for the web-meetings** to function. For development purposes or the usage of this app without the web-meeting capabilities, this step can be skipped.*
+
 ## Production
 
 Build the application for production:
