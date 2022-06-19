@@ -106,6 +106,7 @@ export const refreshSessionToken = async (
     jwt.verify(payload.refreshToken, process.env.JWT_SECRET);
   } catch (error) {
     console.log(
+      "[Auth]",
       `RefreshToken could not be verified for user <${payload.email}>`
     );
     return {
