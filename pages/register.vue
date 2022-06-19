@@ -1,12 +1,16 @@
 <template>
     <main>
-      <form class="form" @submit.prevent="performRegistration">
+      <form class="form form__pane" @submit.prevent="performRegistration">
         <h1>Registrieren</h1>
-        <label class="form__label" for="email">E-Mail-Adresse</label>
-        <input name="email" id="email" type="email" v-model="email">
-        <label class="form__label" for="name">Benutzername</label>
-        <input name="name" id="name" type="text" v-model="name">
-        <input type="submit" value="Jetzt Registrieren">
+        <div class="form__group">
+          <label class="form__label" for="email">E-Mail-Adresse</label>
+          <input class="form__input" name="email" id="email" type="email" v-model="email">
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="name">Benutzername</label>
+          <input class="form__input" name="name" id="name" type="text" v-model="name">
+        </div>
+        <BasicButton class="form__submit-button" type="submit">Jetzt registrieren</BasicButton>
       </form>
       <span v-if="pending">Wird gesendet ...</span>
       <span class="form__response" v-if="response">{{response}}</span>
@@ -50,20 +54,3 @@
   }
 
 </script>
-
-<style lang="scss" scoped>
-
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  label {
-    font-weight: bold;
-  }
-
-</style>

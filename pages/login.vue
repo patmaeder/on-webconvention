@@ -1,14 +1,16 @@
 <template>
-    <main>
-      <form class="form" @submit.prevent="performLogin">
-        <h1>Login</h1>
+  <main>
+    <form class="form form__pane" @submit.prevent="performLogin">
+      <h1>Login</h1>
+      <div class="form__group">
         <label class="form__label" for="email">E-Mail-Adresse</label>
-        <input name="email" id="email" type="email" v-model="email">
-        <input type="submit" value="Jetzt Einloggen">
-      </form>
-      <span v-if="pending">Wird gesendet ...</span>
-      <span class="form__response" v-if="response">{{response}}</span>
-    </main>
+        <input class="form__input" name="email" id="email" type="email" v-model="email">
+      </div>
+      <BasicButton class="form__submit-button" type="submit">Jetzt anmelden</BasicButton>
+    </form>
+    <span v-if="pending">Wird gesendet ...</span>
+    <span class="form__response" v-if="response">{{response}}</span>
+  </main>
 </template>
 
 <script setup>

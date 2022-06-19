@@ -1,14 +1,49 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-
+  align-items: center;
+  gap: 20px;
   max-width: 800px;
   margin: 0 auto;
+
+  &__pane {
+    max-width: 687px;
+    width: 100%;
+    border-radius: 35px;
+    background-color: #363A45;
+    padding: 35px 75px;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+  }
+
+  &__input {
+    appearance: unset;
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: 1.5px solid transparent;
+    outline-offset: 2px;
+    border: none;
+
+    &:focus {
+      outline: 1.5px solid #3B4595;
+    }
+  }
+
+  &__submit-button {
+    margin-top: 20px;
+  }
 
   &__label {
     font-weight: 400;
     font-size: 16px;
+
+    padding-left: 5px;
   }
 
   &__response {
