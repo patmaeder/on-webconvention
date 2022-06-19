@@ -26,7 +26,7 @@ const config = {
   ]
 }
 
-let client, screenshare, localWebcam, localScreenshare;
+let client, screenshare;
 
 export default {
   components: {MeetingControls, ConferenceView},
