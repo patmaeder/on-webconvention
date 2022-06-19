@@ -1,8 +1,14 @@
 <template>
   <client-only>
-    <!-- <MeetingMember :room="this.$route.query.room" /> -->
-    <MeetingControls :startWebcam="startShareWebcam" :startScreenshare="startShareScreen" :mute-audio="mute" />
-    <ConferenceView ref="conferenceView" :isPresenter="true" />
+    <ConferenceView ref="conferenceView"
+                    :isPresenter="this.presenter"
+                    :start-webcam-share="startShareWebcam"
+                    :stop-webcam-share="stopShareWebcam"
+                    :start-screenshare="startShareScreen"
+                    :stop-screenshare="stopShareScreen"
+                    :mute="mute"
+                    :unmute="unmute"
+    />
   </client-only>
 </template>
 
@@ -20,14 +26,16 @@ const config = {
   ]
 }
 
-let client, screenshare;
+let client, screenshare, localWebcam, localScreenshare;
 
 export default {
   components: {MeetingControls, ConferenceView},
   props: ["roomId"],
   data() {
     return {
-      presenter: (this.$route.query.presenter === "true")
+      presenter: (this.$route.query.presenter === "true"),
+      localWebcam: null,
+      localScreen: null,
     }
   },
   created() {
@@ -69,33 +77,46 @@ export default {
     }
   },
   methods: {
-    startShareWebcam() {
+    async startShareWebcam() {
       const { $localStream } = useNuxtApp();
-      $localStream.getUserMedia({
+      this.localWebcam = await $localStream.getUserMedia({
         resolution: "vga",
         audio: true,
         video: true,
         codec: "vp8"
-      }).then(stream => {
-        this.$refs.conferenceView.$refs.public_video.srcObject = stream;
-        client.publish(stream);
-      }).catch(err => console.error(err));
+      });
+      this.localWebcam.mute("audio");
+      this.$refs.conferenceView.$refs.public_video.srcObject = this.localWebcam;
+      this.$refs.conferenceView.$refs.public_video.muted = true;
+      client.publish(this.localWebcam);
     },
-    startShareScreen() {
+    async startShareScreen() {
       const { $localStream } = useNuxtApp();
-      $localStream.getDisplayMedia({
+      this.localScreen = await $localStream.getDisplayMedia({
         resolution: "vga",
         audio: true,
         video: true,
         codec: "vp8"
-      }).then(stream => {
-        this.$refs.conferenceView.$refs.screenshare_video.srcObject = stream;
-        screenshare.publish(stream);
-      }).catch(err => console.error(err));
+      });
+      this.$refs.conferenceView.$refs.screenshare_video.srcObject = this.localScreen;
+      screenshare.publish(this.localScreen);
     },
     mute() {
-      local.mute();
+      this.localWebcam.mute("audio");
     },
+    unmute() {
+      this.localWebcam.unmute("audio");
+    },
+    stopShareWebcam() {
+      this.localWebcam.unpublish();
+      if(this.presenter) {
+        this.$refs.conferenceView.$refs.public_video.srcObject = null;
+      } else { this.$refs.conferenceView.$refs.subscriber_video.srcObject = null; }
+    },
+    stopShareScreen() {
+      this.localScreen.unpublish();
+      this.$refs.conferenceView.$refs.screenshare_video.srcObject = null;
+    }
   }
 }
 </script>
