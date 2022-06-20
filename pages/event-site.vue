@@ -36,7 +36,7 @@
 
 <script lang="ts" setup>
 
-definePageMeta({ layout: "no-header" });
+definePageMeta({ layout: "no-header", middleware: "auth" });
 
 const route = useRoute()
 const user = {
