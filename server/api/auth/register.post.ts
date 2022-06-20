@@ -465,7 +465,8 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Payload does not match requirements.",
+        statusMessage:
+          "Du musst eine E-Mail-Adresse und einen Benutzernamen angeben.",
       })
     );
     return;
@@ -476,7 +477,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Given email address is invalid.",
+        statusMessage: "Deine E-Mail-Adresse ist ungültig.",
       })
     );
     return;
@@ -509,6 +510,6 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
   return {
     success: true,
     message:
-      "Registration attempt succeeded. You will receive a confirmation email in the next minutes.",
+      "Deine Registrierung verlief erfolgreich. Du erhälst gleich eine E-Mail zur Bestätigung.",
   };
 });

@@ -11,4 +11,19 @@ main {
   max-width: 800px;
   margin: 0 auto;
   padding: 30px 15px;
+
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+a {
+  color: white;
+}
+
+* {
+  box-sizing: border-box;
 }

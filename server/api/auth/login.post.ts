@@ -55,7 +55,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Payload does not match requirements.",
+        statusMessage: "Du hast keine E-Mail-Adresse angegeben.",
       })
     );
     return;
@@ -66,7 +66,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Given email address is invalid.",
+        statusMessage: "Deine E-Mail-Adresse ist ungültig.",
       })
     );
     return;
@@ -85,7 +85,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
 
     return {
       success: false,
-      message: "User does not exist.",
+      message: "Dieser Benutzer existiert nicht.",
     };
   }
 
@@ -106,6 +106,6 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
   return {
     success: true,
     message:
-      "Login attempt succeeded. You will receive a confirmation email in the next minutes.",
+      "Dein Login-Vorgang verlief erfolgreich. Du erhälst gleich eine E-Mail zur Bestätigung.",
   };
 });

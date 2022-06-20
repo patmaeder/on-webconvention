@@ -1,16 +1,16 @@
 <template>
+
     <button type="button" class="basicButton">
-      <slot>Button</slot>
+      <slot v-if="!isPending">Button</slot>
+      <Spinner v-else />
     </button>
 </template>
 
 <script lang="ts" setup>
 
-/*
- * ---------------
- * Props
- * ---------------
- */
+const props = defineProps({
+  isPending: Boolean,
+});
 
 </script>
 
@@ -31,6 +31,11 @@
 
     position: relative;
     z-index: 1;
+    transition: opacity 120ms ease-in-out;
+
+    &.hidden {
+      opacity: 0;
+    }
 
     &:before {
       content: "";
@@ -58,6 +63,16 @@
         width: 200px;
         font-size: 17px;
     }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 </style>

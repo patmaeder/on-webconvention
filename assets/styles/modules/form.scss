@@ -3,7 +3,8 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  max-width: 800px;
+  width: 800px;
+  max-width: 100%;
   margin: 0 auto;
 
   &__pane {
@@ -37,6 +38,7 @@
 
   &__submit-button {
     margin-top: 20px;
+    height: 50px;
   }
 
   &__label {
@@ -47,8 +49,40 @@
   }
 
   &__response {
-    display: block;
-    margin: 15px 0;
+    margin: 15px auto;
     font-weight: 700;
+    border-radius: 14px;
+    padding: 15px 75px;
+    background-color: #61adbf;
+    animation: fadeIn 240ms forwards ease-in-out;
+    opacity: 0;
+
+    @extend .form__pane;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    &--error {
+      background-color: #bb4e4e;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0px);
   }
 }
