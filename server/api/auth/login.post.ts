@@ -1,7 +1,7 @@
 import { CompatibilityEvent, sendError } from "h3";
 import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
-import setupServer, { TokenType, useServer } from "~/backend";
+import { TokenType, useServer } from "~/backend";
 import { LoginTokenPayload } from "~/backend/auth";
 
 type LoginEmailProps = { username: string; link: string };
@@ -15,7 +15,7 @@ const loginEmailTemplate = ({ username, link }: LoginEmailProps) => `
 `;
 
 const getVerificationURL = (token: string) =>
-  `${process.env.MAIL_HOST}/api/auth/verify?token=${token}`;
+  `${process.env.BASE_URL}/api/auth/verify?token=${token}`;
 
 const createToken = ({ email }) => {
   let payload: LoginTokenPayload = {
