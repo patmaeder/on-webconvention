@@ -16,6 +16,7 @@ export type LoginTokenPayload = {
 export type SessionTokenPayload = {
   type: TokenType;
   email: string;
+  role: Roles;
   refreshToken: string;
 };
 
@@ -29,9 +30,16 @@ export const setSessionToken = async (event: CompatibilityEvent, { email }) => {
     process.env.JWT_SECRET
   );
 
+  let user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
   let payload: SessionTokenPayload = {
     type: TokenType.SESSION,
     email: email,
+    role: (user?.role as Roles) || Roles.PARTICIPANT,
     refreshToken: refreshToken,
   };
 

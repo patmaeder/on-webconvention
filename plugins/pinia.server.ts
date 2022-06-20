@@ -24,6 +24,7 @@ export default defineNuxtPlugin(async (nuxt) => {
     name: decodedToken.name,
     email: decodedToken.email,
     expiresIn: decodedToken.expiresIn * 1000,
+    role: decodedToken.role,
   });
 
   console.log(

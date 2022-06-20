@@ -3,8 +3,8 @@ import { acceptHMRUpdate, defineStore } from "pinia";
 export const useStore = defineStore("store", () => {
   const session = ref(null);
 
-  function updateSession({ name, email, expiresIn }) {
-    session.value = { name, email, expiresIn };
+  function updateSession({ name, email, expiresIn, role }) {
+    session.value = { name, email, expiresIn, role };
   }
 
   function clearSession() {
