@@ -32,7 +32,8 @@ export default {
   data() {
     return {
       hasMembers: false,
-      local: null
+      local: null,
+      vEl: null,
     }
   },
   created() {
@@ -66,7 +67,7 @@ export default {
     async startShare() {
       const { $localStream } = useNuxtApp();
       const  videoContainer = this.$refs.breakroomView.$refs.subscriber_video;
-      const videoEl = document.createElement('video');
+      this.vEl  = document.createElement('video');
       local = await $localStream.getUserMedia({
         resolution: "vga",
         audio: true,
@@ -75,17 +76,18 @@ export default {
         simulcast: true,
       });
       this.local = local;
-      videoEl.autoplay = true;
-      videoEl.muted = true;
-      videoEl.srcObject = local;
+      this.vEl.autoplay = true;
+      this.vEl.muted = true;
+      this.vEl.srcObject = local;
 
 
-      videoContainer.appendChild(videoEl);
+      videoContainer.appendChild(this.vEl);
       local.mute("audio");
       client.publish(local);
     },
     stopShare() {
       local.unpublish();
+      this.vEl.remove();
     },
     mute() {
       local.mute("audio");
