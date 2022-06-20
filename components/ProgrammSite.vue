@@ -7,7 +7,7 @@
           <section id="calendar-records">
               <div class="event-body-programm">
                 <div class="room-display-programm">
-                  <p>Raum: {{ event.room }}</p>
+                  <p>Raum: {{ event.roomName }}</p>
                 </div>                    
                 <div class="start_time_display-programm">
                   <h5>{{ new Date(event.startDate).toTimeString().slice(0, 5) }}</h5>

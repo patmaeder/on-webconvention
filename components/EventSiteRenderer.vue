@@ -54,7 +54,10 @@
                         </svg>
                     </button>
                     <ul>
-                        <li v-for="event in currentEvents" :key="events.find(elem => elem.id == event).id" :class="{'favorite': favorites.includes(event)}">
+                        <li 
+                            v-for="event in currentEvents" 
+                            :key="events.find(elem => elem.id == event).id" 
+                            :class="{'favorite': favorites.includes(event), 'current': new Date(events.find(elem => elem.id == event).startDate).getTime() < new Date().getTime()}">
                             <div>
                                 <span v-if="new Date(events.find(elem => elem.id == event).startDate).getTime() < new Date().getTime()">Aktuell</span>
                                 <span v-else>
@@ -229,7 +232,7 @@ function characterLoaded(gltf) {
 
                     if (intersections.length > 0) {
                         characterObject3D.translateX(0.02 * delta * character.value.userData.move.speed);
-                        tempRoom = intersections[0].object.parent.userData.roomID;
+                        tempRoom = intersections[intersections.length - 1].object.parent.userData.roomID;
 
                     } else {
                         tempRoom = null;
@@ -439,7 +442,6 @@ onMounted(() => {
         renderer.value.three.renderer.shadowMap.enabled = THREE.PCFSoftShadowMap;
         renderer.value.three.renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.value.three.renderer.gammaFactor = 2.2;
-        renderer.value.three.renderer.setPixelRatio( window.devicePixelRatio );
         directionalLight1.value.light.shadow.bias = -0.00006;
         directionalLight2.value.light.shadow.bias = -0.00006;
 
@@ -597,16 +599,21 @@ onMounted(() => {
                     margin-bottom: 16px;
                 }
 
-                &.favorite {
+                &.current {
                     background: linear-gradient(150deg, rgba(121,220,240,1) 0%, rgba(59,86,149,1) 100%);
+                }
 
+                &.favorite {
+                    & button {
+                        visibility: visible;
+                    }
+                    
                     & button svg {
                         fill: #ffffff;
                     }
                 }
 
                 & div {
-
                     & > span {
                         font-size: .9rem;
                         font-weight: 400;

@@ -30,7 +30,7 @@
             @favorEvent="favor"
             @enterRoom="joinRoom"
         />
-        <Calendar :events="events" :favorites="favoriteEvents" @favorEvent="favor"/>
+        <Calendar :events="events" :favorites="favoriteEvents" :roomNames="eventSite.reduce((obj, item) => Object.assign(obj, {[item.id]: item.name }))" @favorEvent="favor"/>
     </div>
 </template>
 

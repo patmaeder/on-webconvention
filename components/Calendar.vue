@@ -22,7 +22,7 @@
                                     <div class="col-sm-10 start_time_display" @click="showProgramm(event)">                        
                                         <div class="row">
                                             <div class="col-sm-12 room-display">
-                                                <p>Raum: {{ events.find(elem => elem.id == event).room }}</p>
+                                                <p>Raum: {{ roomNames[events.find(elem => elem.id == event).roomId] }}</p>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                     <div id="programm-container" v-if="showPr">
-                        <ProgrammSite :event="events.find(elem => elem.id == e_key)" @closePr="hideProgramm"></ProgrammSite>
+                        <ProgrammSite :event="{ ...events.find(elem => elem.id == e_key), roomName: roomNames[events.find(elem => elem.id == e_key).roomId] }" @closePr="hideProgramm"></ProgrammSite>
                     </div>
                 </div>
             </div>
@@ -62,23 +62,13 @@ let month = ref(new Date().getMonth());
 let monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
 let year = ref(new Date().getFullYear());
 let selectedDay = ref(null);
-
-const props = defineProps(["events", "favorites"])
-
-//später leeren, wenn Eventform fertig
-/*let events = ref({
-    "8482134": {title: "ABC-Kurs", start_time: "15:30", end_time: "18:00", date: "2022/06/30", room: "123", description: "Das ist ein ABC-Kurs.", favorite: "false", star: "\u2606"},
-    "1346325": {title: "DC-Kurs", start_time: "15:00", end_time: "17:00", date: "2022/06/30", room: "456", description: "Das ist ein DC-Kurs.", favorite: "false", star: "\u2606"},
-});*/
 let showPr = ref(false);
 let showCal = ref(true);
 let showAll = ref(false);
-//let starUnfilled = ref("\u2606");
-//let starFilled = ref("\u2605");
 let showBtn = ref(true);
 let e_key = ref("");
-//let favorites = ref([]);
-//const staritem = {star: "\u2606"};
+
+const props = defineProps(["events", "favorites", "roomNames"])
 
 const emit = defineEmits(["favorEvent"])
 
@@ -127,22 +117,6 @@ function monthBack() {
     }
 }
 
-//später an Eventformlogik anpassen -> Logik einfügen
-function add_event(submitEvent){
-    let output = {};
-    // Object.assign(output, favoriteObj);
-    Object.assign(output, staritem);
-    output['title'] = submitEvent.target.elements.title.value;
-    output['date'] = submitEvent.target.elements.date.value;
-    output['start_time'] = submitEvent.target.elements.starttime.value;
-    output['end_time'] = submitEvent.target.elements.endtime.value;
-    output['descr'] = submitEvent.target.elements.description.value;
-    output['room'] = submitEvent.target.elements.room.value;
-
-    events.value[new Date().valueOf()] = {...output};
-    console.log(events);
-}
-
 function monthForward() {
     month.value += 1;
     if (month.value == 12) {
@@ -151,27 +125,11 @@ function monthForward() {
     }
 }
 
-function delete_event(id){
-        var key = id;
-        events.value[key] = undefined;
-        //auch hier bessere Lösung?
-        delete events.value[key];
-}
-
 function closeCalendar(){
     showAll.value = !showAll.value;
     showBtn.value = !showBtn.value;
 
 }
-
-/*function change_favorite(index){
-    var i = favorites.value.indexOf(index);
-    favorites.value.includes(index) === true ? favorites.value.splice(i, 1) : favorites.value.push(index);
-    favorites.value.includes(index) === true ? events.value[index].star = starFilled.value : events.value[index].star = starUnfilled.value;
-    console.log(favorites.value);
-    // events.value[index].favorite = !events.value[index].favorite;
-    // events.value[index].favorite === true ? events.value[index].star = starFilled.value : events.value[index].star = starUnfilled.value;
-}*/
 
 function hideProgramm(){
     showPr.value = !showPr.value;
@@ -232,7 +190,6 @@ function showCalendarComponent(){
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; 
     grid-template-rows: 40px 1fr 1fr 1fr 1fr 1fr 1fr; 
     gap: 15px 15px; 
-    
 }
 
 .weekday {
