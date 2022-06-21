@@ -1,10 +1,8 @@
 import { CompatibilityEvent, sendError } from "h3";
 import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
-import setupServer, { TokenType, useServer } from "~/backend";
+import { TokenType, useServer } from "~/backend";
 import { RegistrationTokenPayload } from "~/backend/auth";
-
-// token läuft nach 15 Minuten ab, aber Account wird nicht gelöscht. -> d.h. Account automatisch löschen oder erst nach Verifizierung speichern.
 
 type RegistrationEmailProps = { username: string; link: string };
 
@@ -421,7 +419,7 @@ const registrationEmailTemplate = ({
 `;
 
 const getVerificationURL = (token: string) =>
-  `${process.env.MAIL_HOST}/api/auth/confirm?token=${token}`;
+  `${process.env.BASE_URL}/api/auth/confirm?token=${token}`;
 
 const createToken = ({ name, email }) => {
   let payload: RegistrationTokenPayload = {
@@ -465,7 +463,8 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Payload does not match requirements.",
+        statusMessage:
+          "Du musst eine E-Mail-Adresse und einen Benutzernamen angeben.",
       })
     );
     return;
@@ -476,7 +475,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Given email address is invalid.",
+        statusMessage: "Deine E-Mail-Adresse ist ungültig.",
       })
     );
     return;
@@ -490,25 +489,35 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
     },
   });
 
-  if (!existingUser) {
-    try {
-      await sendRegistrationMail({ name, email });
-    } catch (error) {
-      console.log("[Auth]", error);
-      sendError(
-        event,
-        createError({
-          statusCode: 500,
-        })
-      );
+  if (existingUser) {
+    console.log("[Auth]", `User <${email}> is already registered.`);
+    sendError(
+      event,
+      createError({
+        statusCode: 400,
+        statusMessage:
+          "Ein Benutzer mit dieser E-Mail-Adresse ist bereits registriert.",
+      })
+    );
+  }
 
-      return;
-    }
+  try {
+    await sendRegistrationMail({ name, email });
+  } catch (error) {
+    console.log("[Auth]", error);
+    sendError(
+      event,
+      createError({
+        statusCode: 500,
+      })
+    );
+
+    return;
   }
 
   return {
     success: true,
     message:
-      "Registration attempt succeeded. You will receive a confirmation email in the next minutes.",
+      "Deine Registrierung verlief erfolgreich. Du erhälst gleich eine E-Mail zur Bestätigung.",
   };
 });

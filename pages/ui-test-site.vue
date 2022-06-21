@@ -3,7 +3,7 @@
         <h1>Hallo das ist die UI Test Seite</h1>
         <TestComponent></TestComponent>
         <ExpoName dateRange="15.05. - 10.06." expoName="Digitalisierungscamp"/>
-        <BasicButton content="Meeting erstellen"></BasicButton>
+        <BasicButton>Meeting erstellen</BasicButton>
         <BasicIcon size="medium" source="/icons/profile.svg"/>
         <BasicIcon size="medium" source="/icons/q.svg"/>
         <BasicIcon size="medium" source="/icons/settings.svg"/>

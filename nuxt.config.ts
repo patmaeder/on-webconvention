@@ -2,7 +2,13 @@ import { defineNuxtConfig } from "nuxt";
 import "dotenv/config";
 import fs from "fs";
 
-const viteConfig = fs.existsSync(".ddev/ssl/certs")
+const HTTPS_ENABLED = fs.existsSync(".ddev/ssl/certs");
+
+process.env["BASE_URL"] = HTTPS_ENABLED
+  ? "https://localhost:3000"
+  : "http://localhost:3000";
+
+const viteConfig = HTTPS_ENABLED
   ? {
       server: {
         hmr: {
@@ -20,9 +26,7 @@ const viteConfig = fs.existsSync(".ddev/ssl/certs")
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   buildModules: ["@pinia/nuxt"],
-  runtimeConfig: {
-    JWT_SECRET: process.env.JWT_SECRET,
-  },
   css: ["@/assets/styles/index.scss"],
+  ssr: true,
   vite: viteConfig,
 });

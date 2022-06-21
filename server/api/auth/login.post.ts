@@ -1,7 +1,7 @@
 import { CompatibilityEvent, sendError } from "h3";
 import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
-import setupServer, { TokenType, useServer } from "~/backend";
+import { TokenType, useServer } from "~/backend";
 import { LoginTokenPayload } from "~/backend/auth";
 
 type LoginEmailProps = { username: string; link: string };
@@ -15,7 +15,7 @@ const loginEmailTemplate = ({ username, link }: LoginEmailProps) => `
 `;
 
 const getVerificationURL = (token: string) =>
-  `${process.env.MAIL_HOST}/api/auth/verify?token=${token}`;
+  `${process.env.BASE_URL}/api/auth/verify?token=${token}`;
 
 const createToken = ({ email }) => {
   let payload: LoginTokenPayload = {
@@ -55,7 +55,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Payload does not match requirements.",
+        statusMessage: "Du hast keine E-Mail-Adresse angegeben.",
       })
     );
     return;
@@ -66,7 +66,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
       event,
       createError({
         statusCode: 400,
-        statusMessage: "Given email address is invalid.",
+        statusMessage: "Deine E-Mail-Adresse ist ungültig.",
       })
     );
     return;
@@ -85,7 +85,7 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
 
     return {
       success: false,
-      message: "User does not exist.",
+      message: "Dieser Benutzer existiert nicht.",
     };
   }
 
@@ -106,6 +106,6 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
   return {
     success: true,
     message:
-      "Login attempt succeeded. You will receive a confirmation email in the next minutes.",
+      "Dein Login-Vorgang verlief erfolgreich. Du erhälst gleich eine E-Mail zur Bestätigung.",
   };
 });

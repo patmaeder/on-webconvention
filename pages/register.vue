@@ -1,21 +1,25 @@
 <template>
     <main>
-      <form class="form" @submit.prevent="performRegistration">
+      <form class="form form__pane" @submit.prevent="performRegistration">
         <h1>Registrieren</h1>
-        <label class="form__label" for="email">E-Mail-Adresse</label>
-        <input name="email" id="email" type="email" v-model="email">
-        <label class="form__label" for="name">Benutzername</label>
-        <input name="name" id="name" type="text" v-model="name">
-        <input type="submit" value="Jetzt Registrieren">
+        <div class="form__group">
+          <label class="form__label" for="email">E-Mail-Adresse</label>
+          <input class="form__input" name="email" id="email" type="email" v-model="email">
+        </div>
+        <div class="form__group">
+          <label class="form__label" for="name">Benutzername</label>
+          <input class="form__input" name="name" id="name" type="text" v-model="name">
+        </div>
+        <BasicButton class="form__submit-button" type="submit" :isPending="pending">Jetzt registrieren</BasicButton>
       </form>
-      <span v-if="pending">Wird gesendet ...</span>
-      <span class="form__response" v-if="response">{{response}}</span>
+      <FormResponse :response="response" />
     </main>
 </template>
 
 <script setup>
-  import { watchEffect, ref } from 'vue'
+  import { ref } from 'vue'
   import {useFetch} from "nuxt/app";
+  import {useFormResponse} from "../composables/useFormResponse";
 
   const email = ref('');
   const name = ref('');
@@ -32,38 +36,7 @@
       }
     });
 
-    watchEffect(() => {
-      pending.value = registrationRequest.pending.value;
-
-      // consecutive requests with no changes
-      if(registrationRequest.error.value === true) {
-        return;
-      }
-
-      if(registrationRequest.error.value) {
-        response.value = registrationRequest.error.value;
-        return;
-      }
-
-      response.value = registrationRequest.data.value.message;
-    });
+    useFormResponse(registrationRequest, pending, response);
   }
 
 </script>
-
-<style lang="scss" scoped>
-
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  label {
-    font-weight: bold;
-  }
-
-</style>

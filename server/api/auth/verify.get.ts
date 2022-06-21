@@ -61,17 +61,8 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
   if (user.refreshToken) {
     console.log(
       "[Auth]",
-      `Login request for user <${decodedToken.email}> can be verified but user has remaining refresh-token. Prevent overwriting existing session.`
+      `Login request for user <${decodedToken.email}> can be verified but user has remaining refresh-token. Token will be overwritten.`
     );
-
-    sendError(
-      event,
-      createError({
-        statusCode: 500,
-        statusMessage: "User is logged in.",
-      })
-    );
-    return;
   }
 
   await setSessionToken(event, { email: decodedToken.email });

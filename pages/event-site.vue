@@ -36,7 +36,7 @@
 
 <script lang="ts" setup>
 
-definePageMeta({ layout: "no-header" });
+definePageMeta({ layout: "no-header", middleware: "auth" });
 
 const route = useRoute()
 const user = {
@@ -91,7 +91,7 @@ function joinRoom(roomID) {
 
 function leaveEvent() {
     eventSiteRenderer.value.removeCharacter();
-    navigateTo('/')
+    navigateTo('/logout')
 }
 </script>
 
