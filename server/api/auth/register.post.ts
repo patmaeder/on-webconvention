@@ -489,20 +489,30 @@ export default defineEventHandler(async (event: CompatibilityEvent) => {
     },
   });
 
-  if (!existingUser) {
-    try {
-      await sendRegistrationMail({ name, email });
-    } catch (error) {
-      console.log("[Auth]", error);
-      sendError(
-        event,
-        createError({
-          statusCode: 500,
-        })
-      );
+  if (existingUser) {
+    console.log("[Auth]", `User <${email}> is already registered.`);
+    sendError(
+      event,
+      createError({
+        statusCode: 400,
+        statusMessage:
+          "Ein Benutzer mit dieser E-Mail-Adresse ist bereits registriert.",
+      })
+    );
+  }
 
-      return;
-    }
+  try {
+    await sendRegistrationMail({ name, email });
+  } catch (error) {
+    console.log("[Auth]", error);
+    sendError(
+      event,
+      createError({
+        statusCode: 500,
+      })
+    );
+
+    return;
   }
 
   return {
