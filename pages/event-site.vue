@@ -91,7 +91,7 @@ function joinRoom(roomID) {
 
 function leaveEvent() {
     eventSiteRenderer.value.removeCharacter();
-    navigateTo('/')
+    navigateTo('/logout')
 }
 </script>
 

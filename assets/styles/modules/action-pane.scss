@@ -1,0 +1,23 @@
+.action-pane {
+
+  &__container {
+    max-width: 687px;
+    width: 100%;
+    border-radius: 35px;
+    background-color: #363A45;
+    padding: 35px 75px;
+  }
+
+  &__headline {
+    margin-top: 15px;
+    margin-bottom: 25px;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+}

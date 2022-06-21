@@ -27,5 +27,6 @@ const viteConfig = HTTPS_ENABLED
 export default defineNuxtConfig({
   buildModules: ["@pinia/nuxt"],
   css: ["@/assets/styles/index.scss"],
+  ssr: true,
   vite: viteConfig,
 });

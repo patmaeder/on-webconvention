@@ -1,3 +1,5 @@
+@use "./action-pane";
+
 .form {
   display: flex;
   flex-direction: column;
@@ -8,11 +10,7 @@
   margin: 0 auto;
 
   &__pane {
-    max-width: 687px;
-    width: 100%;
-    border-radius: 35px;
-    background-color: #363A45;
-    padding: 35px 75px;
+    @extend .action-pane__container;
   }
 
   &__group {
