@@ -40,11 +40,13 @@
 <script lang="ts" setup>
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
+import { useStore } from "../store";
 
 defineExpose({
     sendMessage
 })
 
+const store = useStore();
 let wsProvider: WebsocketProvider;
 const doc = new Y.Doc();
 let messages = ref([]);
@@ -54,7 +56,6 @@ const chatInput = ref(null);
 
 const props = defineProps({
     roomId: String,
-    user: Object
 })
 
 function sendMessage(type, content = chatInput.value.textContent) {
@@ -63,12 +64,12 @@ function sendMessage(type, content = chatInput.value.textContent) {
     if (content != "") {
 
         type == "userMessage" ? chatInput.value.textContent = "" : null;
-
+        
         chatSharedMap.push([{
             type,
             user: {
-                name: props.user.name,
-                role: props.user.role
+                name: store.session.email,
+                role: store.session.role,
             },
             content,
         }])

@@ -17,7 +17,7 @@
                 </div>
             </NuxtLink>
 
-            <NuxtLink :to="`/room/${currentRoom}`" v-if="currentRoom != null">
+            <NuxtLink :to="`/meeting/${currentRoom}-${eventSite.find(elem => elem.id == currentRoom).type}`" v-if="currentRoom != null">
                 {{ eventSite.find(elem => elem.id == currentRoom).name }} <br />beitreten
             </NuxtLink>
         </div>
@@ -39,6 +39,7 @@
 definePageMeta({ layout: "no-header", middleware: "auth" });
 
 const route = useRoute()
+//const store = useStore();
 const user = {
     id: route.query.id,
     role: route.query.role
