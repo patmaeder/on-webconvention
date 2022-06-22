@@ -26,6 +26,9 @@ const viteConfig = HTTPS_ENABLED
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   buildModules: ["@pinia/nuxt"],
+  build: {
+    transpile: ["troisjs"],
+  },
   css: ["@/assets/styles/index.scss"],
   ssr: true,
   vite: viteConfig,
