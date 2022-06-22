@@ -47,16 +47,14 @@ defineExpose({
 })
 
 const store = useStore();
+const route = useRoute();
+const roomId = route.params.roomId;
 let wsProvider: WebsocketProvider;
 const doc = new Y.Doc();
 let messages = ref([]);
 let chatSharedMap = doc.getArray("chat");
 const chatMessages = ref(null);
 const chatInput = ref(null);
-
-const props = defineProps({
-    roomId: String,
-})
 
 function sendMessage(type, content = chatInput.value.textContent) {
     event.preventDefault();
@@ -77,7 +75,7 @@ function sendMessage(type, content = chatInput.value.textContent) {
 }
 
 onMounted(() => {
-    wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "room/" + props.roomId + '/chat' , doc);
+    wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "room/" + roomId + '/chat' , doc);
 
     chatSharedMap.observe(event => {
 
