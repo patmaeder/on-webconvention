@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  node:
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:3000:3000
+    environment:
+      - NODE_ENV=production
+  sfu:
+    image: pionwebrtc/ion-sfu:latest-jsonrpc
+    restart: unless-stopped
+    ports:
+      - "5000-5200:5000-5200/udp"
+      - 7000:7000
