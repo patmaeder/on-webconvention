@@ -16,6 +16,7 @@ export type LoginTokenPayload = {
 export type SessionTokenPayload = {
   type: TokenType;
   email: string;
+  name: string;
   role: Roles;
   refreshToken: string;
 };
@@ -39,6 +40,7 @@ export const setSessionToken = async (event: CompatibilityEvent, { email }) => {
   let payload: SessionTokenPayload = {
     type: TokenType.SESSION,
     email: email,
+    name: user.name,
     role: (user?.role as Roles) || Roles.PARTICIPANT,
     refreshToken: refreshToken,
   };

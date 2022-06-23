@@ -68,7 +68,7 @@ function sendMessage(type, content = chatInput.value.textContent) {
         chatSharedMap.push([{
             type,
             user: {
-                name: store.session.email,
+                name: store.session.name,
                 role: store.session.role,
             },
             content,
