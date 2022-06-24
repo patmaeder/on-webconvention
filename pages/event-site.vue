@@ -17,7 +17,7 @@
                 </div>
             </NuxtLink>
 
-            <NuxtLink :to="`/meeting/${currentRoom}-${eventSite.find(elem => elem.id == currentRoom).type}`" v-if="currentRoom != null">
+            <NuxtLink :to="`/meeting/${currentRoom}`" v-if="currentRoom != null">
                 {{ eventSite.find(elem => elem.id == currentRoom).name }} <br />beitreten
             </NuxtLink>
         </div>

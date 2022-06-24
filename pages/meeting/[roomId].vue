@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="roomId">
-      <MeetingsConferenceHandler v-if="this.type === 'keynote'" :room-id="roomId" />
+      <MeetingsConferenceHandler v-if="currentRoom.type === 'keynote'" :room-id="roomId" />
       <MeetingsBreakroomHandler v-else :room-id="roomId" />
     </div>
     <div v-else>
@@ -15,7 +15,6 @@ definePageMeta({ layout: "no-header", middleware: "auth" });
 
 const route = useRoute();
 const roomId = route.params.roomId;
-const type = route.params.type;
 
 const { data: currentRoom } = await useAsyncData('fetch.currentRoom', () => $fetch(`/api/expo/eventRoom/${roomId}`))
 const { data: currentEvent } = await useAsyncData('fetch.currentEvent', () => $fetch(`/api/expo/eventRoom/${roomId}/currentEvent`))
