@@ -10,7 +10,7 @@
   &_main {
     flex-grow: 1;
     min-width: 0vw;
-    padding: 0 50px;
+    padding: 0 26px;
     transition: .5s min-width ease-in-out;
   }
 
@@ -48,15 +48,54 @@
 .header {
   width: 100%;
   height: 15vh;
+  margin-top: 26px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 
   .menu-wrapper {
     width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+
+    & > a {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: clamp(360px, 30vw, 460px);
+      padding: 18px 26px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 2px 4px 4px rgba(0, 0, 0, .25);
+      background-color: #363A45;
+      cursor: pointer;
+      text-decoration: none;
+  
+      & div {
+        display: flex;
+      }
+  
+      & div:first-child {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          color: #ffffff;
+  
+          & p {
+              margin: 0;
+              font-weight: 600;
+              font-size: 1.1rem;
+          }
+  
+          & span {
+              margin-bottom: 6px;
+              font-weight: 400;
+              font-size: .9rem;
+          }
+      }
+    }
   }
 
   .menu {

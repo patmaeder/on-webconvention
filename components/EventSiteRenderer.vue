@@ -1,7 +1,7 @@
 <template>
     <div id="eventSite__wrapper" ref="eventSiteWrapper">
         <client-only>
-            <Renderer ref="renderer" alpha antialias orbitCtrl resize="true" :pointer="{intersectRecursive: true}">
+            <Renderer ref="renderer" alpha antialias orbitCtrl resize="window" :pointer="{intersectRecursive: true}">
                 <Camera ref="camera" :position="{x: -3, y: 1.32, z: 2.4}" />
                 <Scene ref="scene">
                     <AmbientLight :intensity=".8" />
@@ -459,7 +459,7 @@ onMounted(() => {
         labelRenderer.setSize(eventSiteWrapper.value.clientWidth, eventSiteWrapper.value.clientHeight);
 
         window.addEventListener("resize", (() => {
-            labelRenderer.setSize(eventSiteWrapper.value.clientWidth, eventSiteWrapper.value.clientHeight);
+            eventSiteWrapper.value != null ? labelRenderer.setSize(eventSiteWrapper.value.clientWidth, eventSiteWrapper.value.clientHeight) : null;
         }))
 
         // EventListener to render character on user input

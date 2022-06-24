@@ -1,11 +1,11 @@
 <template>
     <div id="eventSite">
         <div id="eventSite__controls">
-            <NuxtLink to="/" @click="leaveEvent">
+            <NuxtLink to="/logout" @click="leaveEvent">
                 <div>
                     <span>
-                        {{ `0${new Date(expo.startDate).getDate()}`.slice(-2) }}.{{ `0${new Date(expo.startDate).getMonth() + 1}`.slice(-2) }} -
-                        {{ `0${new Date(expo.endDate).getDate()}`.slice(-2) }}.{{ `0${new Date(expo.endDate).getMonth() + 1}`.slice(-2) }}
+                        {{ `0${new Date(expo?.startDate).getDate()}`.slice(-2) }}.{{ `0${new Date(expo?.startDate).getMonth() + 1}`.slice(-2) }} -
+                        {{ `0${new Date(expo?.endDate).getDate()}`.slice(-2) }}.{{ `0${new Date(expo?.endDate).getMonth() + 1}`.slice(-2) }}
                     </span>
                     <p>{{ expo.name }}</p>
                 </div>

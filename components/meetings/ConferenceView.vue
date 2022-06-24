@@ -3,6 +3,23 @@
     <div class="meetingRoom_main" ref="main" >
       <div class="header">
         <div class="menu-wrapper">
+
+          <NuxtLink to="/event-site">
+            <div v-if="currentEvent.length > 0">
+                <span>{{ currentRoom.name }}</span>
+                <p>{{ currentEvent }}</p>
+            </div>
+            <div v-else>
+                <p>{{ currentRoom.name }}</p>
+            </div>
+            <div>
+                <svg width="27" height="28" viewBox="0 0 27 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.2129 9.18164L26.0002 13.7271L22.2129 9.18164ZM22.2129 18.2726L26.0002 13.7271L22.2129 18.2726Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M1 1V26.4548M23.7275 13.7274H11.9092H23.7275ZM1 1H17.3638H1ZM1 26.4548H17.3638H1ZM17.3638 1V8.27281V1ZM17.3638 19.182V26.4548V19.182Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+          </NuxtLink>
+
           <div class="menu">
             <ul>
               <li>
@@ -49,19 +66,13 @@
                   source="/icons/mic.svg"
                   class="basic-btn"
                   @click="muteAudio"
+                  v-else
               />
             </li>
             <li>
               <BasicIcon
                   size="medium"
                   source="/icons/phones.svg"
-                  class="basic-btn"
-              />
-            </li>
-            <li>
-              <BasicIcon
-                  size="medium"
-                  source="/icons/end_call.svg"
                   class="basic-btn"
               />
             </li>
@@ -94,6 +105,7 @@
                   source="/icons/cam.svg"
                   class="basic-btn"
                   @click="startScreen"
+                  v-else
               />
             </li>
             <li>
@@ -122,9 +134,15 @@
 import { useStore } from '~/store';
 
 const store = useStore();
+const route = useRoute();
+const roomId = route.params.roomId;
+const { data: currentRoom } = await useAsyncData('fetch.currentRoom', () => $fetch(`/api/expo/eventRoom/${roomId}`))
+const { data: currentEvent } = await useAsyncData('fetch.currentEvent', () => $fetch(`/api/expo/eventRoom/${roomId}/currentEvent`))
+
 const main = ref(null);
 const sidebar = ref(null);
 const chat = ref(null);
+
 let sidebarVisible = true;
 let sharingWebcam = ref(false);
 let sharingScreen = ref(false);
