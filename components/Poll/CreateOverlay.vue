@@ -1,5 +1,5 @@
 <template>
-    <div id="pollCreateOverlay">
+    <div id="pollCreateOverlay" v-if="pollState != 'open' || poll.initiator == store.session.email">
 
         <button v-if="!showPopover" @click="showPopover = !showPopover">
             Umfrage
@@ -19,7 +19,7 @@
 
         <div id="pollCreatePopover" v-if="showPopover">
             <button @click="showPopover = !showPopover">
-                <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0.698874 0.698874C1.1465 0.251385 1.75353 0 2.38647 0C3.01941 0 3.62644 0.251385 4.07406 0.698874L12.5144 9.13923L20.9548 0.698874C21.405 0.264067 22.0079 0.0234734 22.6338 0.028912C23.2596 0.0343505 23.8583 0.285386 24.3009 0.727951C24.7434 1.17052 24.9945 1.7692 24.9999 2.39506C25.0053 3.02092 24.7648 3.62387 24.3299 4.07406L15.8896 12.5144L24.3299 20.9548C24.7648 21.405 25.0053 22.0079 24.9999 22.6338C24.9945 23.2596 24.7434 23.8583 24.3009 24.3009C23.8583 24.7434 23.2596 24.9945 22.6338 24.9999C22.0079 25.0053 21.405 24.7648 20.9548 24.3299L12.5144 15.8896L4.07406 24.3299C3.62387 24.7648 3.02092 25.0053 2.39506 24.9999C1.7692 24.9945 1.17052 24.7434 0.727951 24.3009C0.285386 23.8583 0.0343505 23.2596 0.028912 22.6338C0.0234734 22.0079 0.264067 21.405 0.698874 20.9548L9.13923 12.5144L0.698874 4.07406C0.251385 3.62644 0 3.01941 0 2.38647C0 1.75353 0.251385 1.1465 0.698874 0.698874Z" fill="#ffffff"/>
                 </svg>
             </button>
@@ -28,13 +28,13 @@
                 <p>Umfrage erstellen</p>
                 <div>
                     <label for="question">Frage:</label>
-                    <input type="text" name="question" placeholder="Frage">
+                    <input type="text" name="question" placeholder="Frage" required>
                 </div>
                 <div>
                     <label>Antwortmöglichkeiten</label>
                     <ul>
                         <li v-for="(answer, key) in answerCount" :key="answer" >
-                            <input type="text" :name="'answer[x]'.replace('x', key.toString())">
+                            <input type="text" :name="'answer[x]'.replace('x', key.toString())" placeholder="Antwort" required>
                             <span @click="answerCount.splice(key, 1)" >
                                 <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M0.698874 0.698874C1.1465 0.251385 1.75353 0 2.38647 0C3.01941 0 3.62644 0.251385 4.07406 0.698874L12.5144 9.13923L20.9548 0.698874C21.405 0.264067 22.0079 0.0234734 22.6338 0.028912C23.2596 0.0343505 23.8583 0.285386 24.3009 0.727951C24.7434 1.17052 24.9945 1.7692 24.9999 2.39506C25.0053 3.02092 24.7648 3.62387 24.3299 4.07406L15.8896 12.5144L24.3299 20.9548C24.7648 21.405 25.0053 22.0079 24.9999 22.6338C24.9945 23.2596 24.7434 23.8583 24.3009 24.3009C23.8583 24.7434 23.2596 24.9945 22.6338 24.9999C22.0079 25.0053 21.405 24.7648 20.9548 24.3299L12.5144 15.8896L4.07406 24.3299C3.62387 24.7648 3.02092 25.0053 2.39506 24.9999C1.7692 24.9945 1.17052 24.7434 0.727951 24.3009C0.285386 23.8583 0.0343505 23.2596 0.028912 22.6338C0.0234734 22.0079 0.264067 21.405 0.698874 20.9548L9.13923 12.5144L0.698874 4.07406C0.251385 3.62644 0 3.01941 0 2.38647C0 1.75353 0.251385 1.1465 0.698874 0.698874Z" fill="#363A45"/>
@@ -75,6 +75,11 @@
 <script lang="ts" setup>
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
+import { useStore } from "~/store";
+
+const store = useStore();
+const route = useRoute();
+const roomId = route.params.roomId;
 
 let wsProvider: WebsocketProvider;
 const doc = new Y.Doc();
@@ -84,12 +89,7 @@ let showPopover = ref(false);
 
 const pollContent = ref(null);
 let pollState = ref('none');
-const answerCount = ref([]);
-
-const props = defineProps({
-    roomID: String,
-    user: Object
-})
+const answerCount = ref([[], []]);
 
 const emit = defineEmits(["closePollOverlay", "sharePollResults"])
 
@@ -112,6 +112,7 @@ function startPoll() {
             let pollConstructor = new Y.Map();
             let responsesConstructor = new Y.Array();
 
+            pollConstructor.set("initiator", store.session.email);
             pollConstructor.set("question", question);
             pollConstructor.set("answers", answers);
             pollConstructor.set("responses", responsesConstructor);
@@ -122,7 +123,7 @@ function startPoll() {
             }
 
             pollSharedArray.push([pollConstructor]);
-            answerCount.value = [];
+            answerCount.value = [[], []];
         }
     }
 }
@@ -137,13 +138,14 @@ function sharePollResults() {
 }
 
 onMounted(() => {
-    wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "room/" + props.roomID + '/poll3' , doc);
+    wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "room/" + roomId + '/poll' , doc);
 
     pollSharedArray.observe(event => {
 
         for(let value of event.changes.added) {
 
             poll.value = {
+                initiator: pollSharedArray.get(0).get("initiator"),
                 question: pollSharedArray.get(0).get("question"),
                 answers: pollSharedArray.get(0).get("answers"),
                 responses: [[], [], [], []],
@@ -166,6 +168,10 @@ onMounted(() => {
 
             pollState.value = "open";
         }
+
+        for(let value of event.changes.deleted) {
+            pollState.value = "closed";
+        }
     })
 
     window.onbeforeunload = function () {
@@ -175,20 +181,31 @@ onMounted(() => {
 </script>
 
 <style>
+#pollCreateOverlay > button {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, rgba(121,240,218,1) 0%, rgba(59,86,149,1) 100%);
+    font-weight: 600;
+    font-size: .9rem;
+    color: #ffffff;
+    cursor: pointer;
+}
+
 #pollCreatePopover {
     box-sizing: border-box;
     position: absolute;
-    bottom: 40px;
+    bottom: 66px;
     width: 100%;
     padding: 20px;
-    background: linear-gradient(135deg, rgba(121,240,218,1) 0%, rgba(59,86,149,1) 100%);
+    background-color: #252830;
     border-radius: 10px;
-    filter: drop-shadow(2px 4px 8px #252830);
+    filter: drop-shadow(0 0 8px #252830);
     z-index: 1;
 }
 
 #pollCreatePopover::before {
-    --border-width: 10px;
     box-sizing: border-box;
     content: '';
     position: absolute;
@@ -197,26 +214,30 @@ onMounted(() => {
     width: 20px;
     height: 20px;
     transform: rotate(45deg) translateX(-50%);
-    border-right: var(--border-width) solid #508bab;
-    border-bottom: var(--border-width) solid #508bab;
-    border-top: var(--border-width) solid transparent;
-    border-left: var(--border-width) solid transparent;
+    border: 10px solid #252830;
     z-index: -1;
 }
 
 #pollCreatePopover > button {
     box-sizing: border-box;
     position: absolute;
-    right: 14px;
-    top: 14px;
+    right: 20px;
+    top: 20px;
     padding: 0;
     background-color: transparent;
     border: none;
     outline: none;
+    cursor: pointer;
+}
+
+#pollCreatePopover > button svg {
+    stroke: #252830;
+    stroke-width: 2px;
 }
 
 .pollCreatePopover_content > p {
     margin: 6px 0 0 6px;
+    padding-bottom: 10px;
     font-weight: 700;
     font-size: 1.2rem;
 }
@@ -236,14 +257,14 @@ onMounted(() => {
     list-style-type: none;
 }
 
-
 .pollCreatePopover_content button {
     height: 32px;
     border-radius: 6px;
     outline: none;
-    border: none;
-    background-color: #79F0DA;
+    border: 1px solid #ffffff;
+    background-color: transparent;
     font-weight: 700;
+    color: #ffffff;
     cursor: pointer;
 }
 
@@ -255,6 +276,7 @@ onMounted(() => {
     color: #ffffff;
     margin-bottom: 10px;
     padding-left: 4px;
+    font-size: .9rem;
 }
 
 #pollCreatePopover form input {
@@ -267,6 +289,10 @@ onMounted(() => {
     border-radius: 6px;
     font-weight: 600;
     background-color: #ffffff;
+}
+
+#pollCreatePopover form input::placeholder {
+    color: #d13a49;
 }
 
 #pollCreatePopover form ul li {
@@ -291,7 +317,6 @@ onMounted(() => {
     height: 100%;
     width: 30px;
     padding: 10px;
-    background-color: #ffffff;
     cursor: pointer;
 }
 
@@ -311,7 +336,7 @@ onMounted(() => {
 }
 
 #pollCreatePopover > div > div:nth-of-type(2) p {
-    margin: 6px 0 10px 0;
+    margin: 6px 0 16px 0;
 }
 
 #pollCreatePopover > div ul li {
@@ -326,5 +351,6 @@ onMounted(() => {
     padding: 4px 10px;
     border-radius: 6px;
     background-color: #ffffff;
+    color: #000000;
 }
 </style>
