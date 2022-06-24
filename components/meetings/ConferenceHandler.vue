@@ -40,9 +40,10 @@ export default {
   },
   created() {
     const { $jsonRPC, $client } = useNuxtApp();
+    const runtimeConfig = useRuntimeConfig()
 
-    const signal = new $jsonRPC("ws://localhost:7000/ws");
-    const screenshareSignal = new $jsonRPC("ws://localhost:7000/ws");
+    const signal = new $jsonRPC(runtimeConfig.SFU_HOST);
+    const screenshareSignal = new $jsonRPC(runtimeConfig.SFU_HOST);
     client = new $client(signal, config);
     screenshare = new $client(screenshareSignal, config);
     signal.onopen = () => {
