@@ -24,17 +24,10 @@ const verifyNodeMailerConfiguration = (transporter) =>
 export const setupNodeMailer = async (): Promise<Mailer> => {
   let mailer;
 
-  if (process.env.NODE_ENV !== "development") {
-    console.log(
-      "[Mail]",
-      "Mailing in production environments is not supported yet."
-    );
-  }
-
   try {
     mailer = nodemailer.createTransport({
-      host: "localhost",
-      port: 1025,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT as any as number,
       secure: false,
       logger: true,
       debug: true,
