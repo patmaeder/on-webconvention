@@ -12,6 +12,8 @@ services:
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
     restart: always
+    networks:
+      - nginx-proxy
   acme-companion:
     image: nginxproxy/acme-companion
     environment:
@@ -38,6 +40,7 @@ services:
       - .production.env
     networks:
       - webconvention
+      - nginx-proxy
   sfu:
     image: pionwebrtc/ion-sfu:latest-jsonrpc
     restart: unless-stopped
@@ -55,6 +58,8 @@ services:
       - webconvention
 networks:
   webconvention: {}
+  nginx-proxy:
+    external: true
 volumes:
   conf:
     driver: local
