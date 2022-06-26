@@ -30,9 +30,9 @@ export const createNodeMailerFallback = () => {
         wordWrap: true,
       });
 
-      let filteredText = filterLinksInString(
-        (mail.text as string) || getMailText(mail)
-      );
+      let mailText = mail.text ? (mail.text as string) : getMailText(mail);
+
+      let filteredText = filterLinksInString(mailText);
 
       table.push(
         [{ colSpan: 2, content: "~~ Outgoing mail ~~" }],

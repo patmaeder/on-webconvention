@@ -439,7 +439,7 @@ const sendRegistrationMail = async ({ name, email }) => {
   const verificationURL = getVerificationURL(token);
 
   const mailOptions = {
-    from: "info@web-engineering.ddev.site",
+    from: process.env.MAIL_FROM_ADDRESS,
     html: registrationEmailTemplate({
       username: name,
       link: verificationURL,
