@@ -3,14 +3,12 @@ import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
 import setupServer, { TokenType, useServer } from "~/backend";
 import { LoginTokenPayload } from "~/backend/auth";
-import html from "server/api/auth/login-email-template.html";
+import html from "server/mail/login-email-template.html";
 
 type LoginEmailProps = { username: string; link: string };
 
-const loginEmailTemplate = ({ 
-  username, 
-  link 
-}: LoginEmailProps) =>  html.replace("${username}",username).replace("${link}",link);
+const loginEmailTemplate = ({ username, link }: LoginEmailProps) =>
+  html.replace("${username}", username).replace("${link}", link);
 
 const getVerificationURL = (token: string) =>
   `${process.env.MAIL_HOST}/api/auth/verify?token=${token}`;
