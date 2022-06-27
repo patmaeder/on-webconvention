@@ -147,6 +147,7 @@ const props = defineProps({
     favorites: Array,
 })
 
+const runtimeConfig = useRuntimeConfig();
 
 /*
  * ---------------
@@ -468,7 +469,7 @@ onMounted(() => {
         }, {once: true})
 
         // Establish Websocket connection and listen for changes
-        wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "event-site", doc);
+        wsProvider = new WebsocketProvider(runtimeConfig.YJS_HOST, "event-site", doc);
 
         usersSharedMap.observe(event => {
             for(let [key, value] of event.changes.keys) {

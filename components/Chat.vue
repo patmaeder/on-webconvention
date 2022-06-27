@@ -56,6 +56,8 @@ let chatSharedMap = doc.getArray("chat");
 const chatMessages = ref(null);
 const chatInput = ref(null);
 
+const runtimeConfig = useRuntimeConfig();
+
 function sendMessage(type, content = chatInput.value.textContent) {
     event.preventDefault();
 
@@ -75,7 +77,7 @@ function sendMessage(type, content = chatInput.value.textContent) {
 }
 
 onMounted(() => {
-    wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "room/" + roomId + '/chat' , doc);
+    wsProvider = new WebsocketProvider(runtimeConfig.YJS_HOST, "room/" + roomId + '/chat' , doc);
 
     chatSharedMap.observe(event => {
 

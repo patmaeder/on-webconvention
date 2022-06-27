@@ -81,6 +81,8 @@ const store = useStore();
 const route = useRoute();
 const roomId = route.params.roomId;
 
+const runtimeConfig = useRuntimeConfig();
+
 let wsProvider: WebsocketProvider;
 const doc = new Y.Doc();
 let poll = ref(null);
@@ -138,7 +140,7 @@ function sharePollResults() {
 }
 
 onMounted(() => {
-    wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "room/" + roomId + '/poll' , doc);
+    wsProvider = new WebsocketProvider(runtimeConfig.YJS_HOST, "room/" + roomId + '/poll' , doc);
 
     pollSharedArray.observe(event => {
 

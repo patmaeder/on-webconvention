@@ -18,6 +18,7 @@ import { useStore } from "~/store";
 
 const store = useStore();
 const route = useRoute();
+const runtimeConfig = useRuntimeConfig();
 const roomId = route.params.roomId;
 let wsProvider: WebsocketProvider;
 const doc = new Y.Doc();
@@ -30,7 +31,7 @@ function vote (answerID) {
 }
 
 onMounted(() => {
-    wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "room/" + roomId + '/poll' , doc);
+    wsProvider = new WebsocketProvider(runtimeConfig.YJS_HOST, "room/" + roomId + '/poll' , doc);
 
     pollSharedArray.observe(event => {
 
