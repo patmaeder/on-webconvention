@@ -7,6 +7,8 @@ import { parseSessionToken } from "~/backend/auth";
  */
 
 export default defineNuxtPlugin(async (nuxt) => {
+  console.log("[Pinia]", "Running middleware.");
+
   const store = useStore();
 
   console.log("[Pinia]", "Populating client-side store.");
