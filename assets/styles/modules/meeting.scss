@@ -1,0 +1,255 @@
+.meetingRoom {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-height: 100vh;
+  box-sizing: border-box;
+  background-color: #252830;
+  overflow: hidden;
+
+  &_main {
+    flex-grow: 1;
+    min-width: 0vw;
+    padding: 0 26px;
+    transition: .5s min-width ease-in-out;
+  }
+
+  &_sidebar {
+    display: flex;
+    flex-direction: column;
+    min-width: 450px;
+    max-width: 450px;
+    height: 100vh;
+    padding: 40px;
+    background-color: #363A45;
+    border-radius: 40px 0 0 40px;
+    box-shadow: 0 0 14px rgba(0, 0, 0, .25);
+
+    & > div:first-of-type {
+      flex-grow: 1;
+      min-height: 0;
+    }
+  
+    & > div:last-child {
+      position: relative;
+      margin-top: 20px;
+    }
+  }
+
+  .basic-btn {
+    cursor: pointer;
+
+    &:hover {
+      background: #79f0da;
+    }
+  }
+}
+
+.header {
+  width: 100%;
+  height: 15vh;
+  margin-top: 26px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  .menu-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    & > a {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: clamp(360px, 30vw, 460px);
+      padding: 18px 26px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 2px 4px 4px rgba(0, 0, 0, .25);
+      background-color: #363A45;
+      cursor: pointer;
+      text-decoration: none;
+  
+      & div {
+        display: flex;
+      }
+  
+      & div:first-child {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          color: #ffffff;
+  
+          & p {
+              margin: 0;
+              font-weight: 600;
+              font-size: 1.1rem;
+          }
+  
+          & span {
+              margin-bottom: 6px;
+              font-weight: 400;
+              font-size: .9rem;
+          }
+      }
+    }
+  }
+
+  .menu {
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    ul {
+      padding: 0px;
+      margin: 0px;
+      display: flex;
+
+      li {
+        margin-left: 20px;
+        list-style: none;
+
+        &:first-child {
+          margin-left: 0px;
+        }
+      }
+    }
+  }
+}
+
+.main-section {
+  width: 100%;
+  padding: 0px;
+  box-sizing: border-box;
+
+  @media screen and (min-width: 768px) {
+    padding: 0px 100px;
+  }
+}
+
+.members {
+  width: 100%;
+  height: 15vh;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+
+  @media screen and (min-width: 400px) {
+    grid-auto-columns: 50%;
+  }
+
+  @media screen and (min-width: 576px) {
+    grid-auto-columns: 25%;
+  }
+
+  @media screen and (min-width: 992px) {
+    grid-auto-columns: 20%;
+  }
+}
+
+.camera {
+  width: 90%;
+  height: 100%;
+  margin-left: 5px;
+  background: grey;
+  border-radius: 25px;
+}
+
+.breakroom {
+
+  width: 100%;
+  min-height: 70vh;
+  margin-bottom: auto;
+
+  .breakroom__videos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    video {
+      max-width: 30%;
+      height: 100%;
+      margin-left: 5px;
+      margin-bottom: 5px;
+      background: grey;
+      border-radius: 25px;
+    }
+  }
+
+  .breakroom__placeholder {
+    width: 100%;
+    text-align: center;
+    padding-top: 5rem;
+  }
+
+}
+
+
+.screen-wrapper {
+  width: 100%;
+  height: 51vh;
+  padding: 2vh 0;
+
+  #screen {
+    width: 100%;
+    height: 100%;
+    background: salmon;
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.footer {
+  width: 100%;
+  height: 15vh;
+  display: flex;
+  justify-content: center;
+}
+
+.toolbar {
+  height: 15vh;
+  width: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+
+  @media screen and (min-width: 768px) {
+    width: 100%;
+  }
+
+  ul {
+    display: flex;
+    padding: 0px;
+    margin: 0px;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+
+    li {
+      margin-left: 20px;
+      list-style: none;
+
+      &:first-child {
+        margin-left: 0px;
+      }
+    }
+  }
+}
+
+#button-calendar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 25px;
+}

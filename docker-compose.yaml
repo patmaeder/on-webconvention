@@ -1,0 +1,72 @@
+version: "3.8"
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+    restart: always
+    networks:
+      - nginx-proxy
+  acme-companion:
+    image: nginxproxy/acme-companion
+    environment:
+      - DEFAULT_EMAIL=info@on-webconvention.de
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+    restart: always
+  node:
+    build:
+      context: .
+    restart: unless-stopped
+    expose:
+      - 3000
+    environment:
+      - VIRTUAL_HOST=on-webconvention.de
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=on-webconvention.de
+    env_file:
+      - .production.env
+    networks:
+      - webconvention
+      - nginx-proxy
+  sfu:
+    image: pionwebrtc/ion-sfu:latest-jsonrpc
+    restart: unless-stopped
+    ports:
+      - "5000-5200:5000-5200/udp"
+      - "7005:7000"
+  postfix:
+    image: boky/postfix
+    restart: unless-stopped
+    ports:
+      - "1587:587"
+    environment:
+      - POSTFIX_myhostname=on-webconvention.de
+      - ALLOWED_SENDER_DOMAINS=on-webconvention.de
+      - DKIM_AUTOGENERATE=TRUE
+    volumes:
+      - dkim:/etc/opendkim/keys
+    networks:
+      - webconvention
+networks:
+  webconvention: {}
+  nginx-proxy:
+    external: true
+volumes:
+  vhost: {}
+  html: {}
+  certs: {}
+  acme: {}
+  dkim: {}

@@ -1,11 +1,11 @@
 <template>
-  <div class="layout">
-    <slot></slot>
+  <div>
+    <Header />
+    <main>
+      <slot></slot>
+    </main>
   </div>
 </template>
 
 <script setup>
 </script>
-
-<style lang="sass" scoped>
-</style>

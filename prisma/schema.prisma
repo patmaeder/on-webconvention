@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  name           String
+  role           String   @default("listener")
+  refreshToken   String?
+  favoriteEvents Event[]
+  speaker        Speaker?
+}
+
+model Speaker {
+  id           Int     @id @default(autoincrement())
+  userId       Int     @unique
+  user         User    @relation(fields: [userId], references: [id])
+  profileImage String?
+  description  String?
+  events       Event[]
+}
+
+model Expo {
+  id          Int         @id @default(autoincrement())
+  name        String
+  startDate   DateTime?
+  endDate     DateTime?
+  description String?
+  image       String?
+  events      Event[]
+  rooms       EventRoom[]
+}
+
+model Event {
+  id               Int        @id @default(autoincrement())
+  name             String
+  startDate        DateTime?
+  endDate          DateTime?
+  description      String?
+  roomId           Int
+  room             EventRoom  @relation(fields: [roomId], references: [id])
+  expoId           Int
+  expo             Expo       @relation(fields: [expoId], references: [id])
+  speakers         Speaker[]
+  favoritedByUsers User[]
+}
+
+model EventRoom {
+  id        Int    @id @default(autoincrement())
+  name      String
+  type      String
+  positionX String
+  positionY String
+  positionZ String
+  expoId    Int
+  expo      Expo   @relation(fields: [expoId], references: [id])
+  events    Event[]
+}
