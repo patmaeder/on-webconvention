@@ -77,7 +77,7 @@ function sendMessage(type, content = chatInput.value.textContent) {
 }
 
 onMounted(() => {
-    wsProvider = new WebsocketProvider(runtimeConfig.YJS_HOST, "room/" + roomId + '/chat' , doc);
+    wsProvider = new WebsocketProvider(runtimeConfig.public.YJS_HOST, "room/" + roomId + '/chat' , doc);
 
     chatSharedMap.observe(event => {
 

@@ -31,7 +31,7 @@ function vote (answerID) {
 }
 
 onMounted(() => {
-    wsProvider = new WebsocketProvider(runtimeConfig.YJS_HOST, "room/" + roomId + '/poll' , doc);
+    wsProvider = new WebsocketProvider(runtimeConfig.public.YJS_HOST, "room/" + roomId + '/poll' , doc);
 
     pollSharedArray.observe(event => {
 
