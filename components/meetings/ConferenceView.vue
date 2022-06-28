@@ -4,21 +4,12 @@
       <div class="header">
         <div class="menu-wrapper">
 
-          <NuxtLink to="/event-site">
-            <div v-if="currentEvent.length > 0">
+          <div>
+            <div >
                 <span>{{ currentRoom.name }}</span>
-                <p>{{ currentEvent }}</p>
+                <p v-if="currentEvent.length > 0">{{ currentEvent }}</p>
             </div>
-            <div v-else>
-                <p>{{ currentRoom.name }}</p>
-            </div>
-            <div>
-                <svg width="27" height="28" viewBox="0 0 27 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.2129 9.18164L26.0002 13.7271L22.2129 9.18164ZM22.2129 18.2726L26.0002 13.7271L22.2129 18.2726Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M1 1V26.4548M23.7275 13.7274H11.9092H23.7275ZM1 1H17.3638H1ZM1 26.4548H17.3638H1ZM17.3638 1V8.27281V1ZM17.3638 19.182V26.4548V19.182Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </div>
-          </NuxtLink>
+          </div>
 
           <div class="menu">
             <ul>
@@ -75,6 +66,15 @@
                   source="/icons/phones.svg"
                   class="basic-btn"
               />
+            </li>
+            <li>
+              <NuxtLink to="/event-site">
+                <BasicIcon
+                    size="medium"
+                    source="/icons/end_call.svg"
+                    class="basic-btn"
+                />
+              </NuxtLink>
             </li>
             <li v-if="isPresenter">
               <BasicIcon

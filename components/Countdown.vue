@@ -85,15 +85,23 @@ let minutesActive = ref(false);
 const hoursActive = ref(false);
 const daysActive = ref(false);
 
-let eventDate = new Date(events['13784734'].date);
+const emit = defineEmits(["stopCountdown"]);
 
-let timeToConvert = events['13784734'].start_time.split(':');
+const props = defineProps({
+    startTime: Date,
+});
 
-let eventHour = parseInt(timeToConvert[0]);
-let eventMinutes = parseInt(timeToConvert[1]);
+let dateProperty = startTime.value;
 
-eventDate.setHours(eventHour);
-eventDate.setMinutes(eventMinutes);
+let eventDate = new Date(dateProperty);
+
+// let timeToConvert = events['13784734'].start_time.split(':');
+
+// let eventHour = parseInt(timeToConvert[0]);
+// let eventMinutes = parseInt(timeToConvert[1]);
+
+// eventDate.setHours(eventHour);
+// eventDate.setMinutes(eventMinutes);
 
 let countDownDate = eventDate.getTime();
 

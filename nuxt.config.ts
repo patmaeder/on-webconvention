@@ -9,6 +9,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       SFU_HOST: process.env.SFU_HOST,
+      YJS_HOST: process.env.YJS_HOST,
     },
   },
   css: ["@/assets/styles/index.scss"],

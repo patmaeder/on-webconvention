@@ -3,35 +3,40 @@
     <div class="row">
       <div class="back-programm" @click="$emit('closePr')">
         &larr;
-        </div>
-          <section id="calendar-records">
-              <div class="event-body-programm">
-                <div class="room-display-programm">
-                  <p>Raum: {{ event.roomName }}</p>
-                </div>                    
-                <div class="start_time_display-programm">
-                  <h5>{{ new Date(event.startDate).toTimeString().slice(0, 5) }}</h5>
-                </div>
-                <div class="title_display-programm">
-                  <h5>{{ event.name }}</h5>
-                </div>
-          </div>
-        </section>
       </div>
-      <div class="info-container-programm">
+      <section id="calendar-records">
+        <div class="event-body-programm">
+          <div class="room-display-programm">
+            <p>Raum: {{ event.roomName }}</p>
+          </div>
+          <div class="start_time_display-programm">
+            <h5>{{ new Date(event.startDate).toTimeString().slice(0, 5) }}</h5>
+          </div>
+          <div class="title_display-programm">
+            <h5>{{ event.name }}</h5>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="info-container-programm">
       <h3>Beschreibung:</h3>
       <p>
           {{ event.description }}
       </p>
-    <h3>Datum:</h3>
+      <h3>Datum:</h3>
       <p class="date-container-programm">
         {{ new Date(event.startDate).toTimeString().slice(0, 5) }} Uhr - {{ new Date(event.endDate).toTimeString().slice(0, 5) }} Uhr<br>
         {{ String(new Date(event.startDate).getDate()).padStart(2, '0') }}.{{ String(new Date(event.startDate).getMonth()+1).padStart(2, '0') }}.{{ new Date(event.startDate).getFullYear() }} 
       </p>
-
-      </div>
-
     </div>
+
+    <div v-if="new Date().getTime() > new Date(event.startDate).getTime() && new Date().getTime() < new Date(event.endDate).getTime()">
+      <NuxtLink :to="`/meeting/${event.roomId}`">
+        Veranstaltung beitreten
+      </NuxtLink>
+    </div>
+
+  </div>
 </template>
 
 <script setup>
@@ -100,6 +105,7 @@ const props = defineProps({
 
 .event-body-programm{
     margin-left: 50px;
+    margin-bottom: 20px;
     max-width: 450px;
     background: linear-gradient(90deg, rgba(59,76,149,1) 0%, rgba(88,158,181,1) 52%, rgba(120,239,217,1) 100%);
     border-radius: 5px;
@@ -121,6 +127,19 @@ const props = defineProps({
   margin-left: 0;
   margin-top: 0;
   font-size: 14px;
+}
+
+.container-programm > div:nth-child(3) {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.container-programm > div:nth-child(3) a {
+  margin-right: 20px;
+  padding: 16px 26px;
+  background: linear-gradient(90deg,#3b4c95,#589eb5 52%,#78efd9);
+  border-radius: 6px;
+  text-decoration: none;
 }
 
 </style>

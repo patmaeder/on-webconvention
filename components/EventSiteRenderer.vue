@@ -26,7 +26,8 @@
                             :key="tile.id" :src="'/glbModels/' + tile.type + '.glb'" 
                             :position="{x: tile.positionX, y: tile.positionY, z: tile.positionZ}" 
                             @click="focusRoom($event, tile.id)" 
-                            @load="tileLoaded($event, tile.id)" 
+                                @before-load="beforeTileLoad"
+                            @load="tileLoaded($event, tile.id)"
                         />
                     </Group>
                     
@@ -87,6 +88,7 @@ import { Renderer, Camera, Scene, AmbientLight, DirectionalLight, Group, GltfMod
 import * as THREE from "three";
 import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
 
@@ -147,6 +149,7 @@ const props = defineProps({
     favorites: Array,
 })
 
+const runtimeConfig = useRuntimeConfig();
 
 /*
  * ---------------
@@ -181,6 +184,12 @@ const currentEvents = computed(() => {
  * Functions
  * ---------------
  */
+function beforeTileLoad(GLTFLoader) {
+    const loader = new DRACOLoader();
+    loader.setDecoderPath('/node_modules/three/examples/js/libs/draco/');
+    GLTFLoader.setDRACOLoader(loader);
+}
+
 function tileLoaded(gltf, id) {
     gltf.scene.userData.roomID = id;
 
@@ -218,7 +227,7 @@ function characterLoaded(gltf) {
             if (character.value.userData.move.forward != 0 || character.value.userData.move.sideward != 0) {
                 
                 let quaternion = getRotationQuaternion(character.value.userData.move.forward, character.value.userData.move.sideward);
-                characterObject3D.quaternion.rotateTowards(quaternion, 0.04);
+                characterObject3D.quaternion.rotateTowards(quaternion, 4 * delta);
 
                 if (!characterIsIntersecting()) {
                 
@@ -228,7 +237,7 @@ function characterLoaded(gltf) {
 
                     raycaster.set(characterObject3D.position, new THREE.Vector3(1, -1, 0).applyQuaternion(characterObject3D.quaternion));
                     let intersections = raycaster.intersectObjects(tiles.value.group.children);
-                    let tempRoom
+                    let tempRoom;
 
                     if (intersections.length > 0) {
                         characterObject3D.translateX(0.02 * delta * character.value.userData.move.speed);
@@ -468,7 +477,7 @@ onMounted(() => {
         }, {once: true})
 
         // Establish Websocket connection and listen for changes
-        wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "event-site", doc);
+        wsProvider = new WebsocketProvider(runtimeConfig.public.YJS_HOST, "event-site", doc);
 
         usersSharedMap.observe(event => {
             for(let [key, value] of event.changes.keys) {

@@ -47,6 +47,8 @@ services:
     ports:
       - "5000-5200:5000-5200/udp"
       - "7005:7000"
+    networks:
+      - nginx-proxy
   postfix:
     image: boky/postfix
     restart: unless-stopped
