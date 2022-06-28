@@ -1,6 +1,10 @@
 <template>
     <div id="calendar-component">
         <div id="calendarbody" v-show="showAll">
+            <div id="switch" v-show="showCal">
+                <div id="overview" @click="showOverview" :class="{'activated': overviewActive}">Überblick</div>
+                <div id="favoriteEvents" @click="showFavorites" :class="{'activated': favoriteActive}">Favoriten</div>
+            </div>
             <div id="head" v-show="showCal">
                 <p @click="monthBack" class="arrows">&larr;</p>
                 <h1>{{ monthNames[month] + ' ' + year }}</h1>
@@ -11,23 +15,54 @@
                 <div v-for="weekday in weekdays" :key="weekday" class="placholder"></div>   
                 <div v-for="day in daysInMonth" :key="day" class="day" :class="{'selected': selectedDay == day}" @click="selectDay(day)">
                     <p>{{weekdays[day.getDay()].slice(0, 1)}} <br> {{ day.getDate() }}</p>
+                    <div v-for="event in visibleEvents" :key="event">
+                        <div v-if="new Date(events.find(elem => elem.id == event).startDate).toDateString() == day.toDateString()" class="event-circle">
+                            X
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="events">
                 <div class="row event-row">
                     <div v-for="event in visibleEvents" :key="event">
-                        <div class="row event-container">
+                        <div class="row event-container" v-show="showOverviewContainer">
                             <div class="col-sm-9 event-body" v-show="showCal" :class="{'favorite': favorites.includes(event)}">
                                 <div class="row">
                                     <div class="col-sm-10 start_time_display" @click="showProgramm(event)">                        
                                         <div class="row">
                                             <div class="col-sm-12 room-display">
-                                                <p>Raum: {{ events.find(elem => elem.id == event).room }}</p>
+                                                <p>Raum: {{ events.find(elem => elem.id == event).roomId }}</p>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-3">
-                                                <h5>{{ new Date(events.find(elem => elem.id == event).startDate).toTimeString().slice(0, 5) }}</h5>
+                                                <h5>{{ new Date(events.find(elem => elem.id == event).startDate).toTimeString().slice(0, 5) }} Uhr</h5>
+                                            </div>
+                                            <div class="col-sm-6 title_display">
+                                                <h5>{{ events.find(elem => elem.id == event).name }}</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3 star" @click="$emit('favorEvent', event)">
+                                        <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 0L14.6942 8.2918H23.4127L16.3593 13.4164L19.0534 21.7082L12 16.5836L4.94658 21.7082L7.64074 13.4164L0.587322 8.2918H9.30583L12 0Z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row event-container" v-show="showFavoriteContainer" v-if="favorites.includes(event)">
+                            <div class="col-sm-9 event-body" v-show="showCal" :class="{'favorite': favorites.includes(event)}">
+                                <div class="row">
+                                    <div class="col-sm-10 start_time_display" @click="showProgramm(event)">                        
+                                        <div class="row">
+                                            <div class="col-sm-12 room-display">
+                                                <p>Raum: {{ events.find(elem => elem.id == event).roomId }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <h5>{{ new Date(events.find(elem => elem.id == event).startDate).toTimeString().slice(0, 5) }} Uhr</h5>
                                             </div>
                                             <div class="col-sm-6 title_display">
                                                 <h5>{{ events.find(elem => elem.id == event).name }}</h5>
@@ -69,20 +104,17 @@ let selectedDay = ref(null);
 
 const props = defineProps(["events", "favorites"])
 
-//später leeren, wenn Eventform fertig
-/*let events = ref({
-    "8482134": {title: "ABC-Kurs", start_time: "15:30", end_time: "18:00", date: "2022/06/30", room: "123", description: "Das ist ein ABC-Kurs.", favorite: "false", star: "\u2606"},
-    "1346325": {title: "DC-Kurs", start_time: "15:00", end_time: "17:00", date: "2022/06/30", room: "456", description: "Das ist ein DC-Kurs.", favorite: "false", star: "\u2606"},
-});*/
+
 let showPr = ref(false);
 let showCal = ref(true);
 let showAll = ref(false);
-//let starUnfilled = ref("\u2606");
-//let starFilled = ref("\u2605");
 let showBtn = ref(true);
 let e_key = ref("");
-//let favorites = ref([]);
-//const staritem = {star: "\u2606"};
+let propEvents = ref(props.events);
+let showFavoriteContainer = ref(false);
+let showOverviewContainer = ref(true);
+let overviewActive = ref(true);
+let favoriteActive = ref(false);
 
 const emit = defineEmits(["favorEvent"])
 
@@ -186,6 +218,20 @@ function showCalendarComponent(){
     showBtn.value = !showBtn.value;
 }
 
+function showOverview(){
+    showFavoriteContainer.value = false;
+    showOverviewContainer.value = true;
+    overviewActive.value = true;
+    favoriteActive.value = false;
+}
+
+function showFavorites(){
+    showFavoriteContainer.value = true;
+    showOverviewContainer.value = false;
+   overviewActive.value = false;
+    favoriteActive.value = true;
+}
+
 </script>
 
 <style>
@@ -217,6 +263,26 @@ function showCalendarComponent(){
     display: flex;
     justify-content: space-between;
     margin-bottom: -20px;
+}
+
+#switch{
+    display: flex;
+    justify-content: space-between;
+}
+
+#overview, #favoriteEvents{
+    background: #252830;
+    margin: 0 auto;
+    border-radius: 12px;
+    font-size: 18px;
+    padding: 10px 55px;
+    margin-top: 25px;
+    cursor: pointer;
+}
+
+.activated{
+    background: #79F0DA !important;
+    color: #252830 !important;
 }
 
 .calendar-icon{
@@ -303,6 +369,11 @@ function showCalendarComponent(){
 
 .event-body.favorite {
     background: #ff0000;
+}
+
+.event-circle{
+    background: grey;
+    border-radius: 50px;
 }
 
 .star svg {
