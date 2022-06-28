@@ -76,7 +76,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   // page is rendered on server, prevent sending sensitive information
   if (process.server) {
-    abortNavigation();
+    return;
   }
 
   try {
