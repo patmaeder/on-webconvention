@@ -149,8 +149,6 @@ const props = defineProps({
     favorites: Array,
 })
 
-const runtimeConfig = useRuntimeConfig();
-
 /*
  * ---------------
  * Events
@@ -475,6 +473,9 @@ onMounted(() => {
         document.addEventListener("keydown", function listenForCharInput (event) {
             [87, 38, 83, 40, 65, 37, 68, 39].includes(event.keyCode) ? showCharacter.value = true : null;
         }, {once: true})
+
+        const runtimeConfig = useRuntimeConfig();
+        console.log(runtimeConfig.public.YJS_HOST);
 
         // Establish Websocket connection and listen for changes
         wsProvider = new WebsocketProvider(runtimeConfig.public.YJS_HOST, "event-site", doc);
