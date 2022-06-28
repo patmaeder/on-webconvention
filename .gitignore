@@ -16,3 +16,6 @@ node_modules
 
 .ddev/ssl
 .production.env
+.postfix.env
+
+.DS_Store
