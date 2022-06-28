@@ -59,18 +59,13 @@
     justify-content: space-between;
     align-items: center;
 
-    & > a {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
+    & > div:first-child {
       width: clamp(360px, 30vw, 460px);
       padding: 18px 26px;
       border: none;
       border-radius: 10px;
       box-shadow: 2px 4px 4px rgba(0, 0, 0, .25);
       background-color: #363A45;
-      cursor: pointer;
       text-decoration: none;
   
       & div {
