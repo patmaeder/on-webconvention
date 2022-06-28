@@ -12,14 +12,13 @@
             </div>
             <div id="calendar" v-show="showCal">
                 <div v-for="day in firstDay" :key="day" class="placholder"></div>                
-                <div v-for="weekday in weekdays" :key="weekday" class="placholder"></div>   
+                <div v-for="weekday in weekdays" :key="weekday" class="placholder"></div> 
                 <div v-for="day in daysInMonth" :key="day" class="day" :class="{'selected': selectedDay == day}" @click="selectDay(day)">
-                    <p>{{weekdays[day.getDay()].slice(0, 1)}} <br> {{ day.getDate() }}</p>
-                    <div v-for="event in visibleEvents" :key="event">
-                        <div v-if="new Date(events.find(elem => elem.id == event).startDate).toDateString() == day.toDateString()" class="event-circle">
-                            X
+                    <div v-for="event in propEvents" :key="event">
+                        <div v-if="new Date(event.startDate).toDateString() == day.toDateString()" class="event-circle">
                         </div>
                     </div>
+                    <p>{{weekdays[day.getDay()].slice(0, 1)}} <br> {{ day.getDate() }}</p>
                 </div>
             </div>
             <div id="events">
@@ -368,12 +367,18 @@ function showFavorites(){
 }
 
 .event-body.favorite {
-    background: #ff0000;
+    background: linear-gradient(90deg, rgba(120,239,217,1) 0%, rgba(88,158,181,1) 52%, rgba(59,76,149,1) 100%);
 }
 
 .event-circle{
-    background: grey;
+    background: #79F0DA;
     border-radius: 50px;
+    width: 6px;
+    height: 6px;
+    float: right;
+    position: absolute;
+    margin-top: 14px;
+    margin-left: 18px;
 }
 
 .star svg {
