@@ -21,15 +21,17 @@
                 {{ eventSite.find(elem => elem.id == currentRoom).name }} <br />beitreten
             </NuxtLink>
         </div>
-        <EventSiteRenderer 
-            ref="eventSiteRenderer"
-            :eventSite="eventSite"
-            :user="user"
-            :events="events"
-            :favorites="favoriteEvents"
-            @favorEvent="favor"
-            @enterRoom="joinRoom"
-        />
+        <ClientOnly>
+          <EventSiteRenderer
+                ref="eventSiteRenderer"
+                :eventSite="eventSite"
+                :user="user"
+                :events="events"
+                :favorites="favoriteEvents"
+                @favorEvent="favor"
+                @enterRoom="joinRoom"
+            />
+        </ClientOnly>
         <Calendar :events="events" :favorites="favoriteEvents" :roomNames="eventSite.reduce((obj, item) => Object.assign(obj, {[item.id]: item.name }))" @favorEvent="favor"/>
     </div>
 </template>

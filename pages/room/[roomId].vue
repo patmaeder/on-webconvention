@@ -1,13 +1,13 @@
 <template>
-    <div>
-        <div id="sidebar">
-            <div>
-                <Chat ref="chat" :roomId="roomId" :user="user" />
-            </div>
-            <PollCreateOverlay v-if="user.role == 'speaker'" :roomId="roomId" :user="user" @sharePollResults="sharePollResults" />
-        </div>
-        <PollVoteOverlay v-if="user.role == 'user'" :roomId="roomId" :user="user" />
-    </div>
+  <ClientOnly>
+      <div id="sidebar">
+          <div>
+              <Chat ref="chat" :roomId="roomId" :user="user" />
+          </div>
+          <PollCreateOverlay v-if="user.role == 'speaker'" :roomId="roomId" :user="user" @sharePollResults="sharePollResults" />
+      </div>
+      <PollVoteOverlay v-if="user.role == 'user'" :roomId="roomId" :user="user" />
+  </ClientOnly>
 </template>
 
 <script lang="ts" setup>

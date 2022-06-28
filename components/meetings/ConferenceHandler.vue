@@ -1,15 +1,13 @@
 <template>
-  <client-only>
-    <ConferenceView ref="conferenceView"
-                    :isPresenter="this.presenter"
-                    :start-webcam-share="startShareWebcam"
-                    :stop-webcam-share="stopShareWebcam"
-                    :start-screenshare="startShareScreen"
-                    :stop-screenshare="stopShareScreen"
-                    :mute="mute"
-                    :unmute="unmute"
-    />
-  </client-only>
+  <ConferenceView ref="conferenceView"
+                  :isPresenter="this.presenter"
+                  :start-webcam-share="startShareWebcam"
+                  :stop-webcam-share="stopShareWebcam"
+                  :start-screenshare="startShareScreen"
+                  :stop-screenshare="stopShareScreen"
+                  :mute="mute"
+                  :unmute="unmute"
+  />
 </template>
 
 <script>

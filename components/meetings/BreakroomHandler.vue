@@ -1,13 +1,11 @@
 <template>
-  <client-only>
-    <BreakroomView ref="breakroomView"
-                   :start-webcam="startShare"
-                   :stop-webcam="stopShare"
-                   :mute="mute"
-                   :unmute="unmute"
-                   :has-members="hasMembers"
-    />
-  </client-only>
+  <BreakroomView ref="breakroomView"
+                 :start-webcam="startShare"
+                 :stop-webcam="stopShare"
+                 :mute="mute"
+                 :unmute="unmute"
+                 :has-members="hasMembers"
+  />
 </template>
 
 <script>
@@ -37,8 +35,12 @@ export default {
     }
   },
   created() {
+    const runtimeConfig = useRuntimeConfig()
+
+    console.log(runtimeConfig.public.SFU_HOST);
+
     const { $client, $jsonRPC } = useNuxtApp();
-    const signal = new $jsonRPC("ws://localhost:7000/ws");
+    const signal = new $jsonRPC(runtimeConfig.public.SFU_HOST);
     client = new $client(signal, config);
     signal.onopen = () => client.join(this.roomId || "room1");
     client.ontrack = (track, stream) => {

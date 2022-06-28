@@ -1,50 +1,48 @@
 <template>
     <div id="eventSite__wrapper" ref="eventSiteWrapper">
-        <client-only>
-            <Renderer ref="renderer" alpha antialias orbitCtrl resize="window" :pointer="{intersectRecursive: true}">
-                <Camera ref="camera" :position="{x: -3, y: 1.32, z: 2.4}" />
-                <Scene ref="scene">
-                    <AmbientLight :intensity=".8" />
-                    <DirectionalLight
-                        ref="directionalLight1" 
-                        :position="{x: -10, y: 10, z: 6}"
-                        :intensity=".6"
-                        :shadowMapSize="{width: 4096, height: 4096}"
-                        :castShadow="true" 
-                    />
-                    <DirectionalLight
-                        ref="directionalLight2" 
-                        :position="{x: 0, y: 10, z: 0}"
-                        :intensity=".3"
-                        :shadowMapSize="{width: 4096, height: 4096}"
-                        :castShadow="true" 
-                    />
+        <Renderer ref="renderer" alpha antialias orbitCtrl resize="window" :pointer="{intersectRecursive: true}">
+            <Camera ref="camera" :position="{x: -3, y: 1.32, z: 2.4}" />
+            <Scene ref="scene">
+                <AmbientLight :intensity=".8" />
+                <DirectionalLight
+                    ref="directionalLight1"
+                    :position="{x: -10, y: 10, z: 6}"
+                    :intensity=".6"
+                    :shadowMapSize="{width: 4096, height: 4096}"
+                    :castShadow="true"
+                />
+                <DirectionalLight
+                    ref="directionalLight2"
+                    :position="{x: 0, y: 10, z: 0}"
+                    :intensity=".3"
+                    :shadowMapSize="{width: 4096, height: 4096}"
+                    :castShadow="true"
+                />
 
-                    <Group ref="tiles">
-                        <GltfModel 
-                            v-for="tile in eventSite" 
-                            :key="tile.id" :src="'/glbModels/' + tile.type + '.glb'" 
-                            :position="{x: tile.positionX, y: tile.positionY, z: tile.positionZ}" 
-                            @click="focusRoom($event, tile.id)" 
-                                @before-load="beforeTileLoad"
-                            @load="tileLoaded($event, tile.id)"
-                        />
-                    </Group>
-                    
-                    <!-- Render Character if user moves -->
+                <Group ref="tiles">
                     <GltfModel
-                        v-if="showCharacter" 
-                        ref="character" 
-                        :src="user.role == 'speaker' ? '/glbModels/speaker.glb' : '/glbModels/visitor.glb'" 
-                        :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: -0.3, y: 0.03, z: 0.44}"
-                        :rotation="usersSharedMap.has(props.user.id) ? {x: usersSharedMap.get(props.user.id).rotation._x, y: usersSharedMap.get(props.user.id).rotation._y, z: usersSharedMap.get(props.user.id).rotation._z} : {x: 0, y: 0, z: 0}"
-                        :scale="{x: 0.5, y: 0.5, z: 0.5}"
-                        @load="characterLoaded"
+                        v-for="tile in eventSite"
+                        :key="tile.id" :src="'/glbModels/' + tile.type + '.glb'"
+                        :position="{x: tile.positionX, y: tile.positionY, z: tile.positionZ}"
+                        @click="focusRoom($event, tile.id)"
+                            @before-load="beforeTileLoad"
+                        @load="tileLoaded($event, tile.id)"
                     />
+                </Group>
 
-                </Scene>
-            </Renderer>
-        </client-only>
+                <!-- Render Character if user moves -->
+                <GltfModel
+                    v-if="showCharacter"
+                    ref="character"
+                    :src="user.role == 'speaker' ? '/glbModels/speaker.glb' : '/glbModels/visitor.glb'"
+                    :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: -0.3, y: 0.03, z: 0.44}"
+                    :rotation="usersSharedMap.has(props.user.id) ? {x: usersSharedMap.get(props.user.id).rotation._x, y: usersSharedMap.get(props.user.id).rotation._y, z: usersSharedMap.get(props.user.id).rotation._z} : {x: 0, y: 0, z: 0}"
+                    :scale="{x: 0.5, y: 0.5, z: 0.5}"
+                    @load="characterLoaded"
+                />
+
+            </Scene>
+        </Renderer>
         <div id="eventSite__overlay" ref="eventSiteOverlay" >
             <div ref="popover">
                <div v-if="currentEvents.length > 0">

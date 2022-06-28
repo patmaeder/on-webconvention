@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <ClientOnly>
     <div v-if="roomId">
       <MeetingsConferenceHandler v-if="currentRoom.type === 'keynote'" :room-id="roomId" />
       <MeetingsBreakroomHandler v-else :room-id="roomId" />
@@ -7,7 +7,7 @@
     <div v-else>
       <p>Nothing to see here!</p>
     </div>
-  </div>
+  </ClientOnly>
 </template>
 
 <script setup>
