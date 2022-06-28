@@ -1,19 +1,22 @@
 <template>
-    <main>
-      <form class="form" @submit.prevent="performLogin">
-        <h1>Login</h1>
+  <main>
+    <form class="form form__pane" @submit.prevent="performLogin">
+      <h1>Login</h1>
+      <div class="form__group">
         <label class="form__label" for="email">E-Mail-Adresse</label>
-        <input name="email" id="email" type="email" v-model="email">
-        <input type="submit" value="Jetzt Einloggen">
-      </form>
-      <span v-if="pending">Wird gesendet ...</span>
-      <span class="form__response" v-if="response">{{response}}</span>
-    </main>
+        <input class="form__input" name="email" id="email" type="email" v-model="email">
+      </div>
+      <BasicButton class="form__submit-button" type="submit" :isPending="pending">Jetzt anmelden</BasicButton>
+      <span>Du hast noch keinen Account? <NuxtLink href="/register">Jetzt registrieren</NuxtLink></span>
+    </form>
+    <FormResponse :response="response" />
+  </main>
 </template>
 
 <script setup>
-  import { watchEffect, ref } from 'vue'
+  import { ref } from 'vue'
   import {useFetch} from "nuxt/app";
+  import {useFormResponse} from "../composables/useFormResponse";
 
   const email = ref('');
 
@@ -28,26 +31,7 @@
       }
     });
 
-    watchEffect(() => {
-      pending.value = loginRequest.pending.value;
-
-      // consecutive requests with no changes
-      if(loginRequest.error.value === true) {
-        return;
-      }
-
-      if(loginRequest.error.value) {
-        response.value = loginRequest.error.value;
-        return;
-      }
-
-      response.value = loginRequest.data.value.message;
-    });
+    useFormResponse(loginRequest, pending, response);
   }
 
 </script>
-
-<style lang="scss" scoped>
-
-
-</style>

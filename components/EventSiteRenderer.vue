@@ -1,7 +1,7 @@
 <template>
     <div id="eventSite__wrapper" ref="eventSiteWrapper">
         <client-only>
-            <Renderer ref="renderer" alpha antialias orbitCtrl resize="true" :pointer="{intersectRecursive: true}">
+            <Renderer ref="renderer" alpha antialias orbitCtrl resize="window" :pointer="{intersectRecursive: true}">
                 <Camera ref="camera" :position="{x: -3, y: 1.32, z: 2.4}" />
                 <Scene ref="scene">
                     <AmbientLight :intensity=".8" />
@@ -23,10 +23,11 @@
                     <Group ref="tiles">
                         <GltfModel 
                             v-for="tile in eventSite" 
-                            :key="tile.id" :src="'/glbModels/' + tile.src" 
-                            :position="tile.position" 
+                            :key="tile.id" :src="'/glbModels/' + tile.type + '.glb'" 
+                            :position="{x: tile.positionX, y: tile.positionY, z: tile.positionZ}" 
                             @click="focusRoom($event, tile.id)" 
-                            @load="tileLoaded($event, tile.id)" 
+                                @before-load="beforeTileLoad"
+                            @load="tileLoaded($event, tile.id)"
                         />
                     </Group>
                     
@@ -46,7 +47,7 @@
         </client-only>
         <div id="eventSite__overlay" ref="eventSiteOverlay" >
             <div ref="popover">
-                <div v-if="currentEvents.length > 0">
+               <div v-if="currentEvents.length > 0">
                     <span>{{ eventSite.find(elem => elem.id == selectedRoom).name }}</span>
                     <button @click="blurRoom">
                         <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,7 +55,10 @@
                         </svg>
                     </button>
                     <ul>
-                        <li v-for="event in currentEvents" :key="events.find(elem => elem.id == event).id" :class="{'favorite': favorites.includes(event)}">
+                        <li 
+                            v-for="event in currentEvents" 
+                            :key="events.find(elem => elem.id == event).id" 
+                            :class="{'favorite': favorites.includes(event), 'current': new Date(events.find(elem => elem.id == event).startDate).getTime() < new Date().getTime()}">
                             <div>
                                 <span v-if="new Date(events.find(elem => elem.id == event).startDate).getTime() < new Date().getTime()">Aktuell</span>
                                 <span v-else>
@@ -73,7 +77,7 @@
                             </button>
                         </li>
                     </ul>
-                </div>
+                </div> 
             </div>
         </div>
     </div>
@@ -84,7 +88,7 @@ import { Renderer, Camera, Scene, AmbientLight, DirectionalLight, Group, GltfMod
 import * as THREE from "three";
 import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
 
@@ -139,12 +143,11 @@ const usersSharedMap = doc.getMap("users");
  * ---------------
  */
 const props = defineProps({
-    eventSite: Object,
+    eventSite: Array,
     user: Object,
-    events: Object,
+    events: Array,
     favorites: Array,
 })
-
 
 /*
  * ---------------
@@ -163,8 +166,7 @@ const currentEvents = computed(() => {
     const currentTimestamp = new Date().getTime();
 
     let temp = props.events.filter((elem) => {
-        return elem.room == selectedRoom.value &&
-            new Date(elem.endDate).getTime() > currentTimestamp
+        return elem.roomId == selectedRoom.value && new Date(elem.endDate).getTime() > currentTimestamp
     })
 
     temp.sort((a, b) => {
@@ -180,6 +182,12 @@ const currentEvents = computed(() => {
  * Functions
  * ---------------
  */
+function beforeTileLoad(GLTFLoader) {
+    const loader = new DRACOLoader();
+    loader.setDecoderPath('/node_modules/three/examples/js/libs/draco/');
+    GLTFLoader.setDRACOLoader(loader);
+}
+
 function tileLoaded(gltf, id) {
     gltf.scene.userData.roomID = id;
 
@@ -217,7 +225,7 @@ function characterLoaded(gltf) {
             if (character.value.userData.move.forward != 0 || character.value.userData.move.sideward != 0) {
                 
                 let quaternion = getRotationQuaternion(character.value.userData.move.forward, character.value.userData.move.sideward);
-                characterObject3D.quaternion.rotateTowards(quaternion, 0.04);
+                characterObject3D.quaternion.rotateTowards(quaternion, 4 * delta);
 
                 if (!characterIsIntersecting()) {
                 
@@ -227,11 +235,11 @@ function characterLoaded(gltf) {
 
                     raycaster.set(characterObject3D.position, new THREE.Vector3(1, -1, 0).applyQuaternion(characterObject3D.quaternion));
                     let intersections = raycaster.intersectObjects(tiles.value.group.children);
-                    let tempRoom
+                    let tempRoom;
 
                     if (intersections.length > 0) {
                         characterObject3D.translateX(0.02 * delta * character.value.userData.move.speed);
-                        tempRoom = intersections[0].object.parent.userData.roomID;
+                        tempRoom = intersections[intersections.length - 1].object.parent.userData.roomID;
 
                     } else {
                         tempRoom = null;
@@ -441,7 +449,6 @@ onMounted(() => {
         renderer.value.three.renderer.shadowMap.enabled = THREE.PCFSoftShadowMap;
         renderer.value.three.renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.value.three.renderer.gammaFactor = 2.2;
-        renderer.value.three.renderer.setPixelRatio( window.devicePixelRatio );
         directionalLight1.value.light.shadow.bias = -0.00006;
         directionalLight2.value.light.shadow.bias = -0.00006;
 
@@ -459,7 +466,7 @@ onMounted(() => {
         labelRenderer.setSize(eventSiteWrapper.value.clientWidth, eventSiteWrapper.value.clientHeight);
 
         window.addEventListener("resize", (() => {
-            labelRenderer.setSize(eventSiteWrapper.value.clientWidth, eventSiteWrapper.value.clientHeight);
+            eventSiteWrapper.value != null ? labelRenderer.setSize(eventSiteWrapper.value.clientWidth, eventSiteWrapper.value.clientHeight) : null;
         }))
 
         // EventListener to render character on user input
@@ -467,8 +474,11 @@ onMounted(() => {
             [87, 38, 83, 40, 65, 37, 68, 39].includes(event.keyCode) ? showCharacter.value = true : null;
         }, {once: true})
 
+        const runtimeConfig = useRuntimeConfig();
+        console.log(runtimeConfig.public.YJS_HOST);
+
         // Establish Websocket connection and listen for changes
-        wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "event-site", doc);
+        wsProvider = new WebsocketProvider(runtimeConfig.public.YJS_HOST, "event-site", doc);
 
         usersSharedMap.observe(event => {
             for(let [key, value] of event.changes.keys) {
@@ -504,6 +514,7 @@ onMounted(() => {
         })
 
         renderer.value.onBeforeRender(() => {
+
             delta = clock.getDelta();
             labelRenderer.render(renderer.value.scene, renderer.value.camera);
             popoverCSS2DObject.position.set(0, (renderer.value.three.cameraCtrl.getDistance() * 0.048 + 0.12), 0);
@@ -598,16 +609,21 @@ onMounted(() => {
                     margin-bottom: 16px;
                 }
 
-                &.favorite {
+                &.current {
                     background: linear-gradient(150deg, rgba(121,220,240,1) 0%, rgba(59,86,149,1) 100%);
+                }
 
+                &.favorite {
+                    & button {
+                        visibility: visible;
+                    }
+                    
                     & button svg {
                         fill: #ffffff;
                     }
                 }
 
                 & div {
-
                     & > span {
                         font-size: .9rem;
                         font-weight: 400;

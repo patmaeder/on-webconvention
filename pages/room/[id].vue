@@ -11,6 +11,9 @@
 </template>
 
 <script lang="ts" setup>
+
+definePageMeta({ middleware: "auth" });
+
 const route = useRoute();
 const roomId = route.params.id;
 const user = {

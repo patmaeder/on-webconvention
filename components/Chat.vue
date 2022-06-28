@@ -40,11 +40,15 @@
 <script lang="ts" setup>
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
+import { useStore } from "../store";
 
 defineExpose({
     sendMessage
 })
 
+const store = useStore();
+const route = useRoute();
+const roomId = route.params.roomId;
 let wsProvider: WebsocketProvider;
 const doc = new Y.Doc();
 let messages = ref([]);
@@ -52,10 +56,7 @@ let chatSharedMap = doc.getArray("chat");
 const chatMessages = ref(null);
 const chatInput = ref(null);
 
-const props = defineProps({
-    roomId: String,
-    user: Object
-})
+const runtimeConfig = useRuntimeConfig();
 
 function sendMessage(type, content = chatInput.value.textContent) {
     event.preventDefault();
@@ -63,12 +64,12 @@ function sendMessage(type, content = chatInput.value.textContent) {
     if (content != "") {
 
         type == "userMessage" ? chatInput.value.textContent = "" : null;
-
+        
         chatSharedMap.push([{
             type,
             user: {
-                name: props.user.name,
-                role: props.user.role
+                name: store.session.name,
+                role: store.session.role,
             },
             content,
         }])
@@ -76,7 +77,7 @@ function sendMessage(type, content = chatInput.value.textContent) {
 }
 
 onMounted(() => {
-    wsProvider = new WebsocketProvider("ws://"+ window.location.hostname +":1234", "room/" + props.roomId + '/chat' , doc);
+    wsProvider = new WebsocketProvider(runtimeConfig.public.YJS_HOST, "room/" + roomId + '/chat' , doc);
 
     chatSharedMap.observe(event => {
 

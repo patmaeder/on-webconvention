@@ -15,3 +15,7 @@ node_modules
 # ddev
 
 .ddev/ssl
+.production.env
+.postfix.env
+
+.DS_Store

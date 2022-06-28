@@ -1,10 +1,10 @@
-import { setupNodeMailer } from "~/backend/setup/nodemailer";
+import { Mailer, setupNodeMailer } from "~/backend/setup/nodemailer";
 import { PrismaClient } from "@prisma/client";
 import { Transporter } from "nodemailer";
 
 type ServerInstance = {
   prisma: PrismaClient;
-  mailer: Transporter;
+  mailer: Mailer;
 };
 
 export enum TokenType {
@@ -24,7 +24,7 @@ let server: ServerInstance | null = null;
 
 export const setupServer = async (): Promise<ServerInstance> => {
   const prisma = new PrismaClient();
-  const mailer = setupNodeMailer();
+  const mailer = await setupNodeMailer();
 
   return { mailer, prisma };
 };
