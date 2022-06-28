@@ -7,8 +7,11 @@ import html from "server/mail/login-email-template.html";
 
 type LoginEmailProps = { username: string; link: string };
 
-const loginEmailTemplate = ({ username, link }: LoginEmailProps) =>
-  html.replace("${username}", username).replace("${link}", link);
+const getLoginEmailTemplate = ({ username, link }: LoginEmailProps) =>
+  html
+    .replaceAll("${username}", username)
+    .replaceAll("${link}", link)
+    .replaceAll("${baseURL}", process.env.BASE_URL);
 
 const getVerificationURL = (token: string) =>
   `${process.env.BASE_URL}/api/auth/verify?token=${token}`;
@@ -31,7 +34,7 @@ const sendLoginMail = async ({ name, email }) => {
 
   const mailOptions = {
     from: process.env.MAIL_FROM_ADDRESS,
-    html: loginEmailTemplate({
+    html: getLoginEmailTemplate({
       username: name,
       link: verificationURL,
     }),
