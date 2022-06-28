@@ -1,11 +1,13 @@
 <template>
   <client-only>
     <BreakroomView ref="breakroomView"
-                   :start-webcam="startShare"
-                   :stop-webcam="stopShare"
-                   :mute="mute"
-                   :unmute="unmute"
-                   :has-members="hasMembers"
+                   :start-webcam="this.startShare"
+                   :stop-webcam="this.stopShare"
+                   :mute="this.mute"
+                   :unmute="this.unmute"
+                   :has-members="this.hasMembers"
+                   :mute-local="this.muteLocal"
+                   :unmute-local="this.unmuteLocal"
     />
   </client-only>
 </template>
@@ -95,6 +97,18 @@ export default {
     unmute() {
       this.local.unmute("audio")
     },
+    muteLocal() {
+      const  videoContainer = this.$refs.breakroomView.$refs.subscriber_video;
+      videoContainer.childNodes.forEach(node => {
+        node.muted = true;
+      });
+    },
+    unmuteLocal() {
+      const  videoContainer = this.$refs.breakroomView.$refs.subscriber_video;
+      videoContainer.childNodes.forEach(node => {
+        node.muted = false;
+      });
+    }
   }
 }
 </script>

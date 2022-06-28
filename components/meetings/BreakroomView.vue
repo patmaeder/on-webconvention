@@ -70,7 +70,16 @@
               <BasicIcon
                   size="medium"
                   source="/icons/phones.svg"
+                  class="basic-btn active"
+                  @click="unmuteLocal"
+                  v-if="localMuted"
+              />
+              <BasicIcon
+                  size="medium"
+                  source="/icons/phones.svg"
                   class="basic-btn"
+                  @click="muteLocal"
+                  v-else
               />
             </li>
             <li>
@@ -124,28 +133,39 @@ const sidebar = ref(null);
 const chat = ref(null);
 let sidebarVisible = true;
 let sharing = ref(false);
-let muted = ref(false);
+let muted = ref(true);
+let localMuted = ref(false);
 
-const props = defineProps(["startWebcam", "stopWebcam", "mute", "unmute", "hasMembers"])
+const props = defineProps(["startWebcam", "stopWebcam", "mute", "unmute", "hasMembers", "muteLocal", "unmuteLocal"])
 
 function startWebcamStream() {
-  this.startWebcam();
-  this.sharing = true;
+  props.startWebcam();
+  sharing.value = true;
 }
 
 function stopWebcamSharing() {
-  this.stopWebcam();
-  this.sharing = false;
+  props.stopWebcam();
+  sharing.value = false;
 }
 
 function muteAudio() {
-  this.mute();
-  this.muted = true;
+  props.mute();
+  muted.value = true;
 }
 
 function unmuteAudio() {
-  this.unmute();
-  this.muted = false;
+  props.unmute();
+  muted.value = false;
+}
+
+function muteLocal() {
+  props.muteLocal();
+  localMuted.value = true;
+}
+
+function unmuteLocal() {
+  props.unmuteLocal();
+  localMuted.value = false;
 }
 
 function toggleSidebar() {
