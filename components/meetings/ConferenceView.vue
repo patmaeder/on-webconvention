@@ -1,5 +1,5 @@
 <template>
-  <div class="meetingRoom">
+  <div class="meetingRoom meetingview__bg keynote__bg">
     <div class="meetingRoom_main" ref="main" >
       <div class="header">
         <div class="menu-wrapper">
@@ -65,6 +65,8 @@
                   size="medium"
                   source="/icons/phones.svg"
                   class="basic-btn"
+                  :class="{ active: localMuted.value }"
+                  @click="muteLocal"
               />
             </li>
             <li>
@@ -142,42 +144,55 @@ const { data: currentEvent } = await useAsyncData('fetch.currentEvent', () => $f
 const main = ref(null);
 const sidebar = ref(null);
 const chat = ref(null);
+const public_video = ref(null);
+const subscriber_video = ref(null);
 
 let sidebarVisible = true;
 let sharingWebcam = ref(false);
 let sharingScreen = ref(false);
-let muted = ref(false);
+let muted = ref(true);
+let localMuted = ref(false);
 
 const props = defineProps(["isPresenter", "startScreenshare", "stopScreenshare", "startWebcamShare", "stopWebcamShare", "mute", "unmute"])
 
 function startScreen() {
   this.startScreenshare();
-  this.sharingScreen = true;
+  sharingScreen.value = true;
 }
 
 function stopScreen() {
   this.stopScreenshare();
-  this.sharingScreen = false;
+  sharingScreen.value = false;
 }
 
 function startWebcam() {
   this.startWebcamShare();
-  this.sharingWebcam = true;
+  sharingWebcam.value = true;
 }
 
 function stopWebcam() {
   this.stopWebcamShare();
-  this.sharingWebcam = false;
+  sharingWebcam.value = false;
 }
 
 function muteAudio() {
   this.mute();
-  this.muted = true;
+  muted.value = true;
 }
 
 function unmuteAudio() {
   this.unmute();
-  this.muted = false;
+  muted.value = false;
+}
+
+// ToDo: Clean up control-methods with this schema.
+function muteLocal() {
+  if(props.isPresenter) {
+    public_video.value.muted = !localMuted.value;
+  } else {
+    subscriber_video.value.muted = !localMuted.value;
+  }
+  localMuted.value = !localMuted.value;
 }
 
 function toggleSidebar() {
