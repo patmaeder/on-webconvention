@@ -3,7 +3,7 @@ import isEmail from "validator/es/lib/isEmail";
 import jwt from "jsonwebtoken";
 import { TokenType, useServer } from "~/backend";
 import { RegistrationTokenPayload } from "~/backend/auth";
-import html from "server/mail/login-email-template.html";
+import getRegistrationEmailMarkup from "~/server/mail/registration-email-template";
 
 type RegistrationEmailProps = { username: string; link: string };
 
@@ -25,10 +25,7 @@ const getRegistrationEmailTemplate = ({
   username,
   link,
 }: RegistrationEmailProps) =>
-  html
-    .replaceAll("${username}", username)
-    .replaceAll("${link}", link)
-    .replaceAll("${baseURL}", process.env.BASE_URL);
+  getRegistrationEmailMarkup({ username, link, baseURL: process.env.BASE_URL });
 
 const sendRegistrationMail = async ({ name, email }) => {
   const { mailer } = await useServer();
