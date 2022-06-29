@@ -30,7 +30,7 @@
                                     <div class="col-sm-10 start_time_display" @click="showProgramm(event)">                        
                                         <div class="row">
                                             <div class="col-sm-12 room-display">
-                                                <p>Raum: {{ events.find(elem => elem.id == event).roomId }}</p>
+                                                <p>Raum: {{ roomNames[events.find(elem => elem.id == event).roomId] }}</p>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -101,7 +101,7 @@ let monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", 
 let year = ref(new Date().getFullYear());
 let selectedDay = ref(null);
 
-const props = defineProps(["events", "favorites"])
+const props = defineProps(["events", "roomNames", "favorites"]);
 
 let showPr = ref(false);
 let showCal = ref(true);
