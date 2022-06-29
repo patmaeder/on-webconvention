@@ -27,7 +27,7 @@ const config = {
 let client, screenshare;
 
 export default {
-  components: {MeetingControls, ConferenceView},
+  components: {ConferenceView},
   props: ["roomId"],
   data() {
     return {

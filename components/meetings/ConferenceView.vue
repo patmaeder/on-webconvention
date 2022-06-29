@@ -33,11 +33,19 @@
       </div>
       <div class="main-section">
         <div class="members">
-          <video class="camera" ref="public_video" autoplay v-if="isPresenter" ></video>
-          <video class="camera" ref="subscriber_video" autoplay v-else ></video>
+          <div v-if="sharingWebcam">
+            <video class="camera" ref="public_video" autoplay v-if="isPresenter" ></video>
+            <video class="camera" ref="subscriber_video" autoplay v-else ></video>
+          </div>
+          <div v-else>
+            <div class="camera-placeholder">
+              <p>Name</p>
+            </div>
+          </div>
         </div>
         <div class="screen-wrapper">
-          <video id="screen" ref="screenshare_video" autoplay ></video>
+          <video id="screen" ref="screenshare_video" autoplay v-if="sharingScreen" ></video>
+          <h2 v-else>Stage</h2>
         </div>
       </div>
       <BasicIcon id="button-calendar" size="large" source="/icons/filter.svg" />
