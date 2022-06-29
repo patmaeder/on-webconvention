@@ -45,7 +45,7 @@
         </div>
         <div class="screen-wrapper">
           <video id="screen" ref="screenshare_video" autoplay v-if="sharingScreen" ></video>
-          <h2 v-else>Stage</h2>
+          <h2 class="sc-placeholder" :class="{sc__placeholder__wrapper: !sharingScreen}" v-else>Stage</h2>
         </div>
       </div>
       <BasicIcon id="button-calendar" size="large" source="/icons/filter.svg" />
@@ -86,7 +86,7 @@
                 />
               </NuxtLink>
             </li>
-            <li v-if="isPresenter">
+            <li v-if="store.session.role === 'speaker'">
               <BasicIcon
                   size="medium"
                   source="/icons/cam.svg"
@@ -102,7 +102,7 @@
                   v-else
               />
             </li>
-            <li v-if="isPresenter">
+            <li v-if="store.session.role === 'speaker'">
               <BasicIcon
                   size="medium"
                   source="/icons/cam.svg"
@@ -134,7 +134,7 @@
       <div>
         <Chat ref="chat"/>
       </div>
-      <PollCreateOverlay @sharePollResults="sharePollResults" v-if="store.session.role == 'speaker'" />
+      <PollCreateOverlay @sharePollResults="sharePollResults" v-if="store.session.role === 'speaker'" />
     </div>
     <PollVoteOverlay />
   </div>
@@ -164,33 +164,37 @@ let localMuted = ref(false);
 const props = defineProps(["isPresenter", "startScreenshare", "stopScreenshare", "startWebcamShare", "stopWebcamShare", "mute", "unmute"])
 
 function startScreen() {
-  this.startScreenshare();
   sharingScreen.value = true;
+  props.startScreenshare();
+}
+
+function debug() {
+  console.log(store.session.role);
 }
 
 function stopScreen() {
-  this.stopScreenshare();
   sharingScreen.value = false;
+  props.stopScreenshare();
 }
 
 function startWebcam() {
-  this.startWebcamShare();
   sharingWebcam.value = true;
+  props.startWebcamShare();
 }
 
 function stopWebcam() {
-  this.stopWebcamShare();
   sharingWebcam.value = false;
+  props.stopWebcamShare();
 }
 
 function muteAudio() {
-  this.mute();
   muted.value = true;
+  props.mute();
 }
 
 function unmuteAudio() {
-  this.unmute();
   muted.value = false;
+  props.unmute();
 }
 
 // ToDo: Clean up control-methods with this schema.

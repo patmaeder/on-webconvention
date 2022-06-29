@@ -12,9 +12,11 @@
 
 <script>
 import ConferenceView from "./ConferenceView";
-import MeetingControls from "./MeetingControls";
 
 import {useNuxtApp} from "nuxt/app";
+import {useStore} from "~/store";
+
+let store;
 
 const config = {
   iceServers: [
@@ -31,7 +33,7 @@ export default {
   props: ["roomId"],
   data() {
     return {
-      presenter: (this.$route.query.presenter === "true"),
+      presenter: false,
       localWebcam: null,
       localScreen: null,
     }
@@ -39,6 +41,8 @@ export default {
   created() {
     const { $jsonRPC, $client } = useNuxtApp();
     const runtimeConfig = useRuntimeConfig()
+    store = useStore();
+    this.presenter = store.session.role === "speaker";
 
     const signal = new $jsonRPC(runtimeConfig.public.SFU_HOST);
     const screenshareSignal = new $jsonRPC(runtimeConfig.public.SFU_HOST);
@@ -88,6 +92,9 @@ export default {
       this.$refs.conferenceView.$refs.public_video.srcObject = this.localWebcam;
       this.$refs.conferenceView.$refs.public_video.muted = true;
       client.publish(this.localWebcam);
+    },
+    debug() {
+      console.log(this.presenter)
     },
     async startShareScreen() {
       const { $localStream } = useNuxtApp();
