@@ -1,5 +1,5 @@
 <template>
-  <div class="meetingRoom">
+  <div class="meetingRoom meetingview__bg keynote__bg">
     <div class="meetingRoom_main" ref="main" >
       <div class="header">
         <div class="menu-wrapper">

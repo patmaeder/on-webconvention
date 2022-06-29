@@ -1,5 +1,6 @@
 <template>
-  <div class="meetingRoom">
+  <!-- Temp fix for dynamic loading of breakromm bg-images :) -->
+  <div class="meetingRoom meetingview__bg" :class="{breakroom__bg__2: (roomId % 2 === 0), breakroom__bg__1: (roomId % 2 !== 0)}">
     <div ref="public_video"></div>
     <div ref="subscriber_video"></div>
     <div class="meetingRoom_main" ref="main" >
