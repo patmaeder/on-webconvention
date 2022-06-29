@@ -7,6 +7,8 @@
                   :stop-screenshare="stopShareScreen"
                   :mute="mute"
                   :unmute="unmute"
+                  :is-sharing-webcam="sharingWebcam"
+                  :is-sharing-screen="sharingScreen"
   />
 </template>
 
@@ -36,6 +38,8 @@ export default {
       presenter: false,
       localWebcam: null,
       localScreen: null,
+      sharingWebcam: false,
+      sharingScreen: false,
     }
   },
   created() {
@@ -57,22 +61,27 @@ export default {
     if(!this.presenter) {
       client.ontrack = (track, stream) => {
         track.onunmute = () => {
+          this.sharingWebcam = true;
           this.$refs.conferenceView.$refs.subscriber_video.srcObject = stream;
           this.$refs.conferenceView.$refs.subscriber_video.autoplay = true;
           this.$refs.conferenceView.$refs.subscriber_video.muted = false;
 
+
           stream.onremovetrack = () => {
+            this.sharingWebcam = false;
             this.$refs.conferenceView.$refs.subscriber_video.srcObject = null;
           }
         }
       }
       screenshare.ontrack = (track, stream) => {
         track.onunmute = () => {
+          this.sharingScreen = true;
           this.$refs.conferenceView.$refs.screenshare_video.srcObject = stream;
           this.$refs.conferenceView.$refs.screenshare_video.autoplay = true;
           this.$refs.conferenceView.$refs.screenshare_video.muted = false;
 
           stream.onremovetrack = () => {
+            this.sharingScreen = false;
             this.$refs.conferenceView.$refs.screenshare_video.srcObject = null;
           }
         }

@@ -7,7 +7,7 @@
           <div>
             <div >
                 <span>{{ currentRoom.name }}</span>
-                <p v-if="currentEvent.length > 0">{{ currentEvent }}</p>
+                <p v-if="currentEvent.length > 0">{{ currentEvent.name }}</p>
             </div>
           </div>
 
@@ -33,26 +33,30 @@
       </div>
       <div class="main-section">
         <div class="members">
-          <div v-if="sharingWebcam">
-            <video class="camera" ref="public_video" autoplay v-if="isPresenter" ></video>
-            <video class="camera" ref="subscriber_video" autoplay v-else ></video>
+          <div>
+            <video class="camera" :class="{hidden: !sharingWebcam}" ref="public_video" autoplay v-if="(store.session.role === 'speaker')"  ></video>
+            <video class="camera" :class="{hidden: !isSharingWebcam}" ref="subscriber_video" autoplay v-else ></video>
           </div>
-          <div v-else>
+          <div :class="{hidden: sharingWebcam || isSharingWebcam}">
             <div class="camera-placeholder">
               <p>Name</p>
             </div>
           </div>
         </div>
-        <div class="screen-wrapper">
-          <video id="screen" ref="screenshare_video" autoplay v-if="sharingScreen" ></video>
-          <h2 class="sc-placeholder" :class="{sc__placeholder__wrapper: !sharingScreen}" v-else>Stage</h2>
+        <div class="screen-wrapper" v-if="(store.session.role === 'speaker')">
+          <video id="screen" ref="screenshare_video" autoplay :class="{hidden: !sharingScreen}"></video>
+          <h2 class="sc-placeholder sc__placeholder__wrapper" :class="{hidden: sharingScreen}">Stage</h2>
+        </div>
+        <div class="screen-wrapper" v-else>
+          <video id="screen" ref="screenshare_video" autoplay :class="{hidden: !isSharingScreen}"></video>
+          <h2 class="sc-placeholder sc__placeholder__wrapper" :class="{hidden: isSharingScreen}">Stage</h2>
         </div>
       </div>
       <BasicIcon id="button-calendar" size="large" source="/icons/filter.svg" />
       <div class="footer">
         <div class="toolbar">
           <ul>
-            <li v-if="isPresenter">
+            <li v-if="store.session.role === 'speaker'">
               <BasicIcon
                   size="medium"
                   source="/icons/mic.svg"
@@ -125,6 +129,9 @@
                 class="basic-btn"
                 @click="toggleSidebar"
               />
+              <button @click="debug">
+                Debug
+              </button>
             </li>
           </ul>
         </div>
@@ -166,15 +173,18 @@ let sharingScreen = ref(false);
 let muted = ref(true);
 let localMuted = ref(false);
 
-const props = defineProps(["isPresenter", "startScreenshare", "stopScreenshare", "startWebcamShare", "stopWebcamShare", "mute", "unmute"])
+const props = defineProps(["isPresenter", "startScreenshare", "stopScreenshare", "startWebcamShare", "stopWebcamShare", "mute", "unmute", "isSharingWebcam", "isSharingScreen"])
+
+function debug() {
+  console.log(
+      props.isSharingScreen,
+      sharingScreen.value
+  )
+}
 
 function startScreen() {
   sharingScreen.value = true;
   props.startScreenshare();
-}
-
-function debug() {
-  console.log(store.session.role);
 }
 
 function stopScreen() {
