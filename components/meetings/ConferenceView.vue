@@ -74,6 +74,8 @@
                   size="medium"
                   source="/icons/phones.svg"
                   class="basic-btn"
+                  :class="{ active: localMuted.value }"
+                  @click="muteLocal"
               />
             </li>
             <li v-if="isPresenter">
@@ -142,11 +144,14 @@ const { data: currentEvent } = await useAsyncData('fetch.currentEvent', () => $f
 const main = ref(null);
 const sidebar = ref(null);
 const chat = ref(null);
+const public_video = ref(null);
+const subscriber_video = ref(null);
 
 let sidebarVisible = true;
 let sharingWebcam = ref(false);
 let sharingScreen = ref(false);
 let muted = ref(true);
+let localMuted = ref(false);
 
 const props = defineProps(["isPresenter", "startScreenshare", "stopScreenshare", "startWebcamShare", "stopWebcamShare", "mute", "unmute"])
 
@@ -178,6 +183,16 @@ function muteAudio() {
 function unmuteAudio() {
   this.unmute();
   muted.value = false;
+}
+
+// ToDo: Clean up control-methods with this schema.
+function muteLocal() {
+  if(props.isPresenter) {
+    public_video.value.muted = !localMuted.value;
+  } else {
+    subscriber_video.value.muted = !localMuted.value;
+  }
+  localMuted.value = !localMuted.value;
 }
 
 function toggleSidebar() {
