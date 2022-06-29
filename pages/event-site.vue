@@ -22,10 +22,10 @@
             </NuxtLink>
         </div>
         <ClientOnly>
-          <EventSiteRenderer
+            <EventSiteRenderer
                 ref="eventSiteRenderer"
                 :eventSite="eventSite"
-                :user="user"
+                :user="store.session"
                 :events="events"
                 :favorites="favoriteEvents"
                 @favorEvent="favor"
@@ -37,15 +37,12 @@
 </template>
 
 <script lang="ts" setup>
+import { useStore } from '../store';
 
 definePageMeta({ layout: "no-header", middleware: "auth" });
 
 const route = useRoute()
-//const store = useStore();
-const user = {
-    id: route.query.id,
-    role: route.query.role
-}
+const store = useStore();
 const { data: expo } = await useAsyncData('fetch.expo', () => $fetch('/api/expo'))
 const { data: eventSite } = await useAsyncData('fetch.eventRooms', () => $fetch('/api/expo/eventRooms'))
 const { data: events } = await useAsyncData('fetch.events', () => $fetch('/api/expo/events'))

@@ -182,7 +182,7 @@ const currentEvents = computed(() => {
  */
 function beforeTileLoad(GLTFLoader) {
     const loader = new DRACOLoader();
-    loader.setDecoderPath('/node_modules/three/examples/js/libs/draco/');
+    loader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.141.0/examples/js/libs/draco/');
     GLTFLoader.setDRACOLoader(loader);
 }
 
