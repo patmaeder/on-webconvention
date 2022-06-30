@@ -7,7 +7,7 @@
           <div>
             <div >
                 <span>{{ currentRoom.name }}</span>
-                <p v-if="currentEvent.length > 0">{{ currentEvent.name }}</p>
+                <p v-if="currentEvent.length > 0">{{ currentEvent[0].name }}</p>
             </div>
           </div>
 

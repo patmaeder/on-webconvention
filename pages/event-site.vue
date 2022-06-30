@@ -41,7 +41,7 @@ import { useStore } from '../store';
 
 definePageMeta({ layout: "no-header", middleware: "auth" });
 
-const route = useRoute()
+const route = useRoute();
 const store = useStore();
 const { data: expo } = await useAsyncData('fetch.expo', () => $fetch('/api/expo'))
 const { data: eventSite } = await useAsyncData('fetch.eventRooms', () => $fetch('/api/expo/eventRooms'))
@@ -76,7 +76,7 @@ function joinRoom(roomID) {
             const currentTimestamp = new Date().getTime()
 
             let filteredEvents = events.value.filter((elem) => {
-                return elem.room == roomID &&
+                return elem.roomId == roomID &&
                     new Date(elem.endDate).getTime() > currentTimestamp &&
                     new Date(elem.startDate).getTime() < currentTimestamp
             });
