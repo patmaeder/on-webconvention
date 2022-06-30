@@ -35,8 +35,8 @@
                     v-if="showCharacter"
                     ref="character"
                     :src="user.role == 'speaker' ? '/glbModels/speaker.glb' : '/glbModels/visitor.glb'"
-                    :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: -0.3, y: 0.03, z: 0.44}"
-                    :rotation="usersSharedMap.has(props.user.id) ? {x: usersSharedMap.get(props.user.id).rotation._x, y: usersSharedMap.get(props.user.id).rotation._y, z: usersSharedMap.get(props.user.id).rotation._z} : {x: 0, y: 0, z: 0}"
+                    :position="usersSharedMap.has(props.user.email) ? {...usersSharedMap.get(props.user.email).position} : {x: -0.3, y: 0.03, z: 0.44}"
+                    :rotation="usersSharedMap.has(props.user.email) ? {x: usersSharedMap.get(props.user.email).rotation._x, y: usersSharedMap.get(props.user.email).rotation._y, z: usersSharedMap.get(props.user.email).rotation._z} : {x: 0, y: 0, z: 0}"
                     :scale="{x: 0.5, y: 0.5, z: 0.5}"
                     @load="characterLoaded"
                 />
@@ -206,8 +206,8 @@ function characterLoaded(gltf) {
     document.addEventListener("keyup", keyUp);
 
     // Add user to sharedMap
-    if (!usersSharedMap.has(props.user.id)) {
-        usersSharedMap.set(props.user.id, {
+    if (!usersSharedMap.has(props.user.email)) {
+        usersSharedMap.set(props.user.email, {
             role: props.user.role,
             position: {x: 0, y: 0.05, z: 0},
             rotation: {_x: 0, _y: 0, _z: 0},
@@ -250,7 +250,7 @@ function characterLoaded(gltf) {
                     }
                 }
 
-                usersSharedMap.set(props.user.id, {
+                usersSharedMap.set(props.user.email, {
                     role: props.user.role,
                     position: characterObject3D.position,
                     rotation: characterObject3D.rotation
@@ -386,7 +386,7 @@ function setDirectionOfMovement(forward, sideward){
 
 function removeCharacter() {
     showCharacter.value = false;
-    usersSharedMap.delete(props.user.id);
+    usersSharedMap.delete(props.user.email);
 }
 
 function addUser(key, visitor) {
@@ -431,6 +431,10 @@ function blurRoom() {
     popoverCSS2DObject.parent.remove(popoverCSS2DObject);
 }
 
+function beforeUnload(event) {
+    removeCharacter();
+    return null;
+}
 
 /*
  * ---------------
@@ -438,6 +442,7 @@ function blurRoom() {
  * --------------
  */
 onMounted(() => {
+
     nextTick(() => {
 
         // Setup Clock for animation
@@ -471,7 +476,9 @@ onMounted(() => {
         // EventListener to render character on user input
         document.addEventListener("keydown", function listenForCharInput (event) {
             [87, 38, 83, 40, 65, 37, 68, 39].includes(event.keyCode) ? showCharacter.value = true : null;
-        }, {once: true})
+        }, {once: true});
+
+        window.addEventListener("beforeunload", beforeUnload);
 
         const runtimeConfig = useRuntimeConfig();
         console.log(runtimeConfig.public.YJS_HOST);
@@ -485,7 +492,7 @@ onMounted(() => {
                 switch (value.action) {
 
                     case "add":
-                        if (key != props.user.id) {
+                        if (key != props.user.email) {
                             addUser(key, usersSharedMap.get(key));
 
                         } else if (!showCharacter.value) {
@@ -494,7 +501,7 @@ onMounted(() => {
                         break;
                     
                     case "update":
-                        if (key != props.user.id) {
+                        if (key != props.user.email) {
                             users[key] = {
                                 ...users[key],
                                 ...usersSharedMap.get(key)
@@ -503,7 +510,7 @@ onMounted(() => {
                         break;
 
                     case "delete":
-                        if (key != props.user.id) {
+                        if (key != props.user.email) {
                             scene.value.remove(users[key].model);
                             delete users[key];
                         }
@@ -530,6 +537,7 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("keydown", keyDown);
   document.removeEventListener("keyup", keyUp);
+  window.removeEventListener("beforeunload", beforeUnload);
 })
 </script>
 

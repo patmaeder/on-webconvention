@@ -1,13 +1,15 @@
 <template>
-  <ClientOnly>
-    <div v-if="roomId">
-      <MeetingsConferenceHandler v-if="currentRoom.type === 'keynote'" :room-id="roomId" />
-      <MeetingsBreakroomHandler v-else :room-id="roomId" />
-    </div>
-    <div v-else>
-      <p>Nothing to see here!</p>
-    </div>
-  </ClientOnly>
+  <div>
+    <ClientOnly>
+      <div v-if="roomId">
+        <MeetingsConferenceHandler v-if="currentRoom.type === 'keynote'" :room-id="roomId" />
+        <MeetingsBreakroomHandler v-else :room-id="roomId" />
+      </div>
+      <div v-else>
+        <p>Nothing to see here!</p>
+      </div>
+    </ClientOnly>
+  </div>
 </template>
 
 <script setup>
