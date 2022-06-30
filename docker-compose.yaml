@@ -29,6 +29,7 @@ services:
   node:
     build:
       context: .
+      dockerfile: Node.Dockerfile
     restart: unless-stopped
     expose:
       - 3000
@@ -41,12 +42,29 @@ services:
     networks:
       - webconvention
       - nginx-proxy
+  yjs:
+    build:
+      context: .
+      dockerfile: YJS.Dockerfile
+    restart: unless-stopped
+    expose:
+      - 1234
+    environment:
+      - VIRTUAL_HOST=yjs.on-webconvention.de
+      - VIRTUAL_PORT=1234
+      - LETSENCRYPT_HOST=yjs.on-webconvention.de
+    networks:
+      - nginx-proxy
   sfu:
     image: pionwebrtc/ion-sfu:latest-jsonrpc
     restart: unless-stopped
     ports:
       - "5000-5200:5000-5200/udp"
-      - "7005:7000"
+      - "7000:7000"
+    environment:
+      - VIRTUAL_HOST=sfu.on-webconvention.de
+      - VIRTUAL_PORT=7000
+      - LETSENCRYPT_HOST=sfu.on-webconvention.de
     networks:
       - nginx-proxy
   postfix:
