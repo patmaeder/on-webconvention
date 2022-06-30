@@ -89,6 +89,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
+import {onUnmounted} from "#imports";
 
 // Expose publicly available variables and functions
 defineExpose({
@@ -524,6 +525,11 @@ onMounted(() => {
             }
         })
     })
+})
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", keyDown);
+  document.removeEventListener("keyup", keyUp);
 })
 </script>
 
