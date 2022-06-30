@@ -16,5 +16,5 @@ apply_path
 
 
 npx prisma migrate dev
-npm run ws & node .output/server/index.mjs
+node .output/server/index.mjs
 exec "$@"
