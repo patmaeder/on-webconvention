@@ -13,4 +13,4 @@ RUN npm i y-websocket
 
 EXPOSE 1234
 
-CMD ["npx y-websocket"]
+CMD ["npx","y-websocket"]
