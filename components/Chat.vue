@@ -34,6 +34,9 @@
                 </button>
             </form>
         </div>
+        <button @click="deleteChat" v-if="roomType == 'break' || store.session.role == 'speaker'">
+            Chat löschen
+        </button>
     </div>
 </template>
 
@@ -52,9 +55,11 @@ const roomId = route.params.roomId;
 let wsProvider: WebsocketProvider;
 const doc = new Y.Doc();
 let messages = ref([]);
-let chatSharedMap = doc.getArray("chat");
+let chatSharedArray = doc.getArray("chat");
 const chatMessages = ref(null);
 const chatInput = ref(null);
+
+const props = defineProps(["roomType"]);
 
 const runtimeConfig = useRuntimeConfig();
 
@@ -65,7 +70,7 @@ function sendMessage(type, content = chatInput.value.textContent) {
 
         type == "userMessage" ? chatInput.value.textContent = "" : null;
         
-        chatSharedMap.push([{
+        chatSharedArray.push([{
             type,
             user: {
                 name: store.session.name,
@@ -76,13 +81,21 @@ function sendMessage(type, content = chatInput.value.textContent) {
     }
 }
 
+function deleteChat() {
+    chatSharedArray.delete(0, chatSharedArray.length);
+}
+
 onMounted(() => {
     wsProvider = new WebsocketProvider(runtimeConfig.public.YJS_HOST, "room/" + roomId + '/chat' , doc);
 
-    chatSharedMap.observe(event => {
+    chatSharedArray.observe(event => {
 
         for(let value of event.changes.added) {
             messages.value.push(...value.content.arr);
+        }
+
+        if (event.changes.deleted.size > 0) {
+            messages.value = [];
         }
 
         nextTick(() => {
@@ -218,6 +231,26 @@ onMounted(() => {
     background-color: transparent;
     border: none;
     outline: none;
+    cursor: pointer;
+}
+
+#chatControls > button {
+    width: 100%;
+    height: 44px;
+    border-radius: 6px;
+    border: 2px solid #ffffff;
+    background-color: transparent;
+    color: #ffffff;
+}
+
+#chat > button {
+    width: 100%;
+    height: 44px;
+    margin-top: 16px;
+    border-radius: 6px;
+    border: 1px solid #ffffff;
+    background-color: transparent;
+    color: #ffffff;
     cursor: pointer;
 }
 </style>

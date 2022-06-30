@@ -116,7 +116,7 @@
     </div>
     <div class="meetingRoom_sidebar" ref="sidebar" >
       <div>
-        <Chat ref="chat"/>
+        <Chat ref="chat" :roomType="currentRoom.type"/>
       </div>
       <PollCreateOverlay @sharePollResults="sharePollResults" />
     </div>
