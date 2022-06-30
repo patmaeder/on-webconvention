@@ -129,9 +129,6 @@
                 class="basic-btn"
                 @click="toggleSidebar"
               />
-              <button @click="debug">
-                Debug
-              </button>
             </li>
           </ul>
         </div>
@@ -174,13 +171,6 @@ let muted = ref(true);
 let localMuted = ref(false);
 
 const props = defineProps(["isPresenter", "startScreenshare", "stopScreenshare", "startWebcamShare", "stopWebcamShare", "mute", "unmute", "isSharingWebcam", "isSharingScreen"])
-
-function debug() {
-  console.log(
-      props.isSharingScreen,
-      sharingScreen.value
-  )
-}
 
 function startScreen() {
   sharingScreen.value = true;
