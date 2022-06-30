@@ -34,7 +34,7 @@
                 <GltfModel
                     v-if="showCharacter"
                     ref="character"
-                    :src="user.role == 'speaker' ? '/glbModels/speaker.glb' : '/glbModels/visitor.glb'"
+                    :src="user.role == 'speaker' ? '/glbModels/speaker.glb' : '/glbModels/user.glb'"
                     :position="usersSharedMap.has(props.user.email) ? {...usersSharedMap.get(props.user.email).position} : {x: -0.3, y: 0.03, z: 0.44}"
                     :rotation="usersSharedMap.has(props.user.email) ? {x: usersSharedMap.get(props.user.email).rotation._x, y: usersSharedMap.get(props.user.email).rotation._y, z: usersSharedMap.get(props.user.email).rotation._z} : {x: 0, y: 0, z: 0}"
                     :scale="{x: 0.5, y: 0.5, z: 0.5}"
@@ -224,7 +224,7 @@ function characterLoaded(gltf) {
             if (character.value.userData.move.forward != 0 || character.value.userData.move.sideward != 0) {
                 
                 let quaternion = getRotationQuaternion(character.value.userData.move.forward, character.value.userData.move.sideward);
-                characterObject3D.quaternion.rotateTowards(quaternion, 4 * delta);
+                characterObject3D.quaternion.rotateTowards(quaternion, 4.4 * delta);
 
                 if (!characterIsIntersecting()) {
                 
@@ -237,7 +237,7 @@ function characterLoaded(gltf) {
                     let tempRoom;
 
                     if (intersections.length > 0) {
-                        characterObject3D.translateX(0.02 * delta * character.value.userData.move.speed);
+                        characterObject3D.translateX(0.025 * delta * character.value.userData.move.speed);
                         tempRoom = intersections[intersections.length - 1].object.parent.userData.roomID;
 
                     } else {
@@ -250,11 +250,13 @@ function characterLoaded(gltf) {
                     }
                 }
 
-                usersSharedMap.set(props.user.email, {
-                    role: props.user.role,
-                    position: characterObject3D.position,
-                    rotation: characterObject3D.rotation
-                })
+                try {
+                    usersSharedMap.set(props.user.email, {
+                        role: props.user.role,
+                        position: characterObject3D.position,
+                        rotation: characterObject3D.rotation
+                    })
+                } catch (e) {}
             }
         }
     })
@@ -431,8 +433,8 @@ function blurRoom() {
     popoverCSS2DObject.parent.remove(popoverCSS2DObject);
 }
 
-function beforeUnload(event) {
-    removeCharacter();
+function beforeUnload() {
+    usersSharedMap.delete(props.user.email);
     return null;
 }
 
@@ -492,29 +494,35 @@ onMounted(() => {
                 switch (value.action) {
 
                     case "add":
-                        if (key != props.user.email) {
-                            addUser(key, usersSharedMap.get(key));
+                        try {
+                            if (key != props.user.email) {
+                                addUser(key, usersSharedMap.get(key));
 
-                        } else if (!showCharacter.value) {
-                            showCharacter.value = true;
-                        }
-                        break;
+                            } else if (!showCharacter.value) {
+                                showCharacter.value = true;
+                            }
+                            break;
+                        } catch(e) {}
                     
                     case "update":
-                        if (key != props.user.email) {
-                            users[key] = {
-                                ...users[key],
-                                ...usersSharedMap.get(key)
+                        try {
+                            if (key != props.user.email) {
+                                users[key] = {
+                                    ...users[key],
+                                    ...usersSharedMap.get(key)
+                                }
                             }
-                        }
-                        break;
+                            break;
+                        } catch (e) {}
 
                     case "delete":
-                        if (key != props.user.email) {
-                            scene.value.remove(users[key].model);
-                            delete users[key];
-                        }
-                        break;
+                        try {
+                            if (key != props.user.email) {
+                                scene.value.remove(users[key].model);
+                                delete users[key];
+                            }
+                            break;
+                        } catch (e) {}
                 }
             }
         })
@@ -534,10 +542,17 @@ onMounted(() => {
     })
 })
 
+/*
+ * ---------------
+ * On UnMounted Hook
+ * --------------
+ */
 onUnmounted(() => {
   document.removeEventListener("keydown", keyDown);
   document.removeEventListener("keyup", keyUp);
   window.removeEventListener("beforeunload", beforeUnload);
+
+  wsProvider.destroy();
 })
 </script>
 
