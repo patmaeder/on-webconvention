@@ -7,7 +7,7 @@ RUN mkdir -p /usr/src
 WORKDIR /usr/src
 
 # copy source files
-COPY . /usr/src
+COPY .. /usr/src
 
 # create persistent volume
 VOLUME /usr/src/storage
