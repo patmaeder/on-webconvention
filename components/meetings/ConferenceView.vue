@@ -7,7 +7,7 @@
           <div>
             <div >
                 <span>{{ currentRoom.name }}</span>
-                <p v-if="currentEvent.length > 0">{{ currentEvent }}</p>
+                <p v-if="currentEvent.length > 0">{{ currentEvent[0].name }}</p>
             </div>
           </div>
 
@@ -33,18 +33,30 @@
       </div>
       <div class="main-section">
         <div class="members">
-          <video class="camera" ref="public_video" autoplay v-if="isPresenter" ></video>
-          <video class="camera" ref="subscriber_video" autoplay v-else ></video>
+          <div>
+            <video class="camera" :class="{hidden: !sharingWebcam}" ref="public_video" autoplay v-if="(store.session.role === 'speaker')"  ></video>
+            <video class="camera" :class="{hidden: !isSharingWebcam}" ref="subscriber_video" autoplay v-else ></video>
+          </div>
+          <div :class="{hidden: sharingWebcam || isSharingWebcam}">
+            <div class="camera-placeholder">
+              <p>Name</p>
+            </div>
+          </div>
         </div>
-        <div class="screen-wrapper">
-          <video id="screen" ref="screenshare_video" autoplay ></video>
+        <div class="screen-wrapper" v-if="(store.session.role === 'speaker')">
+          <video id="screen" ref="screenshare_video" autoplay :class="{hidden: !sharingScreen}"></video>
+          <h2 class="sc-placeholder sc__placeholder__wrapper" :class="{hidden: sharingScreen}">Stage</h2>
+        </div>
+        <div class="screen-wrapper" v-else>
+          <video id="screen" ref="screenshare_video" autoplay :class="{hidden: !isSharingScreen}"></video>
+          <h2 class="sc-placeholder sc__placeholder__wrapper" :class="{hidden: isSharingScreen}">Stage</h2>
         </div>
       </div>
       <BasicIcon id="button-calendar" size="large" source="/icons/filter.svg" />
       <div class="footer">
         <div class="toolbar">
           <ul>
-            <li v-if="isPresenter">
+            <li v-if="store.session.role === 'speaker'">
               <BasicIcon
                   size="medium"
                   source="/icons/mic.svg"
@@ -78,7 +90,7 @@
                 />
               </NuxtLink>
             </li>
-            <li v-if="isPresenter">
+            <li v-if="store.session.role === 'speaker'">
               <BasicIcon
                   size="medium"
                   source="/icons/cam.svg"
@@ -94,17 +106,17 @@
                   v-else
               />
             </li>
-            <li v-if="isPresenter">
+            <li v-if="store.session.role === 'speaker'">
               <BasicIcon
                   size="medium"
-                  source="/icons/cam.svg"
+                  source="/icons/screen.svg"
                   class="basic-btn active"
                   @click="stopScreen"
                   v-if="sharingScreen"
               />
               <BasicIcon
                   size="medium"
-                  source="/icons/cam.svg"
+                  source="/icons/screen.svg"
                   class="basic-btn"
                   @click="startScreen"
                   v-else
@@ -124,11 +136,12 @@
     </div>
     <div class="meetingRoom_sidebar" ref="sidebar" >
       <div>
-        <Chat ref="chat"/>
+        <Chat ref="chat" :roomType="currentRoom.type"/>
       </div>
-      <PollCreateOverlay @sharePollResults="sharePollResults" v-if="store.session.role == 'speaker'" />
+      <PollCreateOverlay @sharePollResults="sharePollResults" v-if="store.session.role === 'speaker'" />
     </div>
     <PollVoteOverlay />
+    <Calendar :events="events" :favorites="favoriteEvents" :roomNames="eventSite.reduce((obj, item) => Object.assign(obj, {[item.id]: item.name }))" @favorEvent="favor"/>
   </div>
 </template>
 
@@ -140,7 +153,11 @@ const route = useRoute();
 const roomId = route.params.roomId;
 const { data: currentRoom } = await useAsyncData('fetch.currentRoom', () => $fetch(`/api/expo/eventRoom/${roomId}`))
 const { data: currentEvent } = await useAsyncData('fetch.currentEvent', () => $fetch(`/api/expo/eventRoom/${roomId}/currentEvent`))
+const { data: eventSite } = await useAsyncData('fetch.eventRooms', () => $fetch('/api/expo/eventRooms'))
+const { data: events } = await useAsyncData('fetch.events', () => $fetch('/api/expo/events'))
 
+
+let favoriteEvents = ref([]);
 const main = ref(null);
 const sidebar = ref(null);
 const chat = ref(null);
@@ -153,36 +170,36 @@ let sharingScreen = ref(false);
 let muted = ref(true);
 let localMuted = ref(false);
 
-const props = defineProps(["isPresenter", "startScreenshare", "stopScreenshare", "startWebcamShare", "stopWebcamShare", "mute", "unmute"])
+const props = defineProps(["isPresenter", "startScreenshare", "stopScreenshare", "startWebcamShare", "stopWebcamShare", "mute", "unmute", "isSharingWebcam", "isSharingScreen"])
 
 function startScreen() {
-  this.startScreenshare();
   sharingScreen.value = true;
+  props.startScreenshare();
 }
 
 function stopScreen() {
-  this.stopScreenshare();
   sharingScreen.value = false;
+  props.stopScreenshare();
 }
 
 function startWebcam() {
-  this.startWebcamShare();
   sharingWebcam.value = true;
+  props.startWebcamShare();
 }
 
 function stopWebcam() {
-  this.stopWebcamShare();
   sharingWebcam.value = false;
+  props.stopWebcamShare();
 }
 
 function muteAudio() {
-  this.mute();
   muted.value = true;
+  props.mute();
 }
 
 function unmuteAudio() {
-  this.unmute();
   muted.value = false;
+  props.unmute();
 }
 
 // ToDo: Clean up control-methods with this schema.
@@ -207,6 +224,19 @@ function toggleSidebar() {
 function sharePollResults(event) {
   chat.value.sendMessage('pollResults', event)
 }
+
+function favor(eventID) {
+
+  if (favoriteEvents.value.includes(eventID)) {
+    favoriteEvents.value = favoriteEvents.value.filter((elem) => {
+      return elem != eventID
+    })
+
+  } else {
+    favoriteEvents.value.push(eventID)
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>

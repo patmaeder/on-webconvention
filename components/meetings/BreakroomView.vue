@@ -116,11 +116,12 @@
     </div>
     <div class="meetingRoom_sidebar" ref="sidebar" >
       <div>
-        <Chat ref="chat"/>
+        <Chat ref="chat" :roomType="currentRoom.type"/>
       </div>
       <PollCreateOverlay @sharePollResults="sharePollResults" />
     </div>
     <PollVoteOverlay />
+    <Calendar :events="events" :favorites="favoriteEvents" :roomNames="eventSite.reduce((obj, item) => Object.assign(obj, {[item.id]: item.name }))" @favorEvent="favor"/>
   </div>
 </template>
 
@@ -131,7 +132,11 @@ const store = useStore();
 const route = useRoute();
 const roomId = route.params.roomId;
 const { data: currentRoom } = await useAsyncData('fetch.currentRoom', () => $fetch(`/api/expo/eventRoom/${roomId}`))
+const { data: currentEvent } = await useAsyncData('fetch.currentEvent', () => $fetch(`/api/expo/eventRoom/${roomId}/currentEvent`))
+const { data: eventSite } = await useAsyncData('fetch.eventRooms', () => $fetch('/api/expo/eventRooms'))
+const { data: events } = await useAsyncData('fetch.events', () => $fetch('/api/expo/events'))
 
+let favoriteEvents = ref([]);
 const main = ref(null);
 const sidebar = ref(null);
 const chat = ref(null);
@@ -184,6 +189,19 @@ function toggleSidebar() {
 function sharePollResults(event) {
   chat.value.sendMessage('pollResults', event)
 }
+
+function favor(eventID) {
+
+  if (favoriteEvents.value.includes(eventID)) {
+    favoriteEvents.value = favoriteEvents.value.filter((elem) => {
+      return elem != eventID
+    })
+
+  } else {
+    favoriteEvents.value.push(eventID)
+  }
+}
+
 </script>
 
 <style scoped>

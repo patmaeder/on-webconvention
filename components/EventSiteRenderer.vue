@@ -34,9 +34,9 @@
                 <GltfModel
                     v-if="showCharacter"
                     ref="character"
-                    :src="user.role == 'speaker' ? '/glbModels/speaker.glb' : '/glbModels/visitor.glb'"
-                    :position="usersSharedMap.has(props.user.id) ? {...usersSharedMap.get(props.user.id).position} : {x: -0.3, y: 0.03, z: 0.44}"
-                    :rotation="usersSharedMap.has(props.user.id) ? {x: usersSharedMap.get(props.user.id).rotation._x, y: usersSharedMap.get(props.user.id).rotation._y, z: usersSharedMap.get(props.user.id).rotation._z} : {x: 0, y: 0, z: 0}"
+                    :src="user.role == 'speaker' ? '/glbModels/speaker.glb' : '/glbModels/user.glb'"
+                    :position="usersSharedMap.has(props.user.email) ? {...usersSharedMap.get(props.user.email).position} : {x: -0.3, y: 0.03, z: 0.44}"
+                    :rotation="usersSharedMap.has(props.user.email) ? {x: usersSharedMap.get(props.user.email).rotation._x, y: usersSharedMap.get(props.user.email).rotation._y, z: usersSharedMap.get(props.user.email).rotation._z} : {x: 0, y: 0, z: 0}"
                     :scale="{x: 0.5, y: 0.5, z: 0.5}"
                     @load="characterLoaded"
                 />
@@ -89,6 +89,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import * as Y from "yjs"
 import { WebsocketProvider } from "y-websocket";
+import {onUnmounted} from "#imports";
 
 // Expose publicly available variables and functions
 defineExpose({
@@ -205,8 +206,8 @@ function characterLoaded(gltf) {
     document.addEventListener("keyup", keyUp);
 
     // Add user to sharedMap
-    if (!usersSharedMap.has(props.user.id)) {
-        usersSharedMap.set(props.user.id, {
+    if (!usersSharedMap.has(props.user.email)) {
+        usersSharedMap.set(props.user.email, {
             role: props.user.role,
             position: {x: 0, y: 0.05, z: 0},
             rotation: {_x: 0, _y: 0, _z: 0},
@@ -223,7 +224,7 @@ function characterLoaded(gltf) {
             if (character.value.userData.move.forward != 0 || character.value.userData.move.sideward != 0) {
                 
                 let quaternion = getRotationQuaternion(character.value.userData.move.forward, character.value.userData.move.sideward);
-                characterObject3D.quaternion.rotateTowards(quaternion, 4 * delta);
+                characterObject3D.quaternion.rotateTowards(quaternion, 4.4 * delta);
 
                 if (!characterIsIntersecting()) {
                 
@@ -236,7 +237,7 @@ function characterLoaded(gltf) {
                     let tempRoom;
 
                     if (intersections.length > 0) {
-                        characterObject3D.translateX(0.02 * delta * character.value.userData.move.speed);
+                        characterObject3D.translateX(0.025 * delta * character.value.userData.move.speed);
                         tempRoom = intersections[intersections.length - 1].object.parent.userData.roomID;
 
                     } else {
@@ -249,11 +250,13 @@ function characterLoaded(gltf) {
                     }
                 }
 
-                usersSharedMap.set(props.user.id, {
-                    role: props.user.role,
-                    position: characterObject3D.position,
-                    rotation: characterObject3D.rotation
-                })
+                try {
+                    usersSharedMap.set(props.user.email, {
+                        role: props.user.role,
+                        position: characterObject3D.position,
+                        rotation: characterObject3D.rotation
+                    })
+                } catch (e) {}
             }
         }
     })
@@ -385,7 +388,7 @@ function setDirectionOfMovement(forward, sideward){
 
 function removeCharacter() {
     showCharacter.value = false;
-    usersSharedMap.delete(props.user.id);
+    usersSharedMap.delete(props.user.email);
 }
 
 function addUser(key, visitor) {
@@ -430,6 +433,10 @@ function blurRoom() {
     popoverCSS2DObject.parent.remove(popoverCSS2DObject);
 }
 
+function beforeUnload() {
+    usersSharedMap.delete(props.user.email);
+    return null;
+}
 
 /*
  * ---------------
@@ -437,6 +444,7 @@ function blurRoom() {
  * --------------
  */
 onMounted(() => {
+
     nextTick(() => {
 
         // Setup Clock for animation
@@ -470,7 +478,9 @@ onMounted(() => {
         // EventListener to render character on user input
         document.addEventListener("keydown", function listenForCharInput (event) {
             [87, 38, 83, 40, 65, 37, 68, 39].includes(event.keyCode) ? showCharacter.value = true : null;
-        }, {once: true})
+        }, {once: true});
+
+        window.addEventListener("beforeunload", beforeUnload);
 
         const runtimeConfig = useRuntimeConfig();
         console.log(runtimeConfig.public.YJS_HOST);
@@ -484,29 +494,35 @@ onMounted(() => {
                 switch (value.action) {
 
                     case "add":
-                        if (key != props.user.id) {
-                            addUser(key, usersSharedMap.get(key));
+                        try {
+                            if (key != props.user.email) {
+                                addUser(key, usersSharedMap.get(key));
 
-                        } else if (!showCharacter.value) {
-                            showCharacter.value = true;
-                        }
-                        break;
+                            } else if (!showCharacter.value) {
+                                showCharacter.value = true;
+                            }
+                            break;
+                        } catch(e) {}
                     
                     case "update":
-                        if (key != props.user.id) {
-                            users[key] = {
-                                ...users[key],
-                                ...usersSharedMap.get(key)
+                        try {
+                            if (key != props.user.email) {
+                                users[key] = {
+                                    ...users[key],
+                                    ...usersSharedMap.get(key)
+                                }
                             }
-                        }
-                        break;
+                            break;
+                        } catch (e) {}
 
                     case "delete":
-                        if (key != props.user.id) {
-                            scene.value.remove(users[key].model);
-                            delete users[key];
-                        }
-                        break;
+                        try {
+                            if (key != props.user.email) {
+                                scene.value.remove(users[key].model);
+                                delete users[key];
+                            }
+                            break;
+                        } catch (e) {}
                 }
             }
         })
@@ -524,6 +540,19 @@ onMounted(() => {
             }
         })
     })
+})
+
+/*
+ * ---------------
+ * On UnMounted Hook
+ * --------------
+ */
+onUnmounted(() => {
+  document.removeEventListener("keydown", keyDown);
+  document.removeEventListener("keyup", keyUp);
+  window.removeEventListener("beforeunload", beforeUnload);
+
+  wsProvider.destroy();
 })
 </script>
 

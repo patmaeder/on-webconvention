@@ -10,12 +10,10 @@ export default defineEventHandler(async (event) => {
         where: {
             roomId: parseInt(roomId),
         },
-        orderBy: [
-            {
-              startDate: 'desc',
-            },
-        ],
+        orderBy:  {
+              startDate: 'asc',
+        },
     });
 
-    return events.filter(elem => new Date(elem.endDate).getTime() < timestamp).slice(0, 1);
+    return events.filter(elem =>  new Date(elem.startDate).getTime() < timestamp && new Date(elem.endDate).getTime() > timestamp);
 });

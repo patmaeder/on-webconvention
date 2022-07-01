@@ -7,14 +7,18 @@
                   :stop-screenshare="stopShareScreen"
                   :mute="mute"
                   :unmute="unmute"
+                  :is-sharing-webcam="sharingWebcam"
+                  :is-sharing-screen="sharingScreen"
   />
 </template>
 
 <script>
 import ConferenceView from "./ConferenceView";
-import MeetingControls from "./MeetingControls";
 
 import {useNuxtApp} from "nuxt/app";
+import {useStore} from "~/store";
+
+let store;
 
 const config = {
   iceServers: [
@@ -27,18 +31,22 @@ const config = {
 let client, screenshare;
 
 export default {
-  components: {MeetingControls, ConferenceView},
+  components: {ConferenceView},
   props: ["roomId"],
   data() {
     return {
-      presenter: (this.$route.query.presenter === "true"),
+      presenter: false,
       localWebcam: null,
       localScreen: null,
+      sharingWebcam: false,
+      sharingScreen: false,
     }
   },
   created() {
     const { $jsonRPC, $client } = useNuxtApp();
     const runtimeConfig = useRuntimeConfig()
+    store = useStore();
+    this.presenter = store.session.role === "speaker";
 
     const signal = new $jsonRPC(runtimeConfig.public.SFU_HOST);
     const screenshareSignal = new $jsonRPC(runtimeConfig.public.SFU_HOST);
@@ -53,22 +61,27 @@ export default {
     if(!this.presenter) {
       client.ontrack = (track, stream) => {
         track.onunmute = () => {
+          this.sharingWebcam = true;
           this.$refs.conferenceView.$refs.subscriber_video.srcObject = stream;
           this.$refs.conferenceView.$refs.subscriber_video.autoplay = true;
           this.$refs.conferenceView.$refs.subscriber_video.muted = false;
 
+
           stream.onremovetrack = () => {
+            this.sharingWebcam = false;
             this.$refs.conferenceView.$refs.subscriber_video.srcObject = null;
           }
         }
       }
       screenshare.ontrack = (track, stream) => {
         track.onunmute = () => {
+          this.sharingScreen = true;
           this.$refs.conferenceView.$refs.screenshare_video.srcObject = stream;
           this.$refs.conferenceView.$refs.screenshare_video.autoplay = true;
           this.$refs.conferenceView.$refs.screenshare_video.muted = false;
 
           stream.onremovetrack = () => {
+            this.sharingScreen = false;
             this.$refs.conferenceView.$refs.screenshare_video.srcObject = null;
           }
         }
@@ -88,6 +101,9 @@ export default {
       this.$refs.conferenceView.$refs.public_video.srcObject = this.localWebcam;
       this.$refs.conferenceView.$refs.public_video.muted = true;
       client.publish(this.localWebcam);
+    },
+    debug() {
+      console.log(this.presenter)
     },
     async startShareScreen() {
       const { $localStream } = useNuxtApp();
