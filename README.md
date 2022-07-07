@@ -13,6 +13,20 @@ npm install
 
 Populate the environment inside `.env` with the JWT_SECRET which can be generated with the bash command `openssl rand -base64 12`.
 
+#### Setup and migrate Prisma ORM
+
+This project comes with a pre-configured SQLite database (/storage/db.sql) managed by the Prisma ORM. To migrate this database, run the following command **after** installing the project dependencies:
+
+````bash
+npx prisma migrate develop
+````
+
+The Prisma-Studio Dashboard for database-administration can then be accessed by running:
+
+````bash
+npx prisma studio
+````
+
 ## Development Server
 
 #### Option 1:
