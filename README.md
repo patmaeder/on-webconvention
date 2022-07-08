@@ -1,6 +1,13 @@
-# Nuxt 3 Minimal Starter
+# OnWebconvention
 
-Look at the [nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
+Table of contents:
+
+- Setup
+- Development Server
+- Signaling Backend
+- Production
+- Deployment
+
 
 ## Setup
 
@@ -34,26 +41,8 @@ npx prisma studio
 Start the development server on http://localhost:3000
 
 ```bash
-npm run dev -- -o
-```
-
-#### Option 2:
-
-If you want to setup the application with ddev, make sure to install docker and ddev on your machine: https://ddev.readthedocs.io/en/stable/#installation
-
-Then execute the following commands:
-
-```bash
-# setup ddev container and start the project, this makes the application accessible behind a nginx proxy with added ssl and some development tools
-ddev start
 npm run dev
 ```
-
-Your application is now accessible under: https://web-engineering.ddev.site/
-
-Mailhog is accessible via https://web-engineering.ddev.site:8026/
-
-_Please note that the **development setup** with ddev is **optional**. You can omit these steps and just run the command at the top of this section._
 
 ## Signaling Backend
 
@@ -85,10 +74,46 @@ Build the application for production:
 npm run build
 ```
 
-Locally preview production build:
+## Deployment
 
-```bash
-npm run preview
+We did use a DigitalOcean droplet for the deployment of the application. This instance was accessible via ssh under "calvin@on-webconvention.de".
+
+Connect to the server and navigate to the folder "/srv/web-engineering". This is the cloned repository which contains this source-code. The file "/srv/.ssh/deploy_key" can be used as a ssh key to pull from our github repository.
+
+Please provide an appropriate .postfix.env and .production.env file which matches the configuration of your server. Additional configuration can be done in `docker-compose.yaml`.
+
+Example .postfix.env:
+
+```
+POSTFIX_myhostname=on-webconvention.de
+ALLOWED_SENDER_DOMAINS=on-webconvention.de
+DKIM_AUTOGENERATE=TRUE
+RELAYHOST=[smtp.sendgrid.net]:587
+RELAYHOST_USERNAME=apikey
+RELAYHOST_PASSWORD=XXXXXX
+POSTFIX_smtp_tls_security_level=encrypt
+POSTFIX_header_size_limit=4096000
+POSTFIX_smtp_sasl_security_options=noanonymous
+POSTFIX_smtp_sasl_tls_security_options=noanonymous
 ```
 
-Checkout the [deployment documentation](https://v3.nuxtjs.org/docs/deployment) for more information.
+(Postfix is here used as a bridge between the Node.js backend and the outgoing sendgrid server. You can configure your own custom mailserver which relies on no other services. Please see: https://github.com/bokysan/docker-postfix)
+
+Example .production.env:
+
+```
+NODE_ENV=production
+BASE_URL="https://on-webconvention.de"
+DATABASE_URL="file:/usr/src/storage/db.sql"
+SMTP_HOST="postfix"
+SMTP_PORT=587
+MAIL_HOST=https://on-webconvention.de/
+MAIL_FROM_ADDRESS=info@on-webconvention.de
+YJS_HOST="wss://on-webconvention.de:1234"
+SFU_HOST="wss://on-webconvention.de:7002/ws"
+JWT_SECRET=XXX
+```
+
+Last required step:
+
+Run `sudo ./deploy.sh` in order to build the application using docker-compose and in order to spin it up. The application is now accessible under the VIRTUAL_HOST specified in your `docker-compose.yaml`.
